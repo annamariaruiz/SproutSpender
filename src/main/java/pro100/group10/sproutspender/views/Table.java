@@ -66,10 +66,12 @@ public class Table {
 	}
 	
 	private ObservableList<Budget> parseLastHundredContacts() {
+		return null;
 		
 	}
 	
 	private ObservableList<Budget> parseNextHundredContacts() {
+		return null;
 		
 	}
 }
