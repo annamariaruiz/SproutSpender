@@ -14,10 +14,10 @@ public class Budget {
 	private float currentAmount;
 	
 	
-	public Budget(float limit, CategoryType category) {
+	public Budget(float limit, CategoryType category, Date date) {
 		setLimit(limit);
 		setCategory(category);
-		
+		setDate(date);
 	}
 	
 	
@@ -43,5 +43,25 @@ public class Budget {
 
 	public void setCurrentAmount(float currentAmount) {
 		this.currentAmount = currentAmount;
+	}
+
+
+	public int getID() {
+		return id;
+	}
+
+
+	public void setID(int id) {
+		this.id = id;
+	}
+
+
+	public Date getDate() {
+		return date;
+	}
+
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 }

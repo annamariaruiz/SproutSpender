@@ -1,5 +1,6 @@
 package pro100.group10.sproutspender.views;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javafx.collections.ObservableList;
@@ -13,6 +14,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.util.Callback;
 import pro100.group10.sproutspender.models.Budget;
+import pro100.group10.sproutspender.models.Database;
 import pro100.group10.sproutspender.models.StrEditingCell;
 
 public class Table {
@@ -51,6 +53,7 @@ public class Table {
 	
 	private boolean tableIsEditable;
 	
+	private Database db;
 	
 	private void makeTablePopulatable() {		
 		tableView.setEditable(tableIsEditable);
@@ -65,18 +68,30 @@ public class Table {
 	private void linkTableToBackend() {
 		@SuppressWarnings("unchecked")
 		TableColumn<Budget, Float>[] columns = (TableColumn<Budget, Float>[]) new TableColumn[7];
+		columns[0] = day1Col;
+		columns[1] = day2Col;
+		columns[2] = day3Col;
+		columns[3] = day4Col;
+		columns[4] = day5Col;
+		columns[5] = day6Col;
+		columns[6] = day7Col;
 		
-//		for(TableColumn<Budget, Float> col : columns) {
-//			col.setOnEditCommit(value);
-//		}
-//		day1Col.setOnEditCommit(new EventHandler<CellEditEvent<Budget, Integer>>() {
-//			@Override
-//			public void handle(CellEditEvent<Budget, Integer> t) {
-//				Budget b = (Budget) t.getTableView().getItems().get(
-//						t.getTablePosition().getRow());
-//				b.setCurrentAmount(t.getNewValue());
-//			}
-//		});
+		for(TableColumn<Budget, Float> col : columns) {
+			col.setOnEditCommit(new EventHandler<CellEditEvent<Budget, Float>>() {
+				@Override
+				public void handle(CellEditEvent<Budget, Float> t) {
+					Budget b = (Budget) t.getTableView().getItems().get(
+							t.getTablePosition().getRow());
+					b.setCurrentAmount(t.getNewValue());
+				
+					try {
+						
+					} catch(SQLException sqle) {
+						
+					}
+				}
+			});
+		}
 	}
 	
 	private void onMenuItemEditMode() {
