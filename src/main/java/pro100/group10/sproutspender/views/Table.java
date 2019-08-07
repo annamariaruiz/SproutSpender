@@ -2,20 +2,25 @@ package pro100.group10.sproutspender.views;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.Alert.AlertType;
 import javafx.util.Callback;
 import pro100.group10.sproutspender.models.Budget;
 import pro100.group10.sproutspender.models.Database;
-import pro100.group10.sproutspender.models.StrEditingCell;
+import pro100.group10.sproutspender.models.FloatEditingCell;
 
 public class Table {
 
@@ -55,17 +60,10 @@ public class Table {
 	
 	private Database db;
 	
-	private void makeTablePopulatable() {		
-		tableView.setEditable(tableIsEditable);
-		Callback<TableColumn<Budget, String>, TableCell<Budget, String>> strCellFactory =
-			new Callback<TableColumn<Budget, String>, TableCell<Budget, String>>() {
-				public TableCell<Budget, String> call(TableColumn<Budget, String> p) {
-					return new StrEditingCell();
-				}
-			};
-	}
 	
-	private void linkTableToBackend() {
+	private void prepTableForInput() {
+		tableView.setEditable(tableIsEditable);
+		
 		@SuppressWarnings("unchecked")
 		TableColumn<Budget, Float>[] columns = (TableColumn<Budget, Float>[]) new TableColumn[7];
 		columns[0] = day1Col;
@@ -76,7 +74,17 @@ public class Table {
 		columns[5] = day6Col;
 		columns[6] = day7Col;
 		
+		Callback<TableColumn<Budget, Float>, TableCell<Budget, Float>> floatCellFactory =
+				new Callback<TableColumn<Budget, Float>, TableCell<Budget, Float>>() {
+					public TableCell<Budget, Float> call(TableColumn<Budget, Float> p) {
+						return new FloatEditingCell();
+					}
+				};
+		
 		for(TableColumn<Budget, Float> col : columns) {
+			day1Col.setCellValueFactory(new PropertyValueFactory<Budget, Float>("currentAmount"));
+			day1Col.setCellFactory(floatCellFactory);
+			
 			col.setOnEditCommit(new EventHandler<CellEditEvent<Budget, Float>>() {
 				@Override
 				public void handle(CellEditEvent<Budget, Float> t) {
@@ -85,9 +93,10 @@ public class Table {
 					b.setCurrentAmount(t.getNewValue());
 				
 					try {
-						
+						db.update(b);
 					} catch(SQLException sqle) {
-						
+						Alert alert = new Alert(AlertType.ERROR, "The budget with I.D. " + b.getID() + " could not be updated in the M.S. S.Q.L. database.\n" + sqle, ButtonType.CLOSE);
+						Optional<ButtonType> response = alert.showAndWait();
 					}
 				}
 			});
@@ -95,7 +104,8 @@ public class Table {
 	}
 	
 	private void onMenuItemEditMode() {
-		
+		tableIsEditable = !tableIsEditable;
+		tableView.setEditable(tableIsEditable);
 	}
 	
 	private void onLastButtonClick(ActionEvent ae) {

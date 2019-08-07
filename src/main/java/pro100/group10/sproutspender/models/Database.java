@@ -1,6 +1,7 @@
 package pro100.group10.sproutspender.models;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -58,6 +59,42 @@ public class Database {
             sqle.printStackTrace();
         }
     }
+    
+    public int getLastID() throws SQLException {
+    	int lastID = -1;
+    	String selectSQL = "SELECT SCOPE_IDENTITY()";
+    	ResultSet lastIDRow = null;
+    	
+    	try(Statement stmt = connection.createStatement()) {
+    		lastIDRow = stmt.executeQuery(selectSQL);
+    		lastIDRow.next();
+    		lastID = lastIDRow.getInt(1);
+    	}
+    	
+    	return lastID;
+    }
+    
+    public int store(Budget b) throws SQLException {
+    	String insertSQL =
+    		"INSERT INTO " + tableName + "("
+				+ "date, "
+				+ "limit, "
+				+ "category, "
+				+ "currentAmount"
+			+ ") "
+			+ "VALUES('"
+				+ b.getDate().toString() + "', "
+				+ b.getLimit() + ", "
+				+ b.getCategory().ordinal() + ", "
+				+ b.getCurrentAmount()
+			+ ")";
+    	
+    	try(Statement stmt = connection.createStatement()) {
+    		stmt.executeUpdate(insertSQL);
+    	}
+    	
+    	return getLastID();
+    }
 
     public void update(Budget b) throws SQLException {
     	String updateSQL =
@@ -72,6 +109,8 @@ public class Database {
     		stmt.executeUpdate(updateSQL);
     	}
     }
+    
+    
     
     public void canConnect() throws RuntimeException {
     	try {
