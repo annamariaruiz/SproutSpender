@@ -1,11 +1,14 @@
 package pro100.group10.sproutspender.controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 public class HomeController {
+	
+	private Manager m = new Manager();
 	
 	@FXML
 	private Button start;
@@ -14,16 +17,35 @@ public class HomeController {
 	private TextField dbName;
 	
 	@FXML
+	private TextField username;
+	
+	@FXML
+	private TextField password;
+	
+	@FXML
 	private Label alert;
 	
 	public void init() {
-		if(dbName.getText().trim().isEmpty()) {
-			alert.setText("Database name must not be empty");
-			alert.setLayoutX(213);
-		} else {
+		boolean valid = m.isValid(dbName.getText().trim());
+		boolean empty = dbName.getText().trim().isEmpty();
+		if(valid && !empty) {
 			alert.setText("");
+			
+			//create database
+			Database db = new Database();
+			while(db.getConnection() == null) {
+				
+				db.setConnection(username.getText().trim(), password.getText().trim());
+			}
+			
+			Platform.exit();		
+			
+		} else if (valid && empty) {
+			alert.setText("Database name must not be empty");
+		} else if (!valid){
+			alert.setText("Database name format incorrect");
+		} else {
+			System.out.println("Idk, something broke");
 		}
-		
-		
 	}
 }
