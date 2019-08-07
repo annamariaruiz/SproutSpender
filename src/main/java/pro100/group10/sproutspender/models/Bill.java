@@ -3,6 +3,7 @@ package pro100.group10.sproutspender.models;
 import java.sql.Date;
 
 public class Bill {
+	private int id;
 	private float amount;
 	private Date date;
 	private String name;
@@ -45,6 +46,14 @@ public class Bill {
 
 	public void setTimeFrame(boolean timeFrame) {
 		this.timeFrame = timeFrame;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	
