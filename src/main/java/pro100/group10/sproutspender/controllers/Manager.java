@@ -11,16 +11,16 @@ public class Manager {
 		return null;
 	}
 	
-	public boolean isValid() {
-		//Is the database name valid.
-			//Calls checkDatabases
-			//Check if the database name is valid
-		return false;
-	}
-	
-	public boolean checkDatabases(String dbt) {
-		//Checks if it exists
-		return false;
+	public boolean isValid(String str) {
+		boolean vali = true;
+		if(str.contains("/") || str.contains("\\") || str.contains("~")	|| str.contains("#") || str.contains("%") 
+				|| str.contains("&") || str.contains("*") || str.contains("{") || str.contains("}") 
+				|| str.contains(":") || str.contains("?") || str.contains("+") || str.contains("|") 
+				|| str.contains("\"") || str.contains("'") || str.contains("$") || str.contains("!") 
+				|| str.contains("@")) {
+			vali = false;
+		}
+		return vali;
 	}
 
 	public boolean isTimeFrame() {
