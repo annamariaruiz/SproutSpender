@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import pro100.group10.sproutspender.models.Database;
 
 public class HomeController {
 	
@@ -33,12 +34,13 @@ public class HomeController {
 			
 			//create database
 			Database db = new Database();
-			while(db.getConnection() == null) {
-				
+			try {
+				db.canConnect();
 				db.setConnection(username.getText().trim(), password.getText().trim());
+				//call to open table
+			} catch (RuntimeException e) {
+				alert.setText("Connection failed");
 			}
-			
-			Platform.exit();		
 			
 		} else if (valid && empty) {
 			alert.setText("Database name must not be empty");
