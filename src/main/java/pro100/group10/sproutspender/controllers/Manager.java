@@ -1,15 +1,50 @@
 package pro100.group10.sproutspender.controllers;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import pro100.group10.sproutspender.models.Bill;
+import pro100.group10.sproutspender.models.Budget;
 
 public class Manager {
 	private boolean timeFrame;
 	private HashMap<String, Bill> bills = new HashMap<>();
+	private Budget[] budgets = new Budget[Budget.CategoryType.values().length];
 	
 	public Manager() {}
+
+	public void newCycleW(LocalDate ld) {
+		Date startDate = Date.valueOf(ld);
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(startDate);
+		calendar.add(Calendar.DATE, +7);
+		Date end = (Date) calendar.getTime();
+		
+		for(Budget b : budgets) {
+			b.setEndDate(end);
+		}
+	}
+	
+	public void newCycleM(LocalDate ld) {
+		Date startDate = Date.valueOf(ld);
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(startDate);
+		
+//		calendar.
+		
+		calendar.add(Calendar.DATE, +7);
+		
+		
+		Date end = (Date) calendar.getTime();
+		
+		for(Budget b : budgets) {
+			b.setEndDate(end);
+		}
+	}
 	
 	public Bill nextBill() {
 		Date d = null;
@@ -65,6 +100,5 @@ public class Manager {
 	public void setTimeFrame(boolean timeFrame) {
 		this.timeFrame = timeFrame;
 	}
-	
-	
+		
 }
