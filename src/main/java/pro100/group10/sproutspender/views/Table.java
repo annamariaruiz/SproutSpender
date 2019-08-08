@@ -56,6 +56,7 @@ public class Table {
 	@FXML
 	private TextField makeNewDay7;
 	
+	private int lastHundredViewed = 0;
 	private boolean tableIsEditable;
 	
 	private Database db;
@@ -108,19 +109,39 @@ public class Table {
 		tableView.setEditable(tableIsEditable);
 	}
 	
+	@FXML
 	private void onLastButtonClick(ActionEvent ae) {
-		
+		if(lastHundredViewed > 0) {
+			ObservableList<Budget> lastHundredBudgets = parseLastWeek();
+			
+			if(!lastHundredBudgets.isEmpty()) {
+				tableView.setItems(lastHundredBudgets);
+			}	
+		}
 	}
 	
+	@FXML
 	private void onNextButtonClick(ActionEvent ae) {
-		
+		try {
+			if(lastHundredViewed < db.size()) {
+				ObservableList<Budget> nextHundredBudgets = parseNextWeek(); 
+			
+				if(!nextHundredBudgets.isEmpty()) {
+					tableView.setItems(nextHundredBudgets);			
+				}
+			}
+		} catch(SQLException sqle) {
+			Alert alert = new Alert(AlertType.ERROR, "The size of the S.Q.L. database could not be determined.\n" + sqle, ButtonType.CLOSE);
+			Optional<ButtonType> response = alert.showAndWait();
+			sqle.printStackTrace();
+		}
 	}
 	
-	private ObservableList<Budget> parseLastHundredContacts() {
+	private ObservableList<Budget> parseLastWeek() {
 		return null;
 	}
 	
-	private ObservableList<Budget> parseNextHundredContacts() {
+	private ObservableList<Budget> parseNextWeek() {
 		return null;
 	}
 }
