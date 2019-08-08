@@ -48,6 +48,15 @@ public class Budget {
 	}
 
 
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+
 	public int getID() {
 		return id;
 	}
@@ -57,11 +66,9 @@ public class Budget {
 		this.id = id;
 	}
 
-
 	public Date getDate() {
 		return date;
 	}
-
 
 	public void setDate(Date date) {
 		this.date = date;
