@@ -14,7 +14,8 @@ public class Budget {
 	private CategoryType category;
 	private float currentAmount;
 	
-
+	public Budget() {}
+	
 	public Budget(float limit, CategoryType category, Date date) {
 		setLimit(limit);
 		setCategory(category);
