@@ -12,7 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.input.KeyCode;
 
-public class StrEditingCell extends TableCell<Budget, String> {
+public class FloatEditingCell extends TableCell<Budget, Float> {
 
 	private TextField textField;
 	protected ChangeListener<Boolean> changeListener = new ChangeListener<Boolean>() {
@@ -20,12 +20,12 @@ public class StrEditingCell extends TableCell<Budget, String> {
 		public void changed(ObservableValue<? extends Boolean> arg0,
 				Boolean arg1, Boolean arg2) {
 			if(!arg2) {
-				commitEdit(textField.getText());
+				commitEdit(Float.parseFloat(textField.getText().trim()));
 			}
 		}
 	};
 	
-	public StrEditingCell() {}
+	public FloatEditingCell() {}
 	
 	@Override
 	public void startEdit() {
@@ -46,7 +46,7 @@ public class StrEditingCell extends TableCell<Budget, String> {
 		textField = new TextField(getString());
 		textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
 		textField.focusedProperty().addListener(changeListener);
-		textField.setOnAction(evt -> commitEdit(textField.getText()));
+		textField.setOnAction(evt -> Float.parseFloat(textField.getText().trim()));
 		
 		textField.setOnKeyPressed((key) -> {
 			if(key.getCode().equals(KeyCode.ESCAPE)) {
@@ -55,7 +55,7 @@ public class StrEditingCell extends TableCell<Budget, String> {
 			}
 			
 			if(key.getCode().equals(KeyCode.ENTER)) {
-				commitEdit(textField.getText());
+				commitEdit(Float.parseFloat(textField.getText().trim()));
 			}
 		});
 	}
@@ -67,12 +67,12 @@ public class StrEditingCell extends TableCell<Budget, String> {
 	@Override
 	public void cancelEdit() {
 		super.cancelEdit();
-		setText((String) getItem());
+		setText((String) getItem().toString());
 		setGraphic(null);
 	}
 	
 	@Override
-	public void updateItem(String item, boolean empty) {
+	public void updateItem(Float item, boolean empty) {
 		super.updateItem(item, empty);
 		
 		if(empty) {
@@ -95,7 +95,7 @@ public class StrEditingCell extends TableCell<Budget, String> {
 	// Override to commit edits when another cell in the same row is selected
 	@Override
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public void commitEdit(String item) {
+	public void commitEdit(Float item) {
 		textField.focusedProperty().removeListener(changeListener);
 		if(isEditing()) {
 			super.commitEdit(item);
