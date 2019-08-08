@@ -71,8 +71,4 @@ public class Budget {
 	public void setDate(Date date) {
 		this.date = date;
 	}
-
-	public void setDate(Date date) {
-		this.date = date;
-	}
 }
