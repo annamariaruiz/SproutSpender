@@ -2,10 +2,13 @@ package pro100.group10.sproutspender.app;
 	
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import pro100.group10.sproutspender.views.Settings;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 
 
 public class Main extends Application {
@@ -16,19 +19,11 @@ public class Main extends Application {
 	public void start(Stage primaryStage) {
 		stage = primaryStage;
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("../views/Home.fxml"));
-			
-//			HomeController controller = (HomeController)root.getController();
-//			controller.setStageAndSetupListeners(stage);
-//			
-			Scene scene = new Scene(root,600,400);
-			stage.setResizable(false);
-			stage.setScene(scene);
-			stage.show();
-			
-			Settings s = new Settings();
-			
-			s.init();
+			GridPane root = (GridPane)FXMLLoader.load(getClass().getResource("../views/Home.fxml"));
+			Scene scene = new Scene(root,400,400);
+			scene.getStylesheets().add(getClass().getResource("../views/application.css").toExternalForm());
+			primaryStage.setScene(scene);
+			primaryStage.show();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
