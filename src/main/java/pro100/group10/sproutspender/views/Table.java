@@ -84,11 +84,11 @@ public class Table {
 							t.getTablePosition().getRow());
 					b.setCurrentAmount(t.getNewValue());
 				
-					try {
-						
-					} catch(SQLException sqle) {
-						
-					}
+//					try {
+//						
+//					} catch(SQLException sqle) {
+//						
+//					}
 				}
 			});
 		}
