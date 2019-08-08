@@ -2,6 +2,6 @@
 	
 <?import javafx.scene.layout.GridPane?>
 	
-<GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="pro100.group10.sproutspender.HomeController">
+<GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="pro100.group10.sproutspender.controllers.HomeController">
 	<!-- TODO Add Nodes -->
 </GridPane>

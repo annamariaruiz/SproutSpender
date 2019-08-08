@@ -1,7 +1,9 @@
 package pro100.group10.sproutspender.views;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Optional;
 
 import javafx.collections.ObservableList;
@@ -58,6 +60,7 @@ public class Table {
 	
 	private int lastHundredViewed = 0;
 	private boolean tableIsEditable;
+	private Date endDate;
 	
 	private Database db;
 	
@@ -138,6 +141,16 @@ public class Table {
 	}
 	
 	private ObservableList<Budget> parseLastWeek() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(endDate);
+		Date dateToGrab = null;
+		
+		for(int i = 0; i < 7; i++) {
+			calendar.add(Calendar.DATE, -1);
+			dateToGrab = (Date) calendar.getTime();
+			
+		}
+		
 		return null;
 	}
 	
