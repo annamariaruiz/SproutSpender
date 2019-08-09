@@ -35,8 +35,8 @@ public class HomeController {
 			//create database
 			Database db = new Database();
 			try {
-				db.canConnect();
 				db.setConnection(username.getText().trim(), password.getText().trim());
+				db.canConnect();
 				//call to open table
 			} catch (RuntimeException e) {
 				alert.setText("Connection failed");
