@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import pro100.group10.sproutspender.app.Main;
+import pro100.group10.sproutspender.models.Database;
 
 public class HomeController {
 	
@@ -83,5 +84,6 @@ public class HomeController {
 //		} else {
 //			System.out.println("Idk, something broke");
 //		}
+	}
 	}
 }
