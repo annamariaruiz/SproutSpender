@@ -13,6 +13,8 @@ import java.util.Locale.Category;
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import pro100.group10.sproutspender.models.Budget.CategoryType;
 
 public class Database {
@@ -114,8 +116,8 @@ public class Database {
 		return foundBudg;
     }
 
-    public List<Budget> lookUpByDay(Date date) throws SQLException {
-    	List<Budget> budgetsOnDay = new ArrayList<>();
+    public ObservableList<Budget> lookUpByDay(Date date) throws SQLException {
+    	ObservableList<Budget> budgetsOnDay = FXCollections.observableArrayList();
     	
     	String selectSQL =
     		"SELECT * FROM " + tableName
