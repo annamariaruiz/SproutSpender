@@ -9,10 +9,10 @@ public class Budget {
 	
 	private int id;
 	private Date date;
+	private Date endDate;
 	private float limit;
 	private CategoryType category;
 	private float currentAmount;
-	
 	
 	public Budget() {}
 	
@@ -72,5 +72,15 @@ public class Budget {
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 }
