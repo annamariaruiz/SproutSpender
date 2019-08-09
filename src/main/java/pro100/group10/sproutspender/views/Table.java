@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 
 import javafx.collections.ObservableList;
@@ -85,11 +86,19 @@ public class Table {
 					}
 				};
 		
-		for(TableColumn<Budget, Float> col : columns) {
-			day1Col.setCellValueFactory(new PropertyValueFactory<Budget, Float>("currentAmount"));
-			day1Col.setCellFactory(floatCellFactory);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(endDate);
+		Date dateToGrab = null;
+		
+		for(int i = 6; i >= 0; i--) {
+			dateToGrab = (Date) calendar.getTime();
+			columns[i].setText(dateToGrab.toString());
+			calendar.add(Calendar.DATE, -1);
 			
-			col.setOnEditCommit(new EventHandler<CellEditEvent<Budget, Float>>() {
+			columns[i].setCellValueFactory(new PropertyValueFactory<Budget, Float>("currentAmount"));
+			columns[i].setCellFactory(floatCellFactory);
+			
+			columns[i].setOnEditCommit(new EventHandler<CellEditEvent<Budget, Float>>() {
 				@Override
 				public void handle(CellEditEvent<Budget, Float> t) {
 					Budget b = (Budget) t.getTableView().getItems().get(
@@ -140,16 +149,13 @@ public class Table {
 		}
 	}
 	
-	private ObservableList<Budget> parseLastWeek() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(endDate);
-		Date dateToGrab = null;
+	private ObservableList<Budget> parseThisWeek() {
 		
-		for(int i = 0; i < 7; i++) {
-			calendar.add(Calendar.DATE, -1);
-			dateToGrab = (Date) calendar.getTime();
-			
-		}
+		return null;
+	}
+	
+	private ObservableList<Budget> parseLastWeek() {
+		
 		
 		return null;
 	}

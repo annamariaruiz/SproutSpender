@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale.Category;
@@ -26,7 +27,7 @@ public class Database {
 	    ds.setPortNumber(Integer.parseInt("1433"));
     }
 
-    public Database(String username, String password, String server, int port) {
+    public Database(String username, String password, String server, int port) throws SQLException {
         ds = new SQLServerDataSource();
         ds.setUser(username);
         ds.setPassword(password);
@@ -40,29 +41,25 @@ public class Database {
         }
     }
 
-    private void checkCreateDB() {
+    private void checkCreateDB() throws SQLException {
         ds.setDatabaseName("master");
         try(Statement stmt = connection.createStatement()) {
         	String sql = "IF DB_ID('SproutSpenderDB') IS NULL CREATE DATABASE SproutSpenderDB";
         	stmt.executeUpdate(sql);
         	
-        } catch (SQLException sqle) {
-        	System.out.println(sqle);
         }
         
         ds.setDatabaseName("SproutSpenderDB");
         checkCreateTables();
     }
         
-    private void checkCreateTables() {
+    private void checkCreateTables() throws SQLException {
         String createSQL;
     	try(Statement stmt = connection.createStatement()) {
 //            createSQL = "IF OBJECT_ID('Bills') IS NULL CREATE TABLE Bills(id INT PRIMARY KEY IDENTITY(1, 1), name VARCHAR(255), amount float, duedate Date, timeframe BIT )";
 //            stmt.executeUpdate(sql);
             createSQL = "IF OBJECT_ID('Budgets') IS NULL CREATE TABLE Budgets(id INT PRIMARY KEY IDENTITY(1, 1), date DATE, limit float, category VARCHAR(25), currentAmount float )";
             stmt.executeUpdate(createSQL);
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
         }
     }
     
@@ -80,26 +77,17 @@ public class Database {
     	return lastID;
     }
     
-    public int store(Budget b) throws SQLException {
-    	String insertSQL =
-    		"INSERT INTO " + tableName + "("
-				+ "date, "
-				+ "limit, "
-				+ "category, "
-				+ "currentAmount"
-			+ ") "
-			+ "VALUES('"
-				+ b.getDate().toString() + "', "
-				+ b.getLimit() + ", "
-				+ b.getCategory().toString() + ", "
-				+ b.getCurrentAmount()
-			+ ")";
+    public void store(Budget b) throws SQLException {
+         LocalDate now = LocalDate.now();
+         Date date = Date.valueOf(now);
+         try(Statement stmt = connection.createStatement()) {
+             String sql = String.format(
+                     "INSERT INTO Budgets (limit, category, currentAmount, date) VALUES (%2.2f, '%s', 0, '%s')",
+                     b.getLimit(), b.getCategory().toString(), date.toString());
+             stmt.executeUpdate(sql);
+         }
     	
-    	try(Statement stmt = connection.createStatement()) {
-    		stmt.executeUpdate(insertSQL);
-    	}
-    	
-    	return getLastID();
+    	b.setID(getLastID());
     }
     
     public Budget lookUp(int id) throws SQLException {
@@ -133,7 +121,24 @@ public class Database {
     		"SELECT * FROM " + tableName
     		+ " WHERE date = '" + date.toString() + "'";
     	
-    	return null;
+    	ResultSet dayRow = null;
+    	Budget foundBudg = null;
+    	
+    	try(Statement stmt = connection.createStatement()) {
+    		dayRow = stmt.executeQuery(selectSQL);
+    		while(dayRow.next()) {
+    			foundBudg = new Budget();
+    			foundBudg.setID(dayRow.getInt("id"));
+				foundBudg.setDate(dayRow.getDate("date"));
+				foundBudg.setEndDate(dayRow.getDate("endDate"));
+				foundBudg.setLimit(dayRow.getFloat("limit"));
+				foundBudg.setCategory(CategoryType.valueOf(dayRow.getString("category")));
+				foundBudg.setCurrentAmount(dayRow.getFloat("currentAmount"));
+				budgetsOnDay.add(foundBudg);
+    		}
+    	}
+    	
+    	return budgetsOnDay;
     }
     
     public void update(Budget b) throws SQLException {
@@ -178,8 +183,10 @@ public class Database {
     	try {
     		connection = ds.getConnection();
     		checkCreateDB();
-    	} catch(SQLServerException sqle) {
-    		throw new RuntimeException("Could not connect to database.\n");
+    	} catch(SQLServerException sse) {
+    		throw new RuntimeException("Could not connect to database.\n" + sse);
+    	} catch(SQLException sqle) {
+    		throw new RuntimeException("Could not create database.\n" + sqle);
     	}
     }
     

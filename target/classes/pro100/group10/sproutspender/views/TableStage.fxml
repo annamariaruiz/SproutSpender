@@ -41,13 +41,13 @@
 	<center>
 		<TableView fx:id="tableView">
 			<columns>
-	            <TableColumn fx:id="idCol" prefWidth="50.0" text="ID" />
-	            <TableColumn fx:id="firstNameCol" prefWidth="83.0" text="First Name" />
-	            <TableColumn fx:id="lastNameCol" prefWidth="83.0" text="Last Name" />
-	            <TableColumn fx:id="prmEmailAddrCol" prefWidth="105.0" text="1st Email" />
-	            <TableColumn fx:id="secEmailAddrCol" prefWidth="135.0" text="2nd Email" />
-	            <TableColumn fx:id="prmPhoneNumCol" prefWidth="110.0" text="1st Phone" />
-	            <TableColumn fx:id="secPhoneNumCol" prefWidth="110.0" text="2nd Phone" />
+	            <TableColumn fx:id="day7Col" prefWidth="83.0" />
+	            <TableColumn fx:id="day6Col" prefWidth="83.0" />
+	            <TableColumn fx:id="day5Col" prefWidth="83.0" />
+	            <TableColumn fx:id="day4Col" prefWidth="83.0" />
+	            <TableColumn fx:id="day3Col" prefWidth="83.0" />
+	            <TableColumn fx:id="day2Col" prefWidth="83.0" />
+	            <TableColumn fx:id="day1Col" prefWidth="83.0" />
 			</columns>
          </TableView>
 	</center>
