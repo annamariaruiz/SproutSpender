@@ -13,14 +13,22 @@ public class Manager {
 	private HashMap<String, Bill> bills = new HashMap<>();
 	private Budget[] budgets = new Budget[Budget.CategoryType.values().length];
 	
-	public Manager() {}
+	public Manager() {
+		init();
+	}
+	
+	public void init() {
+		//populate bills
+		//populate budgets
+		nextCycle(); //Call the fix for the cycles
+	}
 
 	public void newCycleW(LocalDate ld) {
 		Date startDate = Date.valueOf(ld);
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
-		calendar.add(Calendar.DATE, +7);
+		calendar.add(Calendar.DATE, 7);
 		Date end = (Date) calendar.getTime();
 		
 		for(Budget b : budgets) {
@@ -32,17 +40,31 @@ public class Manager {
 		Date startDate = Date.valueOf(ld);
 		
 		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(startDate);
-		
-//		calendar.
-		
-		calendar.add(Calendar.DATE, +7);
-		
-		
+		calendar.setTime(startDate);		
+		calendar.add(Calendar.MONTH, 1);
 		Date end = (Date) calendar.getTime();
 		
 		for(Budget b : budgets) {
 			b.setEndDate(end);
+		}
+	}
+	
+	public void nextCycle() {
+		//Either use this global one or pass in the budget instead
+		Budget b = budgets[0];
+		boolean next = false;
+		
+		LocalDate ld = LocalDate.now();
+		Date today = Date.valueOf(ld);
+		
+		if(b.getEndDate().before(today)) {
+			next = true;
+		}
+		
+		if(next && timeFrame) {
+			newCycleW(ld);
+		} else if(next && !timeFrame) {
+			newCycleM(ld);
 		}
 	}
 	

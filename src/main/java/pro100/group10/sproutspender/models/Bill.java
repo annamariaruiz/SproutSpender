@@ -9,6 +9,8 @@ public class Bill {
 	private String name;
 	private boolean timeFrame;
 	
+	public Bill() {}
+	
 	public Bill(float amount, Date date, String name, boolean timeF) {
 		setAmount(amount);
 		setDate(date);
