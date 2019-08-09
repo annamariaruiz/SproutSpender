@@ -18,10 +18,11 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		stage = primaryStage;
+		stage.setTitle("Sprout Spender");
+		stage.setResizable(false);
 		try {
 			GridPane root = (GridPane)FXMLLoader.load(getClass().getResource("../views/Home.fxml"));
-			Scene scene = new Scene(root,400,400);
-			scene.getStylesheets().add(getClass().getResource("../views/application.css").toExternalForm());
+			Scene scene = new Scene(root,600,400);
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
