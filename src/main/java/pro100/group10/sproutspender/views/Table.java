@@ -2,7 +2,6 @@ package pro100.group10.sproutspender.views;
 
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +11,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -19,7 +20,6 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.Alert.AlertType;
 import javafx.util.Callback;
 import pro100.group10.sproutspender.models.Budget;
 import pro100.group10.sproutspender.models.Database;
@@ -58,6 +58,13 @@ public class Table {
 	private TextField makeNewDay6;
 	@FXML
 	private TextField makeNewDay7;
+	
+	@FXML
+	private Button settings;
+	@FXML
+	private Button bills;
+	@FXML
+	private Button graphs;
 	
 	private int lastHundredViewed = 0;
 	private boolean tableIsEditable;
@@ -152,6 +159,24 @@ public class Table {
 	private ObservableList<Budget> parseThisWeek() {
 		
 		return null;
+	}
+	
+	@FXML
+	private void onSettingsButtonClick(ActionEvent ae) {
+		Settings s = new Settings();
+		s.init();
+	}
+	
+	@FXML
+	private void onGraphButtonClick(ActionEvent ae) {
+		//open graphs window
+		System.out.println("graph");
+	}
+	
+	@FXML
+	private void onBillsButtonClick(ActionEvent ae) {
+		//open bills window
+		System.out.println("bill was here");
 	}
 	
 	private ObservableList<Budget> parseLastWeek() {
