@@ -33,25 +33,7 @@ public class HomeController {
 	public void init() {
 		boolean valid = m.isValid(dbName.getText().trim());
 		boolean empty = dbName.getText().trim().isEmpty();
-		if(valid && !empty) {
-			alert.setText("");
-			
-			//create database
-			Database db = new Database();
-			try {
-				db.setConnection(username.getText().trim(), password.getText().trim());
-				db.canConnect();
-				//call to open table
-			} catch (RuntimeException e) {
-				alert.setText("Connection failed");
-			}
-			
-		} else if (valid && empty) {
-			alert.setText("Database name must not be empty");
-		} else if (!valid){
-			alert.setText("Database name format incorrect");
-		} else {
-			System.out.println("Idk, something broke");
+		
 		
 		Stage stage = Main.getStage();
 		
@@ -84,6 +66,5 @@ public class HomeController {
 //		} else {
 //			System.out.println("Idk, something broke");
 //		}
-	}
 	}
 }
