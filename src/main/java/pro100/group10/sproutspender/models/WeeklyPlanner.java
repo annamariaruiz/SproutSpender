@@ -42,6 +42,32 @@ public class WeeklyPlanner {
 		
 		return budg;
 	}
+
+	public void setDay(int day, Budget budg) {
+		Method method = null;
+		try {
+			method = getClass().getMethod("setDay" + (day + 1), int.class, Budget.class);
+		} catch (NoSuchMethodException nsme) {
+			// TODO write catch block
+			nsme.printStackTrace();
+		} catch (SecurityException se) {
+			// TODO write catch block
+			se.printStackTrace();
+		}
+
+		try {
+			method.invoke(this, day, budg);
+		} catch (IllegalAccessException iae1) {
+			// TODO write catch block
+			iae1.printStackTrace();
+		} catch (IllegalArgumentException iae2) {
+			// TODO write catch block
+			iae2.printStackTrace();
+		} catch (InvocationTargetException ite) {
+			// TODO write catch block
+			ite.printStackTrace();
+		}
+	}
 	
 	public Budget getDay1() {
 		return day1;

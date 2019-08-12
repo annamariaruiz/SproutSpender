@@ -8,13 +8,10 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale.Category;
 
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import pro100.group10.sproutspender.models.Budget.CategoryType;
 
 public class Database {
@@ -62,7 +59,7 @@ public class Database {
     	try(Statement stmt = connection.createStatement()) {
 //            createSQL = "IF OBJECT_ID('Bills') IS NULL CREATE TABLE Bills(id INT PRIMARY KEY IDENTITY(1, 1), name VARCHAR(255), amount float, duedate Date, timeframe BIT )";
 //            stmt.executeUpdate(sql);
-            createSQL = "IF OBJECT_ID('Budgets') IS NULL CREATE TABLE Budgets(id INT PRIMARY KEY IDENTITY(1, 1), date DATE, limit float, category VARCHAR(25), currentAmount float )";
+            createSQL = "IF OBJECT_ID('Budgets') IS NULL CREATE TABLE Budgets(id INT PRIMARY KEY IDENTITY(1, 1), date DATE, endDate DATE, limit float, category VARCHAR(25), currentAmount float )";
             stmt.executeUpdate(createSQL);
         }
     }
@@ -118,19 +115,17 @@ public class Database {
 		return foundBudg;
     }
 
-    public ObservableList<Budget> lookUpByDay(Date date) throws SQLException {
-    	ObservableList<Budget> budgetsOnDay = FXCollections.observableArrayList();
-    	
+    public Budget lookUpByDayAndCat(Date date, CategoryType cat) throws SQLException {
     	String selectSQL =
     		"SELECT * FROM " + tableName
-    		+ " WHERE date = '" + date.toString() + "'";
+    		+ " WHERE date = '" + date.toString() + "' AND category = " + cat.toString();
     	
     	ResultSet dayRow = null;
     	Budget foundBudg = null;
     	
     	try(Statement stmt = connection.createStatement()) {
     		dayRow = stmt.executeQuery(selectSQL);
-    		while(dayRow.next()) {
+    		if(dayRow.next()) {
     			foundBudg = new Budget();
     			foundBudg.setID(dayRow.getInt("id"));
 				foundBudg.setDate(dayRow.getDate("date"));
@@ -138,11 +133,10 @@ public class Database {
 				foundBudg.setLimit(dayRow.getFloat("limit"));
 				foundBudg.setCategory(CategoryType.valueOf(dayRow.getString("category")));
 				foundBudg.setCurrentAmount(dayRow.getFloat("currentAmount"));
-				budgetsOnDay.add(foundBudg);
     		}
     	}
     	
-    	return budgetsOnDay;
+    	return foundBudg;
     }
     
     public void update(Budget b) throws SQLException {

@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
@@ -44,6 +45,7 @@ public class Table {
 	private TableColumn<WeeklyPlanner, Float> day6Col;
 	@FXML
 	private TableColumn<WeeklyPlanner, Float> day7Col;
+	TableColumn<WeeklyPlanner, Float>[] columns;
 	
 	@FXML
 	private TextField makeNewDay1;
@@ -82,14 +84,14 @@ public class Table {
 		this.db = db;
 	}
 
+	@SuppressWarnings("unchecked")
 	@FXML
 	private void initialize() {
 		if(!hasInitialized) {
 			hasInitialized = true;
 			tableView.setEditable(tableIsEditable);
 			
-			@SuppressWarnings("unchecked")
-			TableColumn<WeeklyPlanner, Float>[] columns = (TableColumn<WeeklyPlanner, Float>[]) new TableColumn[7];
+			columns = (TableColumn<WeeklyPlanner, Float>[]) new TableColumn[7];
 			columns[0] = day1Col;
 			columns[1] = day2Col;
 			columns[2] = day3Col;
@@ -186,20 +188,29 @@ public class Table {
 //		}
 		
 		// TODO set day and thus column of budget based on date inside budget object.
-		WeeklyPlanner wp = new WeeklyPlanner();
-		Budget b1 = new Budget(300, CategoryType.GENERAL, Date.valueOf(LocalDate.now()));
-		b1.setCurrentAmount(200);
+		WeeklyPlanner genWP = parseThisWeek(CategoryType.GENERAL);
 		
-		Budget b2 = new Budget(500, CategoryType.GENERAL, Date.valueOf(LocalDate.now()));
-		b2.setCurrentAmount(400);
-		
-		wp.setDay1(b1);
-		wp.setDay7(b2);
-		tableView.getItems().add(wp);
+		tableView.getItems().add(genWP);
 	}
 	
-	private ObservableList<Budget> parseThisWeek() {
-//		tableView.getColumns().setAll(db.lookUpByDay(new Date(2019, 5, 7)));
+	private WeeklyPlanner parseThisWeek(CategoryType category) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(endDate);
+		Date dateToGrab = null;
+		WeeklyPlanner thisWeek = new WeeklyPlanner();
+		Budget budg = null;
+		
+		for(int i = 6; i >= 0; i--) {
+			dateToGrab = new Date(calendar.getTime().getTime());
+			try {
+				budg = db.lookUpByDayAndCat(dateToGrab, category);
+			} catch(SQLException sqle) {
+				//TODO write catch block
+			}
+			
+			thisWeek.setDay(i + 1, budg);
+			calendar.add(Calendar.DATE, -1);
+		}
 		return null;
 	}
 	
