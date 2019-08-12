@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Optional;
 
 import javafx.collections.ObservableList;
@@ -184,13 +183,14 @@ public class Table {
 	@FXML
 	private void onGraphButtonClick(ActionEvent ae) {
 		//open graphs window
-		System.out.println("graph");
+		Graphs g = new Graphs();
+		g.init();
 	}
 	
 	@FXML
 	private void onBillsButtonClick(ActionEvent ae) {
-		//open bills window
-		System.out.println("bill was here");
+		Bills b = new Bills();
+		b.init();
 	}
 	
 	private ObservableList<Budget> parseLastWeek() {

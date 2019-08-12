@@ -50,8 +50,6 @@ public class Settings {
 		}
 	}
 	
-	
-
 	public void init() {
 		settings.setTitle("Settings");
 		settings.setResizable(false);

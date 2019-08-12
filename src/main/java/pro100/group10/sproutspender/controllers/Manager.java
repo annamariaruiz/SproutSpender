@@ -20,7 +20,7 @@ public class Manager {
 	public void init() {
 		//populate bills
 		//populate budgets
-		nextCycle(); //Call the fix for the cycles
+//		nextCycle(); //Call the fix for the cycles
 	}
 
 	public void newCycleW(LocalDate ld) {
