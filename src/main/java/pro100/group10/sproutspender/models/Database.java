@@ -29,16 +29,17 @@ public class Database {
 	    ds.setPortNumber(Integer.parseInt("1433"));
     }
 
-    public Database(String username, String password, String server, int port) throws SQLException {
+    public Database(String username, String password, String server, int port, String dbName) throws SQLException {
         ds = new SQLServerDataSource();
         ds.setUser(username);
         ds.setPassword(password);
         ds.setServerName(server);
         ds.setPortNumber(port);
+        ds.setDatabaseName(dbName);
         try {
             connection = ds.getConnection();
             checkCreateDB();
-        } catch (SQLServerException e) {
+        } catch (SQLServerException sqle) {
         
         }
     }
@@ -46,12 +47,13 @@ public class Database {
     private void checkCreateDB() throws SQLException {
         ds.setDatabaseName("master");
         try(Statement stmt = connection.createStatement()) {
-        	String sql = "IF DB_ID('SproutSpenderDB') IS NULL CREATE DATABASE SproutSpenderDB";
+        	String sql = "IF DB_ID('" + ds.getDatabaseName() + "') IS NULL CREATE DATABASE " + ds.getDatabaseName();
         	stmt.executeUpdate(sql);
-        	
         }
         
-        ds.setDatabaseName("SproutSpenderDB");
+        if(ds.getDatabaseName() == "master") ds.setDatabaseName("SproutSpenderDB");
+        connection.close();
+        connection = ds.getConnection();
         checkCreateTables();
     }
         
@@ -192,8 +194,9 @@ public class Database {
     	}
     }
     
-    public void setConnection(String username, String password) {
+    public void setConnection(String username, String password, String dbName) {
     	ds.setUser(username);
     	ds.setPassword(password);
+    	ds.setDatabaseName(dbName);
     }
 }

@@ -1,7 +1,5 @@
 package pro100.group10.sproutspender.views;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -76,13 +74,18 @@ public class Table {
 	
 	private Database db;
 	
+	public Database getDB() {
+		return db;
+	}
+
+	public void setDB(Database db) {
+		this.db = db;
+	}
+
 	@FXML
 	private void initialize() {
 		if(!hasInitialized) {
 			hasInitialized = true;
-//			db = new Database();
-//			db.setConnection("sproutspender", "sproutspender");
-//			db.canConnect();
 			tableView.setEditable(tableIsEditable);
 			
 			@SuppressWarnings("unchecked")
@@ -113,36 +116,13 @@ public class Table {
 				
 				final int index = i;
 				columns[i].setCellValueFactory(cellData -> {
-					Method method = null;
-					try {
-						method = cellData.getValue().getClass().getMethod("getDay" + (index+1));
-					} catch (NoSuchMethodException nsme) {
-						// TODO write catch block
-						nsme.printStackTrace();
-					} catch (SecurityException se) {
-						// TODO write catch block
-						se.printStackTrace();
-					}
-					
+					Budget budg = cellData.getValue().getDay(index);
 					Float currentAmount = null;
-					try {
-						Budget b = (((Budget) method.invoke(cellData.getValue())));
-						if(b != null) {
-							currentAmount = b.getCurrentAmount();							
-						}
-					} catch (IllegalAccessException iae1) {
-						// TODO write catch block
-						iae1.printStackTrace();
-					} catch (IllegalArgumentException iae2) {
-						// TODO write catch block
-						iae2.printStackTrace();
-					} catch (InvocationTargetException ite) {
-						// TODO write catch block
-						ite.printStackTrace();
-					}
+					if(budg != null) currentAmount = budg.getCurrentAmount();							
 					
 					return new SimpleObjectProperty<>(currentAmount);
 				});
+				
 				columns[i].setCellFactory(floatCellFactory);
 				
 				columns[i].setOnEditCommit(new EventHandler<CellEditEvent<WeeklyPlanner, Float>>() {
@@ -151,45 +131,16 @@ public class Table {
 						WeeklyPlanner wp = (WeeklyPlanner) t.getTableView().getItems().get(
 								t.getTablePosition().getRow());
 						
-						Method method = null;
-						try {
-							method = wp.getClass().getMethod("getDay" + (index+1));
-						} catch (NoSuchMethodException nsme) {
-							// TODO write catch block
-							nsme.printStackTrace();
-						} catch (SecurityException se) {
-							// TODO write catch block
-							se.printStackTrace();
-						}
-						
-						try {
-							Budget b = ((Budget) method.invoke(wp));
-							if(b != null) {
-								b.setCurrentAmount(t.getNewValue());
-								db.update(b);
+						try {	
+							Budget budg = wp.getDay(index);
+							if(budg != null) {
+								budg.setCurrentAmount(t.getNewValue());
+								db.update(budg);
 							}
-						} catch (IllegalAccessException iae1) {
-							// TODO write catch block
-							iae1.printStackTrace();
-						} catch (IllegalArgumentException iae2) {
-							// TODO write catch block
-							iae2.printStackTrace();
-						} catch (InvocationTargetException ite) {
-							// TODO write catch block
-							ite.printStackTrace();
 						} catch(SQLException sqle) {
 							Alert alert = new Alert(AlertType.ERROR, "The budget could not be updated in the M.S. S.Q.L. database.\n" + sqle, ButtonType.CLOSE);
 							Optional<ButtonType> response = alert.showAndWait();
 						}
-						
-//						b.getDay1().setCurrentAmount(t.getNewValue());
-						
-//						try {
-//							db.update(b.getDay1());
-//						} catch(SQLException sqle) {
-//							Alert alert = new Alert(AlertType.ERROR, "The budget with I.D. " + b.getDay1().getID() + " could not be updated in the M.S. S.Q.L. database.\n" + sqle, ButtonType.CLOSE);
-//							Optional<ButtonType> response = alert.showAndWait();
-//						}
 					}
 				});
 			}
