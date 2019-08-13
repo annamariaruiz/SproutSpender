@@ -21,7 +21,7 @@ public class Graphs {
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("../views/Graphs.fxml"));
 
-			Scene scene = new Scene(root, 600, 400);
+			Scene scene = new Scene(root, 800, 500);
 			graphs.setResizable(false);
 			graphs.setScene(scene);
 			graphs.show();

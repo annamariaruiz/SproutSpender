@@ -1,34 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.Cursor?>
 <?import javafx.scene.chart.PieChart?>
-<?import javafx.scene.effect.Glow?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pro100.group10.sproutspender.views.Graphs">
-  <columnConstraints>
-    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-  </columnConstraints>
-  <rowConstraints>
-    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-  </rowConstraints>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <PieChart fx:id="pieChart" startAngle="-30.0" title="Pie">
-         <cursor>
-            <Cursor fx:constant="DEFAULT" />
-         </cursor>
-         <effect>
-            <Glow />
-         </effect>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-      </PieChart>
+      <Pane prefHeight="261.0" prefWidth="600.0">
+         <children>
+            <PieChart layoutX="224.0" layoutY="-3.0" prefHeight="256.0" prefWidth="352.0" title="Total" />
+         </children>
+      </Pane>
+      <HBox prefHeight="139.0" prefWidth="600.0">
+         <children>
+            <PieChart prefHeight="150.0" prefWidth="148.0" title="Food" />
+            <Line endX="-100.82843017578125" endY="140.2928924560547" startX="-100.0" />
+            <PieChart prefHeight="150.0" prefWidth="148.0" title="Transportation" />
+            <PieChart prefHeight="150.0" prefWidth="148.0" title="Entertainment" />
+            <PieChart prefHeight="150.0" prefWidth="148.0" title="Miscellaneous" />
+         </children>
+      </HBox>
    </children>
-</GridPane>
+</VBox>
