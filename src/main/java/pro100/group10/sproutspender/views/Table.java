@@ -4,9 +4,10 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Optional;
+
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -22,10 +23,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.util.Callback;
 import pro100.group10.sproutspender.models.Budget;
+import pro100.group10.sproutspender.models.Budget.CategoryType;
 import pro100.group10.sproutspender.models.Database;
 import pro100.group10.sproutspender.models.FloatEditingCell;
 import pro100.group10.sproutspender.models.WeeklyPlanner;
-import pro100.group10.sproutspender.models.Budget.CategoryType;
 
 public class Table {
 
@@ -173,24 +174,9 @@ public class Table {
 	
 	@FXML
 	private void onNextButtonClick(ActionEvent ae) {
-//		try {
-//			if(lastIDViewed < db.size()) {
-//				ObservableList<Budget> nextHundredBudgets = parseNextWeek(); 
-//			
-//				if(nextHundredBudgets != null && !nextHundredBudgets.isEmpty()) {
-//					tableView.setItems(nextHundredBudgets);			
-//				}
-//			}
-//		} catch(SQLException sqle) {
-//			Alert alert = new Alert(AlertType.ERROR, "The size of the S.Q.L. database could not be determined.\n" + sqle, ButtonType.CLOSE);
-//			Optional<ButtonType> response = alert.showAndWait();
-//			sqle.printStackTrace();
-//		}
-		
-		// TODO set day and thus column of budget based on date inside budget object.
-		WeeklyPlanner genWP = parseThisWeek(CategoryType.GENERAL);
-		
-		tableView.getItems().add(genWP);
+		ObservableList<WeeklyPlanner> wpList = FXCollections.observableArrayList();
+		wpList.add(parseThisWeek(CategoryType.GENERAL));
+		tableView.setItems(wpList);
 	}
 	
 	private WeeklyPlanner parseThisWeek(CategoryType category) {
@@ -230,15 +216,5 @@ public class Table {
 	private void onBillsButtonClick(ActionEvent ae) {
 		//open bills window
 		System.out.println("bill was here");
-	}
-	
-	private ObservableList<Budget> parseLastWeek() {
-		
-		
-		return null;
-	}
-	
-	private ObservableList<Budget> parseNextWeek() {
-		return null;
 	}
 }
