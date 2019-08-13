@@ -1,5 +1,8 @@
 package pro100.group10.sproutspender.controllers;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Calendar;
@@ -14,7 +17,7 @@ public class Manager {
 	private HashMap<String, Bill> bills = new HashMap<>();
 	private Budget[] budgets = new Budget[Budget.CategoryType.values().length];
 	
-	public Manager() {
+	public Manager() { 
 		init();
 	}
 	
@@ -144,6 +147,43 @@ public class Manager {
 
 	public void setTimeFrame(boolean timeFrame) {
 		this.timeFrame = timeFrame;
+	}
+	
+	private void serialize(Manager m) {
+		String path = ".\\src\\managers\\";
+		FileOutputStream fileOut = null;
+		ObjectOutputStream out = null;
+		
+		String fileName = "";
+//		String fileName = path + getDS().getDatabaseName() + ".ser";
+		
+		try {
+
+			// Saving object into a file
+			fileOut = new FileOutputStream(fileName);
+			out = new ObjectOutputStream(fileOut);
+
+			// Serialization of the object
+			out.writeObject(Manager m);
+			
+
+		} catch (IOException ioe) {
+			System.out.println("Exception is caught");
+		} finally {
+			try {
+			out.close();
+			fileOut.close();
+			System.out.println("Serialization completed.");
+			} catch(IOException ioe2) {
+				System.out.println("Exception is caught");
+			} catch(NullPointerException npe) {
+				
+			}
+		}
+	}
+	
+	private void deserialize() {
+		
 	}
 		
 }
