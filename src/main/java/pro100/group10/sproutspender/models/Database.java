@@ -17,7 +17,18 @@ import pro100.group10.sproutspender.models.Budget.CategoryType;
 public class Database {
 	
 	private Connection connection = null;
-	private SQLServerDataSource ds = null; 
+	private SQLServerDataSource ds = null;
+	
+	
+	public SQLServerDataSource getDS() {
+		return ds;
+	}
+
+	public void setDS(SQLServerDataSource ds) {
+		this.ds = ds;
+	}
+	
+
 	private String tableName = null;
 	
 	public Database() {

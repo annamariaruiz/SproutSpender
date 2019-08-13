@@ -46,7 +46,7 @@ public class WeeklyPlanner {
 	public void setDay(int day, Budget budg) {
 		Method method = null;
 		try {
-			method = getClass().getMethod("setDay" + (day + 1), int.class, Budget.class);
+			method = getClass().getMethod("setDay" + (day + 1), Budget.class);
 		} catch (NoSuchMethodException nsme) {
 			// TODO write catch block
 			nsme.printStackTrace();
@@ -56,7 +56,7 @@ public class WeeklyPlanner {
 		}
 
 		try {
-			method.invoke(this, day, budg);
+			method.invoke(this, budg);
 		} catch (IllegalAccessException iae1) {
 			// TODO write catch block
 			iae1.printStackTrace();

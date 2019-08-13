@@ -33,20 +33,20 @@ public class Table {
 	@FXML
 	private TableView<WeeklyPlanner> tableView;
 	@FXML
-	private TableColumn<WeeklyPlanner, Float> day1Col;
+	private TableColumn<WeeklyPlanner, Budget> day1Col;
 	@FXML
-	private TableColumn<WeeklyPlanner, Float> day2Col;
+	private TableColumn<WeeklyPlanner, Budget> day2Col;
 	@FXML
-	private TableColumn<WeeklyPlanner, Float> day3Col;
+	private TableColumn<WeeklyPlanner, Budget> day3Col;
 	@FXML
-	private TableColumn<WeeklyPlanner, Float> day4Col;
+	private TableColumn<WeeklyPlanner, Budget> day4Col;
 	@FXML
-	private TableColumn<WeeklyPlanner, Float> day5Col;
+	private TableColumn<WeeklyPlanner, Budget> day5Col;
 	@FXML
-	private TableColumn<WeeklyPlanner, Float> day6Col;
+	private TableColumn<WeeklyPlanner, Budget> day6Col;
 	@FXML
-	private TableColumn<WeeklyPlanner, Float> day7Col;
-	TableColumn<WeeklyPlanner, Float>[] columns;
+	private TableColumn<WeeklyPlanner, Budget> day7Col;
+	TableColumn<WeeklyPlanner, Budget>[] columns;
 	
 	@FXML
 	private TextField makeNewDay1;
@@ -92,7 +92,7 @@ public class Table {
 			hasInitialized = true;
 			tableView.setEditable(tableIsEditable);
 			
-			columns = (TableColumn<WeeklyPlanner, Float>[]) new TableColumn[7];
+			columns = (TableColumn<WeeklyPlanner, Budget>[]) new TableColumn[7];
 			columns[0] = day1Col;
 			columns[1] = day2Col;
 			columns[2] = day3Col;
@@ -101,9 +101,9 @@ public class Table {
 			columns[5] = day6Col;
 			columns[6] = day7Col;
 			
-			Callback<TableColumn<WeeklyPlanner, Float>, TableCell<WeeklyPlanner, Float>> floatCellFactory =
-					new Callback<TableColumn<WeeklyPlanner, Float>, TableCell<WeeklyPlanner, Float>>() {
-				public TableCell<WeeklyPlanner, Float> call(TableColumn<WeeklyPlanner, Float> p) {
+			Callback<TableColumn<WeeklyPlanner, Budget>, TableCell<WeeklyPlanner, Budget>> floatCellFactory =
+					new Callback<TableColumn<WeeklyPlanner, Budget>, TableCell<WeeklyPlanner, Budget>>() {
+				public TableCell<WeeklyPlanner, Budget> call(TableColumn<WeeklyPlanner, Budget> p) {
 					return new FloatEditingCell();
 				}
 			};
@@ -120,24 +120,24 @@ public class Table {
 				final int index = i;
 				columns[i].setCellValueFactory(cellData -> {
 					Budget budg = cellData.getValue().getDay(index);
-					Float currentAmount = null;
-					if(budg != null) currentAmount = budg.getCurrentAmount();							
+//					Float currentAmount = null;
+//					if(budg != null) currentAmount = budg.getCurrentAmount();							
 					
-					return new SimpleObjectProperty<>(currentAmount);
+					return new SimpleObjectProperty<Budget>(budg);
 				});
 				
 				columns[i].setCellFactory(floatCellFactory);
 				
-				columns[i].setOnEditCommit(new EventHandler<CellEditEvent<WeeklyPlanner, Float>>() {
+				columns[i].setOnEditCommit(new EventHandler<CellEditEvent<WeeklyPlanner, Budget>>() {
 					@Override
-					public void handle(CellEditEvent<WeeklyPlanner, Float> t) {
+					public void handle(CellEditEvent<WeeklyPlanner, Budget> t) {
 						WeeklyPlanner wp = (WeeklyPlanner) t.getTableView().getItems().get(
 								t.getTablePosition().getRow());
 						
 						try {	
 							Budget budg = wp.getDay(index);
 							if(budg != null) {
-								budg.setCurrentAmount(t.getNewValue());
+								budg.setCurrentAmount(t.getNewValue().getCurrentAmount());
 								db.update(budg);
 							}
 						} catch(SQLException sqle) {
@@ -175,7 +175,12 @@ public class Table {
 	@FXML
 	private void onNextButtonClick(ActionEvent ae) {
 		ObservableList<WeeklyPlanner> wpList = FXCollections.observableArrayList();
-		wpList.add(parseThisWeek(CategoryType.GENERAL));
+		WeeklyPlanner wp = new WeeklyPlanner();
+		Budget budg = new Budget();
+		budg.setCurrentAmount(500);
+		wp.setDay(1, budg);
+		wpList.add(wp);
+//		wpList.add(parseThisWeek(CategoryType.GENERAL));
 		tableView.setItems(wpList);
 	}
 	
