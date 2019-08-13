@@ -214,12 +214,13 @@ public class Table {
 	@FXML
 	private void onGraphButtonClick(ActionEvent ae) {
 		//open graphs window
-		System.out.println("graph");
+		Graphs g = new Graphs();
+		g.init();
 	}
 	
 	@FXML
 	private void onBillsButtonClick(ActionEvent ae) {
-		//open bills window
-		System.out.println("bill was here");
+		Bills b = new Bills();
+		b.init();
 	}
 }

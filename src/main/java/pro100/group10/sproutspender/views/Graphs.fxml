@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Pane prefHeight="261.0" prefWidth="600.0">
+         <children>
+            <PieChart layoutX="224.0" layoutY="-3.0" prefHeight="256.0" prefWidth="352.0" title="Total" />
+         </children>
+      </Pane>
+      <HBox prefHeight="139.0" prefWidth="600.0">
+         <children>
+            <PieChart prefHeight="150.0" prefWidth="148.0" title="Food" />
+            <Line endX="-100.82843017578125" endY="140.2928924560547" startX="-100.0" />
+            <PieChart prefHeight="150.0" prefWidth="148.0" title="Transportation" />
+            <PieChart prefHeight="150.0" prefWidth="148.0" title="Entertainment" />
+            <PieChart prefHeight="150.0" prefWidth="148.0" title="Miscellaneous" />
+         </children>
+      </HBox>
+   </children>
+</VBox>
