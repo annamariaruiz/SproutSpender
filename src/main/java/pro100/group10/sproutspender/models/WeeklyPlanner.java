@@ -1,5 +1,8 @@
 package pro100.group10.sproutspender.models;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 public class WeeklyPlanner {
 
 	private Budget day1;
@@ -9,6 +12,63 @@ public class WeeklyPlanner {
 	private Budget day5;
 	private Budget day6;
 	private Budget day7;
+	
+	
+	public Budget getDay(int day) {
+		Method method = null;
+		try {
+			method = getClass().getMethod("getDay" + (day + 1));
+		} catch (NoSuchMethodException nsme) {
+			// TODO write catch block
+			nsme.printStackTrace();
+		} catch (SecurityException se) {
+			// TODO write catch block
+			se.printStackTrace();
+		}
+		
+		Budget budg = null;
+		try {
+			budg = (((Budget) method.invoke(this)));
+		} catch (IllegalAccessException iae1) {
+			// TODO write catch block
+			iae1.printStackTrace();
+		} catch (IllegalArgumentException iae2) {
+			// TODO write catch block
+			iae2.printStackTrace();
+		} catch (InvocationTargetException ite) {
+			// TODO write catch block
+			ite.printStackTrace();
+		}
+		
+		return budg;
+	}
+
+	public void setDay(int day, Budget budg) {
+		Method method = null;
+		try {
+			method = getClass().getMethod("setDay" + (day + 1), int.class, Budget.class);
+		} catch (NoSuchMethodException nsme) {
+			// TODO write catch block
+			nsme.printStackTrace();
+		} catch (SecurityException se) {
+			// TODO write catch block
+			se.printStackTrace();
+		}
+
+		try {
+			method.invoke(this, day, budg);
+		} catch (IllegalAccessException iae1) {
+			// TODO write catch block
+			iae1.printStackTrace();
+		} catch (IllegalArgumentException iae2) {
+			// TODO write catch block
+			iae2.printStackTrace();
+		} catch (InvocationTargetException ite) {
+			// TODO write catch block
+			ite.printStackTrace();
+		}
+	}
+	
 	public Budget getDay1() {
 		return day1;
 	}

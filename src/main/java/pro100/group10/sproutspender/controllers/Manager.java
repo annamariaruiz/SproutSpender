@@ -10,6 +10,7 @@ import pro100.group10.sproutspender.models.Budget;
 
 public class Manager {
 	private boolean timeFrame;
+	private Date endDate;
 	private HashMap<String, Bill> bills = new HashMap<>();
 	private Budget[] budgets = new Budget[Budget.CategoryType.values().length];
 	
@@ -17,7 +18,28 @@ public class Manager {
 		init();
 	}
 	
+	public static void main(String[] args) {
+		Manager m = new Manager();
+	}
+	
 	public void init() {
+		//deserialize from disc
+		if(endDate == null) {
+			LocalDate ld = LocalDate.now();
+			Calendar today = Calendar.getInstance();
+			today.clear();
+			today.set(ld.getYear(), ld.getMonthValue(), 1);
+			today.add(Calendar.DATE, -1);
+			java.util.Date endD = today.getTime();
+			Date end = new Date(endD.getTime());
+			
+			timeFrame = false;
+			System.out.println(end);
+			
+			System.out.println("hello darkness my old friend");
+		}
+//		when manager is deserialized, it needs to populate the bills statement and the budget statement
+		
 		//populate bills
 		//populate budgets
 //		nextCycle(); //Call the fix for the cycles
@@ -83,6 +105,7 @@ public class Manager {
 		return next;
 	}
 	
+	//CRUD STATEMENT for bills may be irrelevant
 	public void addBill(Bill b) {
 		bills.put(b.getName(), b);
 	}

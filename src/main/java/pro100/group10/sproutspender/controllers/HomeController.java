@@ -13,7 +13,7 @@ import pro100.group10.sproutspender.models.Database;
 
 public class HomeController {
 	
-	private Manager m = new Manager();
+//	private Manager m = new Manager();
 	
 	@FXML
 	private Button start;
@@ -32,7 +32,7 @@ public class HomeController {
 	
 	@FXML
 	public void init() {
-		boolean valid = m.isValid(dbName.getText().trim());
+//		boolean valid = m.isValid(dbName.getText().trim());
 		boolean empty = dbName.getText().trim().isEmpty();
 		
 		

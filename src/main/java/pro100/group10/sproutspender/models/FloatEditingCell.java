@@ -1,6 +1,5 @@
 package pro100.group10.sproutspender.models;
 
-import pro100.group10.sproutspender.models.Budget;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
@@ -12,7 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.input.KeyCode;
 
-public class FloatEditingCell extends TableCell<Budget, Float> {
+public class FloatEditingCell extends TableCell<WeeklyPlanner, Float> {
 
 	private TextField textField;
 	protected ChangeListener<Boolean> changeListener = new ChangeListener<Boolean>() {

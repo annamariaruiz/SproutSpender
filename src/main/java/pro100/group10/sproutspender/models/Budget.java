@@ -7,6 +7,8 @@ public class Budget {
 		GENERAL
 	}
 	
+	public static final CategoryType[] categoryRank = new CategoryType[] { CategoryType.GENERAL };
+	
 	private int id;
 	private Date date;
 	private Date endDate;
