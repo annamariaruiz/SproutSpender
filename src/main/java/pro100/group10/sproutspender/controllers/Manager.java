@@ -22,6 +22,7 @@ public class Manager {
 	}
 	
 	public static void main(String[] args) {
+		@SuppressWarnings("unused")
 		Manager m = new Manager();
 	}
 	
@@ -108,7 +109,7 @@ public class Manager {
 		return next;
 	}
 	
-	//CRUD STATEMENT for bills may be irrelevant
+	//CRUD STATEMENT for bills may be irrelevant ~ Make some from the database
 	public void addBill(Bill b) {
 		bills.put(b.getName(), b);
 	}
@@ -149,13 +150,13 @@ public class Manager {
 		this.timeFrame = timeFrame;
 	}
 	
-	private void serialize(Manager m) {
+	@SuppressWarnings("unused")
+	private void serialize(Manager m, String dbName) {
 		String path = ".\\src\\managers\\";
 		FileOutputStream fileOut = null;
 		ObjectOutputStream out = null;
-		
-		String fileName = "";
-//		String fileName = path + getDS().getDatabaseName() + ".ser";
+
+		String fileName = path + dbName + ".ser";
 		
 		try {
 
@@ -164,7 +165,7 @@ public class Manager {
 			out = new ObjectOutputStream(fileOut);
 
 			// Serialization of the object
-			out.writeObject(Manager m);
+			out.writeObject(m);
 			
 
 		} catch (IOException ioe) {
@@ -182,6 +183,7 @@ public class Manager {
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void deserialize() {
 		
 	}
