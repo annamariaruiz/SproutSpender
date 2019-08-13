@@ -1,8 +1,10 @@
 package pro100.group10.sproutspender.models;
 
+import java.io.Serializable;
 import java.sql.Date;
 
-public class Bill {
+@SuppressWarnings("serial")
+public class Bill implements Serializable {
 	
 	public enum TimeFrame {
 		WEEKLY,
