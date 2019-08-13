@@ -30,6 +30,7 @@ public class HomeController {
 	@FXML
 	private Label alert;
 	
+	@FXML
 	public void init() {
 //		boolean valid = m.isValid(dbName.getText().trim());
 		boolean empty = dbName.getText().trim().isEmpty();
