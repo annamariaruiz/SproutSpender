@@ -71,7 +71,6 @@ public class Table {
 	private Button graphs;
 	
 	private boolean hasInitialized = false;
-	private int lastIDViewed = 0;
 	private boolean tableIsEditable = false;
 	private Date endDate = Date.valueOf(LocalDate.now());
 	
@@ -119,10 +118,7 @@ public class Table {
 				
 				final int index = i;
 				columns[i].setCellValueFactory(cellData -> {
-					Budget budg = cellData.getValue().getDay(index);
-//					Float currentAmount = null;
-//					if(budg != null) currentAmount = budg.getCurrentAmount();							
-					
+					Budget budg = cellData.getValue().getDay(index);						
 					return new SimpleObjectProperty<Budget>(budg);
 				});
 				
@@ -151,6 +147,12 @@ public class Table {
 	}
 	
 	@FXML
+	public void cleanUp() {
+		db.close();
+		System.out.println("Cleaned up");
+	}
+	
+	@FXML
 	private void onMenuItemExit(ActionEvent ae) {
 		
 	}
@@ -175,12 +177,12 @@ public class Table {
 	@FXML
 	private void onNextButtonClick(ActionEvent ae) {
 		ObservableList<WeeklyPlanner> wpList = FXCollections.observableArrayList();
-		WeeklyPlanner wp = new WeeklyPlanner();
-		Budget budg = new Budget();
-		budg.setCurrentAmount(500);
-		wp.setDay(1, budg);
-		wpList.add(wp);
-//		wpList.add(parseThisWeek(CategoryType.GENERAL));
+//		WeeklyPlanner wp = new WeeklyPlanner();
+//		Budget budg = new Budget();
+//		budg.setCurrentAmount(500);
+//		wp.setDay(1, budg);
+//		wpList.add(wp);
+		wpList.add(parseThisWeek(CategoryType.GENERAL));
 		tableView.setItems(wpList);
 	}
 	
@@ -199,10 +201,10 @@ public class Table {
 				//TODO write catch block
 			}
 			
-			thisWeek.setDay(i + 1, budg);
+			if(budg != null) thisWeek.setDay(i + 1, budg);
 			calendar.add(Calendar.DATE, -1);
 		}
-		return null;
+		return thisWeek;
 	}
 	
 	@FXML

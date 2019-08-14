@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import pro100.group10.sproutspender.app.Main;
 import pro100.group10.sproutspender.models.Database;
+import pro100.group10.sproutspender.views.Table;
 
 public class HomeController {
 	
@@ -38,11 +39,11 @@ public class HomeController {
 		
 		Stage stage = Main.getStage();
 		
+		Database db = new Database();
 		if(valid && !empty) {
 			alert.setText("");
 			
 			//create database
-			Database db = new Database();
 			try {
 				db.setConnection(username.getText().trim(), password.getText().trim(), dbName.getText().trim());
 				db.canConnect();
@@ -60,9 +61,15 @@ public class HomeController {
 		}
 		
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("../views/TableStage.fxml"));
+			FXMLLoader tableLoader = new FXMLLoader();
+			tableLoader.setLocation(getClass().getResource("../views/TableStage.fxml"));
+			Table table = new Table();
+			table.setDB(db);
+			tableLoader.setController(table);
+			Parent root = tableLoader.load();
 			Scene scene = new Scene(root,690,630);
 			stage.setScene(scene);
+			stage.setOnHidden(eh -> table.cleanUp());
 			stage.show();
 		} catch(Exception e) {
 			e.printStackTrace();

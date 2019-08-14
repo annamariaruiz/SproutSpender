@@ -18,6 +18,7 @@ public class Database {
 	
 	private Connection connection = null;
 	private SQLServerDataSource ds = null;
+	private final String TABLE_NAME = "Budgets";
 	
 	
 	public SQLServerDataSource getDS() {
@@ -27,9 +28,6 @@ public class Database {
 	public void setDS(SQLServerDataSource ds) {
 		this.ds = ds;
 	}
-	
-
-	private String tableName = null;
 	
 	public Database() {
 		ds = new SQLServerDataSource();
@@ -50,6 +48,17 @@ public class Database {
         } catch (SQLServerException sqle) {
         
         }
+    }
+    
+    public void close() {
+    	if(connection != null) {
+			try {
+				connection.close();
+				connection = null;
+			} catch (SQLException sqle) {
+				throw new RuntimeException("Failed to close connection\n", sqle);
+			}
+		}
     }
 
     private void checkCreateDB() throws SQLException {
@@ -106,7 +115,7 @@ public class Database {
     	Budget foundBudg = new Budget();
 		
 		String selectSQL =
-				"SELECT * FROM " + tableName + " WHERE id = " + id;
+				"SELECT * FROM " + TABLE_NAME + " WHERE id = " + id;
 		
 		ResultSet budgRow = null;
 		
@@ -128,8 +137,8 @@ public class Database {
 
     public Budget lookUpByDayAndCat(Date date, CategoryType cat) throws SQLException {
     	String selectSQL =
-    		"SELECT * FROM " + tableName
-    		+ " WHERE date = '" + date.toString() + "' AND category = " + cat.toString();
+    		"SELECT * FROM " + TABLE_NAME
+    		+ " WHERE date = '" + date.toString() + "' AND category = '" + cat.toString() + "'";
     	
     	ResultSet dayRow = null;
     	Budget foundBudg = null;
@@ -152,7 +161,7 @@ public class Database {
     
     public void update(Budget b) throws SQLException {
     	String updateSQL =
-    		"Update " + tableName + " "
+    		"Update " + TABLE_NAME + " "
 				+ "SET date = '" + b.getDate().toString() + "', "
 				+ "SET limit = " + b.getLimit() + ", "
 				+ "SET category = " + b.getCategory().ordinal() + ", "
@@ -165,7 +174,7 @@ public class Database {
     }
     
     public void remove(int id) throws SQLException {
-    	String deleteSQL = "DELETE FROM " + tableName + " WHERE id = " + id;
+    	String deleteSQL = "DELETE FROM " + TABLE_NAME + " WHERE id = " + id;
 		
 		try(Statement statement = connection.createStatement()) {
 			statement.executeUpdate(deleteSQL);
@@ -175,7 +184,7 @@ public class Database {
     public int size() throws SQLException {
     	int size = -1;
 		String selectSQL =
-				"SELECT COUNT(*) FROM " + tableName;
+				"SELECT COUNT(*) FROM " + TABLE_NAME;
 		
 		ResultSet row = null;
 		
