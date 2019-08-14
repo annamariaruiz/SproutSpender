@@ -177,12 +177,9 @@ public class Table {
 	@FXML
 	private void onNextButtonClick(ActionEvent ae) {
 		ObservableList<WeeklyPlanner> wpList = FXCollections.observableArrayList();
-//		WeeklyPlanner wp = new WeeklyPlanner();
-//		Budget budg = new Budget();
-//		budg.setCurrentAmount(500);
-//		wp.setDay(1, budg);
-//		wpList.add(wp);
-		wpList.add(parseThisWeek(CategoryType.GENERAL));
+		for(CategoryType cat : Budget.categoryRank) {
+			wpList.add(parseThisWeek(cat));			
+		}
 		tableView.setItems(wpList);
 	}
 	

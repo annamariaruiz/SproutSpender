@@ -99,12 +99,10 @@ public class Database {
     }
     
     public void store(Budget b) throws SQLException {
-         LocalDate now = LocalDate.now();
-         Date date = Date.valueOf(now);
          try(Statement stmt = connection.createStatement()) {
              String sql = String.format(
-                     "INSERT INTO Budgets (limit, category, currentAmount, date) VALUES (%2.2f, '%s', 0, '%s')",
-                     b.getLimit(), b.getCategory().toString(), date.toString());
+                     "INSERT INTO Budgets (limit, category, currentAmount, date, endDate) VALUES (%2.2f, '%s', 0, '%s', '%s')",
+                     b.getLimit(), b.getCategory().toString(), b.getDate().toString(), b.getEndDate().toString());
              stmt.executeUpdate(sql);
          }
     	
@@ -126,6 +124,7 @@ public class Database {
 			if(!budgRow.wasNull()) {
 				foundBudg.setID(budgRow.getInt("id"));
 				foundBudg.setDate(budgRow.getDate("date"));
+				foundBudg.setEndDate(budgRow.getDate("endDate"));
 				foundBudg.setLimit(budgRow.getFloat("limit"));
 				foundBudg.setCategory(CategoryType.valueOf(budgRow.getString("category")));
 				foundBudg.setCurrentAmount(budgRow.getFloat("currentAmount"));
@@ -163,9 +162,10 @@ public class Database {
     	String updateSQL =
     		"Update " + TABLE_NAME + " "
 				+ "SET date = '" + b.getDate().toString() + "', "
-				+ "SET limit = " + b.getLimit() + ", "
-				+ "SET category = " + b.getCategory().ordinal() + ", "
-				+ "SET currentAmount = " + b.getCurrentAmount() + " "
+				+ "endDate = '" + b.getEndDate().toString() + "', "
+				+ "limit = " + b.getLimit() + ", "
+				+ "category = '" + b.getCategory() + "', "
+				+ "currentAmount = " + b.getCurrentAmount() + " "
 			+ "WHERE id = " + b.getID();
     	
     	try(Statement stmt = connection.createStatement()) {
