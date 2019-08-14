@@ -66,7 +66,14 @@ public class HomeController {
 			stage.show();
 		} catch(Exception e) {
 			e.printStackTrace();
-		}
-		
+		}	
+	}
+
+	public Manager getM() {
+		return m;
+	}
+
+	public void setM(Manager m) {
+		this.m = m;
 	}
 }
