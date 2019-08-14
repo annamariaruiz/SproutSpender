@@ -11,15 +11,19 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.input.KeyCode;
 
-public class FloatEditingCell extends TableCell<WeeklyPlanner, Float> {
+public class FloatEditingCell extends TableCell<WeeklyPlanner, Budget> {
 
 	private TextField textField;
+
 	protected ChangeListener<Boolean> changeListener = new ChangeListener<Boolean>() {
 		@Override
 		public void changed(ObservableValue<? extends Boolean> arg0,
 				Boolean arg1, Boolean arg2) {
 			if(!arg2) {
-				commitEdit(Float.parseFloat(textField.getText().trim()));
+				if(getItem() != null) {
+					getItem().setCurrentAmount(Float.parseFloat(textField.getText().trim()));
+					commitEdit(getItem());					
+				}
 			}
 		}
 	};
@@ -45,7 +49,12 @@ public class FloatEditingCell extends TableCell<WeeklyPlanner, Float> {
 		textField = new TextField(getString());
 		textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
 		textField.focusedProperty().addListener(changeListener);
-		textField.setOnAction(evt -> Float.parseFloat(textField.getText().trim()));
+		textField.setOnAction(evt -> {
+			if(getItem() != null) {
+				getItem().setCurrentAmount(Float.parseFloat(textField.getText().trim()));
+				commitEdit(getItem());					
+			}
+		});
 		
 		textField.setOnKeyPressed((key) -> {
 			if(key.getCode().equals(KeyCode.ESCAPE)) {
@@ -54,7 +63,10 @@ public class FloatEditingCell extends TableCell<WeeklyPlanner, Float> {
 			}
 			
 			if(key.getCode().equals(KeyCode.ENTER)) {
-				commitEdit(Float.parseFloat(textField.getText().trim()));
+				if(getItem() != null) {
+					getItem().setCurrentAmount(Float.parseFloat(textField.getText().trim()));
+					commitEdit(getItem());					
+				}
 			}
 		});
 	}
@@ -66,12 +78,12 @@ public class FloatEditingCell extends TableCell<WeeklyPlanner, Float> {
 	@Override
 	public void cancelEdit() {
 		super.cancelEdit();
-		setText((String) getItem().toString());
+		setText(getItem() == null ? "" : getItem().toString());
 		setGraphic(null);
 	}
 	
 	@Override
-	public void updateItem(Float item, boolean empty) {
+	public void updateItem(Budget item, boolean empty) {
 		super.updateItem(item, empty);
 		
 		if(empty) {
@@ -94,7 +106,7 @@ public class FloatEditingCell extends TableCell<WeeklyPlanner, Float> {
 	// Override to commit edits when another cell in the same row is selected
 	@Override
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public void commitEdit(Float item) {
+	public void commitEdit(Budget item) {
 		textField.focusedProperty().removeListener(changeListener);
 		if(isEditing()) {
 			super.commitEdit(item);

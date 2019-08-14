@@ -1,5 +1,8 @@
 package pro100.group10.sproutspender.controllers;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Calendar;
@@ -14,11 +17,12 @@ public class Manager {
 	private HashMap<String, Bill> bills = new HashMap<>();
 	private Budget[] budgets = new Budget[Budget.CategoryType.values().length];
 	
-	public Manager() {
+	public Manager() { 
 		init();
 	}
 	
 	public static void main(String[] args) {
+		@SuppressWarnings("unused")
 		Manager m = new Manager();
 	}
 	
@@ -105,7 +109,7 @@ public class Manager {
 		return next;
 	}
 	
-	//CRUD STATEMENT for bills may be irrelevant
+	//CRUD STATEMENT for bills may be irrelevant ~ Make some from the database
 	public void addBill(Bill b) {
 		bills.put(b.getName(), b);
 	}
@@ -144,6 +148,44 @@ public class Manager {
 
 	public void setTimeFrame(boolean timeFrame) {
 		this.timeFrame = timeFrame;
+	}
+	
+	@SuppressWarnings("unused")
+	private void serialize(Manager m, String dbName) {
+		String path = ".\\src\\managers\\";
+		FileOutputStream fileOut = null;
+		ObjectOutputStream out = null;
+
+		String fileName = path + dbName + ".ser";
+		
+		try {
+
+			// Saving object into a file
+			fileOut = new FileOutputStream(fileName);
+			out = new ObjectOutputStream(fileOut);
+
+			// Serialization of the object
+			out.writeObject(m);
+			
+
+		} catch (IOException ioe) {
+			System.out.println("Exception is caught");
+		} finally {
+			try {
+			out.close();
+			fileOut.close();
+			System.out.println("Serialization completed.");
+			} catch(IOException ioe2) {
+				System.out.println("Exception is caught");
+			} catch(NullPointerException npe) {
+				
+			}
+		}
+	}
+	
+	@SuppressWarnings("unused")
+	private void deserialize() {
+		
 	}
 		
 }

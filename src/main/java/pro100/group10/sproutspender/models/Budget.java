@@ -4,10 +4,15 @@ import java.sql.Date;
 
 public class Budget {
 	public enum CategoryType {
-		GENERAL
+		GENERAL,
+		FOOD,
+		TRANSPORTATION,
+		ENTERTAINMENT,
+		MISCELLANEOUS
 	}
 	
-	public static final CategoryType[] categoryRank = new CategoryType[] { CategoryType.GENERAL };
+	public static final CategoryType[] categoryRank = new CategoryType[] { CategoryType.FOOD,
+			CategoryType.TRANSPORTATION, CategoryType.ENTERTAINMENT, CategoryType.MISCELLANEOUS, CategoryType.GENERAL };
 	
 	private int id;
 	private Date date;
@@ -74,5 +79,10 @@ public class Budget {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+	
+	@Override
+	public String toString() {
+		return String.valueOf(getCurrentAmount());
 	}
 }
