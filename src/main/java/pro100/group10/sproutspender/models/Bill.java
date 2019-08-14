@@ -22,12 +22,12 @@ public class Bill implements Serializable {
 	
 	public Bill() {}
 	
-	public Bill(float amount, Date date, String name, TimeFrame timeF) {
+	public Bill(float amount, Date date, String name, TimeFrame timeF, boolean paid) {
 		setAmount(amount);
 		setDate(date);
 		setName(name);
 		setTimeFrame(timeF);
-		setPaid(false);
+		setPaid(paid);
 	}
 
 	public float getAmount() {
@@ -54,7 +54,7 @@ public class Bill implements Serializable {
 		this.name = name;
 	}
 
-	public TimeFrame isTimeFrame() {
+	public TimeFrame getTimeFrame() {
 		return timeFrame;
 	}
 
