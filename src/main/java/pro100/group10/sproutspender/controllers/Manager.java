@@ -1,7 +1,10 @@
 package pro100.group10.sproutspender.controllers;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -17,8 +20,10 @@ public class Manager {
 	private HashMap<String, Bill> bills = new HashMap<>();
 	private Budget[] budgets = new Budget[Budget.CategoryType.values().length];
 	
-	public Manager() { 
-		init();
+	public Manager() {}
+	
+	public Manager(String dbName) { 
+		init(dbName);
 	}
 	
 	public static void main(String[] args) {
@@ -26,8 +31,8 @@ public class Manager {
 		Manager m = new Manager();
 	}
 	
-	public void init() {
-		//deserialize from disc
+	public void init(String dbName) {
+		deserialize(dbName);
 		if(endDate == null) {
 			LocalDate ld = LocalDate.now();
 			Calendar today = Calendar.getInstance();
@@ -150,8 +155,7 @@ public class Manager {
 		this.timeFrame = timeFrame;
 	}
 	
-	@SuppressWarnings("unused")
-	private void serialize(Manager m, String dbName) {
+	public void serialize(Manager m, String dbName) {
 		String path = ".\\src\\managers\\";
 		FileOutputStream fileOut = null;
 		ObjectOutputStream out = null;
@@ -183,9 +187,43 @@ public class Manager {
 		}
 	}
 	
-	@SuppressWarnings("unused")
-	private void deserialize() {
+	public Manager deserialize(String dbName) {
+		String path = ".\\src\\managers\\" + dbName + ".ser";
 		
+		File target = new File(path);
+		
+		Manager found = null;
+		
+		if(target.exists()) {
+
+			FileInputStream fileIn = null;
+			ObjectInputStream in = null;
+		
+			try {
+	
+				// Reading the object from a file
+				fileIn = new FileInputStream(path);
+				in = new ObjectInputStream(fileIn);
+	
+				// Deserialization of the object
+				found = (Manager) in.readObject();
+	
+			} catch (IOException ioe) {
+				System.out.println("Exception is caught");
+			} catch (ClassNotFoundException ex) {
+				System.out.println("ClassNotFoundException is caught.");
+			} finally {
+				try {
+				in.close();
+				fileIn.close();
+				System.out.println("Deserialization completed.");
+				} catch(IOException ioe2) {
+					System.out.println("Exception is caught");
+				}
+			}
+		}		
+		
+		return found;
 	}
 		
 }
