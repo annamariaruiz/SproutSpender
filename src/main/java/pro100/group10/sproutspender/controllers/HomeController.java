@@ -13,7 +13,7 @@ import pro100.group10.sproutspender.models.Database;
 
 public class HomeController {
 	
-//	private Manager m = new Manager();
+	private Manager m = new Manager();
 	
 	@FXML
 	private Button start;
@@ -32,11 +32,32 @@ public class HomeController {
 	
 	@FXML
 	public void init() {
-//		boolean valid = m.isValid(dbName.getText().trim());
+		boolean valid = m.isValid(dbName.getText().trim());
 		boolean empty = dbName.getText().trim().isEmpty();
 		
 		
 		Stage stage = Main.getStage();
+		
+		if(valid && !empty) {
+			alert.setText("");
+			
+			//create database
+			Database db = new Database();
+			try {
+				db.setConnection(username.getText().trim(), password.getText().trim(), dbName.getText().trim());
+				db.canConnect();
+				//call to open table
+			} catch (RuntimeException e) {
+				alert.setText("Connection failed");
+			}
+			
+		} else if (valid && empty) {
+			alert.setText("Database name must not be empty");
+		} else if (!valid){
+			alert.setText("Database name format incorrect");
+		} else {
+			System.out.println("Idk, something broke");
+		}
 		
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("../views/TableStage.fxml"));
@@ -47,25 +68,5 @@ public class HomeController {
 			e.printStackTrace();
 		}
 		
-//		if(valid && !empty) {
-//			alert.setText("");
-//			
-//			//create database
-//			Database db = new Database();
-//			try {
-//				db.canConnect();
-//				db.setConnection(username.getText().trim(), password.getText().trim());
-//				//call to open table
-//			} catch (RuntimeException e) {
-//				alert.setText("Connection failed");
-//			}
-//			
-//		} else if (valid && empty) {
-//			alert.setText("Database name must not be empty");
-//		} else if (!valid){
-//			alert.setText("Database name format incorrect");
-//		} else {
-//			System.out.println("Idk, something broke");
-//		}
 	}
 }
