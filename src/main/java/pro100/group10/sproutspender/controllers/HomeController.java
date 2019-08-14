@@ -13,26 +13,22 @@ import pro100.group10.sproutspender.models.Database;
 
 public class HomeController {
 	
-	private Manager m = new Manager();
+	private Manager manager = new Manager();
 	
 	@FXML
 	private Button start;
-	
 	@FXML
 	private TextField dbName;
-	
 	@FXML
 	private TextField username;
-	
 	@FXML
 	private TextField password;
-	
 	@FXML
 	private Label alert;
 	
 	@FXML
 	public void init() {
-		boolean valid = m.isValid(dbName.getText().trim());
+		boolean valid = manager.isValid(dbName.getText().trim());
 		boolean empty = dbName.getText().trim().isEmpty();
 		
 		
@@ -69,11 +65,11 @@ public class HomeController {
 		}	
 	}
 
-	public Manager getM() {
-		return m;
+	public Manager getManager() {
+		return manager;
 	}
 
-	public void setM(Manager m) {
-		this.m = m;
+	public void setManager(Manager manager) {
+		this.manager = manager;
 	}
 }
