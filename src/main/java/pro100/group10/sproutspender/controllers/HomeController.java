@@ -13,7 +13,7 @@ import pro100.group10.sproutspender.models.Database;
 
 public class HomeController {
 	
-	private Manager m = new Manager();
+	public static Manager manager;
 	
 	@FXML
 	private Button start;
@@ -32,6 +32,7 @@ public class HomeController {
 	
 	@FXML
 	public void init() {
+		Manager m = new Manager(null);
 		boolean valid = m.isValid(dbName.getText().trim());
 		boolean empty = dbName.getText().trim().isEmpty();
 		
@@ -41,6 +42,7 @@ public class HomeController {
 		if(valid && !empty) {
 			alert.setText("");
 			
+			manager = new Manager(dbName.getText().trim());
 			//create database
 			Database db = new Database();
 			try {
@@ -67,13 +69,5 @@ public class HomeController {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}	
-	}
-
-	public Manager getM() {
-		return m;
-	}
-
-	public void setM(Manager m) {
-		this.m = m;
 	}
 }
