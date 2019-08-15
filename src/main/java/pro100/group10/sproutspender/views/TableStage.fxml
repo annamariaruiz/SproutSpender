@@ -28,9 +28,9 @@
                		</Menu>
                			<Menu text="Edit">
                   <items>
-                     			<MenuItem text="Make New Category" />
+                     			<MenuItem text="Make New Budget" />
                      			<CheckMenuItem onAction="#onMenuItemEditMode" text="Edit Mode" />
-                     			<MenuItem text="Remove Selected Contact" />
+                     			<MenuItem onAction="#onMenuItemRemove" text="Remove Selected Budget" />
                   </items>
                			</Menu>
                		<Menu text="Help">

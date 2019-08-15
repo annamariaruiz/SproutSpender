@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="391.0" prefWidth="435.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="219.0" minWidth="10.0" prefWidth="147.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="300.0" minWidth="10.0" prefWidth="300.0" />
+  </columnConstraints>
+  <rowConstraints>
+      <RowConstraints maxHeight="80.0" minHeight="10.0" prefHeight="80.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="76.0" minHeight="10.0" prefHeight="76.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="73.0" minHeight="10.0" prefHeight="73.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="77.0" minHeight="10.0" prefHeight="77.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <TextField fx:id="makeNewDate" maxWidth="-Infinity" prefHeight="31.0" prefWidth="207.0" translateX="48.0" GridPane.columnIndex="1" />
+      <TextField fx:id="makeNewLimit" maxWidth="-Infinity" prefHeight="31.0" prefWidth="207.0" translateX="48.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <TextField fx:id="makeNewCat" maxWidth="-Infinity" prefHeight="31.0" prefWidth="207.0" translateX="48.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <TextField fx:id="makeNewCurrentAmount" maxWidth="-Infinity" prefHeight="31.0" prefWidth="207.0" translateX="48.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <Label alignment="CENTER" contentDisplay="CENTER" text="On this day" translateX="35.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" contentDisplay="CENTER" text="spend less than" translateX="35.0" GridPane.rowIndex="1">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" contentDisplay="CENTER" text="on the category" textAlignment="CENTER" translateX="35.0" wrapText="true" GridPane.rowIndex="2">
+         <font>
+            <Font size="18.0" />
+         </font>
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin>
+      </Label>
+      <Button mnemonicParsing="false" onAction="#onPopOutSubmit" scaleX="1.3" scaleY="1.2" text="Submit" translateX="115.0" translateY="-5.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <Button mnemonicParsing="false" onAction="#onPopOutCancel" scaleX="1.3" scaleY="1.2" text="Cancel" translateX="50.0" translateY="-5.0" GridPane.rowIndex="4" />
+      <Label alignment="CENTER" contentDisplay="CENTER" text="So far I've spent" textAlignment="CENTER" translateX="35.0" wrapText="true" GridPane.rowIndex="3">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+   </children>
+</GridPane>

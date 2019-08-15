@@ -49,19 +49,13 @@ public class Table {
 	TableColumn<WeeklyPlanner, Budget>[] columns;
 	
 	@FXML
-	private TextField makeNewDay1;
+	private TextField makeNewDate;
 	@FXML
-	private TextField makeNewDay2;
+	private TextField makeNewLimit;
 	@FXML
-	private TextField makeNewDay3;
+	private TextField makeNewCat;
 	@FXML
-	private TextField makeNewDay4;
-	@FXML
-	private TextField makeNewDay5;
-	@FXML
-	private TextField makeNewDay6;
-	@FXML
-	private TextField makeNewDay7;
+	private TextField makeNewCurrentAmount;
 	
 	@FXML
 	private Button settings;
@@ -148,7 +142,10 @@ public class Table {
 	@FXML
 	public void cleanUp() {
 		db.close();
-		System.out.println("Cleaned up");
+	}
+
+	private void onMenuItemCreateEdit(ActionEvent ae) {
+		
 	}
 	
 	@FXML
@@ -160,6 +157,21 @@ public class Table {
 	private void onMenuItemEditMode(ActionEvent ae) {
 		tableIsEditable = !tableIsEditable;
 		tableView.setEditable(tableIsEditable);
+	}
+	
+	@FXML
+	private void onMenuItemRemove(ActionEvent ae) {
+		int day = tableView.getFocusModel().getFocusedCell().getColumn() + 1;
+		int row = tableView.getFocusModel().getFocusedCell().getRow();
+		int id = tableView.getFocusModel().getFocusedItem().getDay(day).getID();
+		WeeklyPlanner wp = tableView.getItems().get(row);
+		wp.setDay(day, null);
+		tableView.getItems().set(row, wp);
+		try {
+			db.remove(id);
+		} catch (SQLException sqle) {
+			// TODO write catch block
+		}
 	}
 	
 	@FXML
@@ -240,7 +252,6 @@ public class Table {
 		}
 		
 		wpList.add(genWP);
-		
 	}
 	
 	@FXML
