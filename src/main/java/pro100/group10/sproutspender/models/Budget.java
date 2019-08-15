@@ -1,8 +1,10 @@
 package pro100.group10.sproutspender.models;
 
+import java.io.Serializable;
 import java.sql.Date;
 
-public class Budget {
+@SuppressWarnings("serial")
+public class Budget implements Serializable{
 	public enum CategoryType {
 		GENERAL,
 		FOOD,

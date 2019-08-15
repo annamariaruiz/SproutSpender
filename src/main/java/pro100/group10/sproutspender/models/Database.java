@@ -7,17 +7,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 
+import pro100.group10.sproutspender.models.Bill.TimeFrame;
 import pro100.group10.sproutspender.models.Budget.CategoryType;
 
 public class Database {
 	
 	private Connection connection = null;
 	private SQLServerDataSource ds = null;
+	private final String TABLE_NAME = "Budgets";
 	
 	
 	public SQLServerDataSource getDS() {
@@ -27,9 +30,6 @@ public class Database {
 	public void setDS(SQLServerDataSource ds) {
 		this.ds = ds;
 	}
-	
-
-	private String tableName = null;
 	
 	public Database() {
 		ds = new SQLServerDataSource();
@@ -51,6 +51,17 @@ public class Database {
         
         }
     }
+    
+    public void close() {
+    	if(connection != null) {
+			try {
+				connection.close();
+				connection = null;
+			} catch (SQLException sqle) {
+				throw new RuntimeException("Failed to close connection\n", sqle);
+			}
+		}
+    }
 
     private void checkCreateDB() throws SQLException {
         ds.setDatabaseName("master");
@@ -63,6 +74,7 @@ public class Database {
         connection.close();
         connection = ds.getConnection();
         checkCreateTables();
+        checkCreateBillsTable();
     }
         
     private void checkCreateTables() throws SQLException {
@@ -72,6 +84,14 @@ public class Database {
 //            stmt.executeUpdate(sql);
             createSQL = "IF OBJECT_ID('Budgets') IS NULL CREATE TABLE Budgets(id INT PRIMARY KEY IDENTITY(1, 1), date DATE, endDate DATE, limit float, category VARCHAR(25), currentAmount float )";
             stmt.executeUpdate(createSQL);
+        }
+    }
+    
+    private void checkCreateBillsTable() throws SQLException {
+        String createSQL;
+    	try(Statement stmt = connection.createStatement()) {
+    		createSQL = "IF OBJECT_ID('Bills') IS NULL CREATE TABLE Bills(id INT PRIMARY KEY IDENTITY(1, 1), name VARCHAR(255), amount float, duedate Date, timeframe VARCHAR(255), paid boolean)";
+    		stmt.executeUpdate(createSQL);
         }
     }
     
@@ -102,11 +122,22 @@ public class Database {
     	b.setID(getLastID());
     }
     
+    public void createBi(Bill b) throws SQLException {
+		 LocalDate now = LocalDate.now();
+		 Date date = Date.valueOf(now);
+		 try(Statement stmt = connection.createStatement()) {
+		     String sql = String.format(
+		             "INSERT INTO Bills (name, amount, duedate, timeFrame) VALUES (%s, %2.2f, '%s', '%s')",
+		             b.getName(), b.getAmount(), date.toString(), b.getTimeFrame().toString());
+		     stmt.executeUpdate(sql);
+		 }
+    }
+    
     public Budget lookUp(int id) throws SQLException {
     	Budget foundBudg = new Budget();
 		
 		String selectSQL =
-				"SELECT * FROM " + tableName + " WHERE id = " + id;
+				"SELECT * FROM " + TABLE_NAME + " WHERE id = " + id;
 		
 		ResultSet budgRow = null;
 		
@@ -128,8 +159,8 @@ public class Database {
 
     public Budget lookUpByDayAndCat(Date date, CategoryType cat) throws SQLException {
     	String selectSQL =
-    		"SELECT * FROM " + tableName
-    		+ " WHERE date = '" + date.toString() + "' AND category = " + cat.toString();
+    		"SELECT * FROM " + TABLE_NAME
+    		+ " WHERE date = '" + date.toString() + "' AND category = '" + cat.toString() + "'";
     	
     	ResultSet dayRow = null;
     	Budget foundBudg = null;
@@ -152,7 +183,7 @@ public class Database {
     
     public void update(Budget b) throws SQLException {
     	String updateSQL =
-    		"Update " + tableName + " "
+    		"Update " + TABLE_NAME + " "
 				+ "SET date = '" + b.getDate().toString() + "', "
 				+ "SET limit = " + b.getLimit() + ", "
 				+ "SET category = " + b.getCategory().ordinal() + ", "
@@ -164,8 +195,32 @@ public class Database {
     	}
     }
     
+    public void updateBill(Bill b) throws SQLException {
+    	String updateSQL =
+    		"Update " + tableName + " "
+    			+ "SET name = '" + b.getName() + "', "
+				+ "SET duedate = '" + b.getDate().toString() + "', "
+				+ "SET amount = " + b.getAmount() + ", "
+				+ "SET timeFrame = " + b.getTimeFrame().toString() + ", "
+				+ "SET paid = " + b.isPaid() + " "
+			+ "WHERE id = " + b.getId();
+    	
+    	try(Statement stmt = connection.createStatement()) {
+    		stmt.executeUpdate(updateSQL);
+    	}
+    }
+    
     public void remove(int id) throws SQLException {
-    	String deleteSQL = "DELETE FROM " + tableName + " WHERE id = " + id;
+    	String deleteSQL = "DELETE FROM " + TABLE_NAME + " WHERE id = " + id;
+		
+		try(Statement statement = connection.createStatement()) {
+			statement.executeUpdate(deleteSQL);
+		}
+    }
+
+    
+    public void removeBill(int id) throws SQLException {
+    	String deleteSQL = "DELETE FROM Bills WHERE id = " + id;
 		
 		try(Statement statement = connection.createStatement()) {
 			statement.executeUpdate(deleteSQL);
@@ -175,7 +230,7 @@ public class Database {
     public int size() throws SQLException {
     	int size = -1;
 		String selectSQL =
-				"SELECT COUNT(*) FROM " + tableName;
+				"SELECT COUNT(*) FROM " + TABLE_NAME;
 		
 		ResultSet row = null;
 		
@@ -187,6 +242,41 @@ public class Database {
 		
 		return size;
     }
+    
+	public HashMap<String, Bill> selectAll() {
+		HashMap<String, Bill> bills = new HashMap<>();
+		SQLServerDataSource ds = new SQLServerDataSource();
+
+		Statement stmt;
+		try {
+			Connection con = ds.getConnection();
+			stmt = con.createStatement();
+			String sql = "SELECT * FROM Contacts";
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			while (rs.next()) {
+				String name = rs.getString("name");
+				Float amount = rs.getFloat("amount");
+				String dateS = rs.getString("duedate");
+				Date date = Date.valueOf(dateS);
+				boolean paid = rs.getBoolean("paid");
+				String timeFrame = rs.getString("timeFrame");
+				
+				TimeFrame timeF = Bill.TimeFrame.BIWEEKLY;
+				if(timeF.toString().equalsIgnoreCase(timeFrame)) {
+					
+				}
+				int id = rs.getInt("id");
+				Bill b = new Bill(amount, date, name, timeF, paid);
+				b.setId(id);
+				bills.put(b.getName(), b);
+			}
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return bills;
+	}
     
     public void canConnect() throws RuntimeException {
     	try {
