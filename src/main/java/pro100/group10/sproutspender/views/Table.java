@@ -84,7 +84,7 @@ public class Table {
 		this.db = db;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "restriction" })
 	@FXML
 	private void initialize() {
 		if(!hasInitialized) {
