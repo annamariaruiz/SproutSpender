@@ -23,6 +23,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import pro100.group10.sproutspender.controllers.HomeController;
 import pro100.group10.sproutspender.controllers.Manager;
 import pro100.group10.sproutspender.models.Bill;
 import pro100.group10.sproutspender.models.Bill.TimeFrame;
@@ -34,6 +35,7 @@ public class Bills {
 	private static Scene primScene;
 	private TableView<Bill> tableView = new TableView<>();
 	private static Database db = Table.getDB();
+	private Manager man = HomeController.manager;
 	private ObservableList<Bill> listedBills = FXCollections.observableArrayList();
 	private ObservableList<TimeFrame> enums = FXCollections.observableArrayList(Bill.TimeFrame.values());
 	
@@ -163,7 +165,7 @@ public class Bills {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			Manager.updateBills();
+			man.update(db);
 		}
 
 		tableView.setItems(getBills());
@@ -205,7 +207,7 @@ public class Bills {
 			
 			//save to database
 			db.createBi(newBill);
-			Manager.updateBills();
+			man.update(db);
 			tableView.setItems(getBills());
 			window.setScene(primScene);
 			window.show();
@@ -217,7 +219,7 @@ public class Bills {
 
 	private ObservableList<Bill> getBills() {
 		listedBills.clear();
-		HashMap<String, Bill> temp = db.selectAll();
+		HashMap<String, Bill> temp = db.selectAllBills();
 		int limit = temp.size();
 		
 		for (String bill : temp.keySet()) {

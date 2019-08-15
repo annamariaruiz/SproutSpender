@@ -1,5 +1,7 @@
 package pro100.group10.sproutspender.controllers;
 
+import java.sql.SQLException;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -36,7 +38,15 @@ public class HomeController {
 		
 		Stage stage = Main.getStage();
 		
-		Database db = new Database();
+		//String username, String password, String server, int port, String dbName
+		Database db = null;
+		try {
+			db = new Database(username.getText().trim(), password.getText().trim(), "localhost", 1433, dbName.getText().trim());
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		if(valid && !empty) {
 			alert.setText("");
 			
