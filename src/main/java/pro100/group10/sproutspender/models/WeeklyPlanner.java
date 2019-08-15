@@ -17,7 +17,7 @@ public class WeeklyPlanner {
 	public Budget getDay(int day) {
 		Method method = null;
 		try {
-			method = getClass().getMethod("getDay" + (day + 1));
+			method = getClass().getMethod("getDay" + day);
 		} catch (NoSuchMethodException nsme) {
 			// TODO write catch block
 			nsme.printStackTrace();
@@ -46,7 +46,7 @@ public class WeeklyPlanner {
 	public void setDay(int day, Budget budg) {
 		Method method = null;
 		try {
-			method = getClass().getMethod("setDay" + (day + 1), Budget.class);
+			method = getClass().getMethod("setDay" + day, Budget.class);
 		} catch (NoSuchMethodException nsme) {
 			// TODO write catch block
 			nsme.printStackTrace();
