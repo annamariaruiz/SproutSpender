@@ -110,12 +110,10 @@ public class Database {
     }
     
     public void store(Budget b) throws SQLException {
-         LocalDate now = LocalDate.now();
-         Date date = Date.valueOf(now);
          try(Statement stmt = connection.createStatement()) {
              String sql = String.format(
-                     "INSERT INTO Budgets (limit, category, currentAmount, date) VALUES (%2.2f, '%s', 0, '%s')",
-                     b.getLimit(), b.getCategory().toString(), date.toString());
+                     "INSERT INTO Budgets (limit, category, currentAmount, date, endDate) VALUES (%2.2f, '%s', 0, '%s', '%s')",
+                     b.getLimit(), b.getCategory().toString(), b.getDate().toString(), b.getEndDate().toString());
              stmt.executeUpdate(sql);
          }
     	
@@ -148,6 +146,7 @@ public class Database {
 			if(!budgRow.wasNull()) {
 				foundBudg.setID(budgRow.getInt("id"));
 				foundBudg.setDate(budgRow.getDate("date"));
+				foundBudg.setEndDate(budgRow.getDate("endDate"));
 				foundBudg.setLimit(budgRow.getFloat("limit"));
 				foundBudg.setCategory(CategoryType.valueOf(budgRow.getString("category")));
 				foundBudg.setCurrentAmount(budgRow.getFloat("currentAmount"));
@@ -185,9 +184,10 @@ public class Database {
     	String updateSQL =
     		"Update " + TABLE_NAME + " "
 				+ "SET date = '" + b.getDate().toString() + "', "
-				+ "SET limit = " + b.getLimit() + ", "
-				+ "SET category = " + b.getCategory().ordinal() + ", "
-				+ "SET currentAmount = " + b.getCurrentAmount() + " "
+				+ "endDate = '" + b.getEndDate().toString() + "', "
+				+ "limit = " + b.getLimit() + ", "
+				+ "category = '" + b.getCategory() + "', "
+				+ "currentAmount = " + b.getCurrentAmount() + " "
 			+ "WHERE id = " + b.getID();
     	
     	try(Statement stmt = connection.createStatement()) {
@@ -245,12 +245,10 @@ public class Database {
     
 	public HashMap<String, Bill> selectAllBills() {
 		HashMap<String, Bill> bills = new HashMap<>();
-		SQLServerDataSource ds = new SQLServerDataSource();
 
 		Statement stmt;
 		try {
-			Connection con = ds.getConnection();
-			stmt = con.createStatement();
+			stmt = connection.createStatement();
 			String sql = "SELECT * FROM Bills";
 			ResultSet rs = stmt.executeQuery(sql);
 			
@@ -276,7 +274,6 @@ public class Database {
 				b.setId(id);
 				bills.put(b.getName(), b);
 			}
-			con.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -285,12 +282,10 @@ public class Database {
     
 	public Budget[] selectAllBudg() {
 		Budget[] budgets = new Budget[5];//Change amount
-		SQLServerDataSource ds = new SQLServerDataSource();
 
 		Statement stmt;
 		try {
-			Connection con = ds.getConnection();
-			stmt = con.createStatement();
+			stmt = connection.createStatement();
 			String sql = "SELECT * FROM Budgets";
 			ResultSet rs = stmt.executeQuery(sql);
 			
@@ -320,7 +315,6 @@ public class Database {
 				budgets[i] = b;
 				i++;
 			}
-			con.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

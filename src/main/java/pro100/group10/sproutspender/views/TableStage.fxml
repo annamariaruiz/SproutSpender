@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.Menu?>
@@ -11,28 +15,38 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane minHeight="630.0" minWidth="690.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane minHeight="630.0" minWidth="690.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 	<top>
 		<VBox>
-   			<MenuBar>
-      			<Menu text="File">
-           			<MenuItem text="Exit" />
-         		</Menu>
-         			<Menu text="Edit">
-            			<MenuItem text="Make New Category" />
-            			<CheckMenuItem onAction="#onMenuItemEditMode" text="Edit Mode" />
-            			<MenuItem text="Remove Selected Contact" />
-         			</Menu>
-         		<Menu text="Help">
+   <children>
+      			<MenuBar>
+         <menus>
+            			<Menu text="File">
+               <items>
+                    			<MenuItem text="Exit" />
+               </items>
+               		</Menu>
+               			<Menu text="Edit">
+                  <items>
+                     			<MenuItem text="Make New Category" />
+                     			<CheckMenuItem onAction="#onMenuItemEditMode" text="Edit Mode" />
+                     			<MenuItem text="Remove Selected Contact" />
+                  </items>
+               			</Menu>
+               		<Menu text="Help">
    				</Menu>
-      		</MenuBar>
-      		<ToolBar>
-           		<Button onAction="#onLastButtonClick" styleClass="toolbarbutton">Last</Button>
-           		<Button onAction="#onNextButtonClick" styleClass="toolbarbutton">Next</Button>
-      			<Button fx:id="bills" onAction="#onBillsButtonClick" styleClass="toolbarbutton">Bills</Button>
-      			<Button fx:id="graphs" onAction="#onGraphButtonClick" styleClass="toolbarbutton">Graphs</Button>
-      			<Button fx:id="settings" onAction="#onSettingsButtonClick" styleClass="toolbarbutton">Settings</Button>
-      		</ToolBar>
+         </menus>
+         		</MenuBar>
+         		<ToolBar>
+            <items>
+                 		<Button onAction="#onLastButtonClick" styleClass="toolbarbutton">Last</Button>
+                 		<Button onAction="#onNextButtonClick" styleClass="toolbarbutton">Next</Button>
+            			<Button fx:id="bills" onAction="#onBillsButtonClick" styleClass="toolbarbutton">Bills</Button>
+            			<Button fx:id="graphs" onAction="#onGraphButtonClick" styleClass="toolbarbutton">Graphs</Button>
+            			<Button fx:id="settings" onAction="#onSettingsButtonClick" styleClass="toolbarbutton">Settings</Button>
+            </items>
+         		</ToolBar>
+   </children>
 		</VBox>
 	</top>
 	
@@ -49,4 +63,30 @@
 			</columns>
          </TableView>
 	</center>
+   <left>
+    <VBox>
+       <children>
+   	   	  <Label prefHeight="21.0" prefWidth="73.0" text="Food" translateY="38.0" BorderPane.alignment="CENTER">
+               <font>
+                  <Font size="18.0" />
+               </font></Label>
+   	      <Label prefHeight="27.0" prefWidth="121.0" text="Transportation" translateY="38.0" BorderPane.alignment="CENTER">
+               <font>
+                  <Font size="18.0" />
+               </font></Label>
+   	      <Label prefHeight="21.0" prefWidth="115.0" text="Entertainment" translateY="38.0" BorderPane.alignment="CENTER">
+               <font>
+                  <Font size="18.0" />
+               </font></Label>
+   	      <Label prefHeight="26.0" prefWidth="115.0" text="Miscellaneous" translateY="38.0" BorderPane.alignment="CENTER">
+               <font>
+                  <Font size="18.0" />
+               </font></Label>
+   	      <Label prefHeight="21.0" prefWidth="73.0" text="General" translateY="38.0" BorderPane.alignment="CENTER">
+               <font>
+                  <Font size="18.0" />
+               </font></Label>
+       </children>
+    </VBox>
+   </left>
 </BorderPane>

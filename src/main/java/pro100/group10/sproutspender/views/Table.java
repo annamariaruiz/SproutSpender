@@ -101,11 +101,7 @@ public class Table {
 			columns[6] = day7Col;
 			
 			Callback<TableColumn<WeeklyPlanner, Budget>, TableCell<WeeklyPlanner, Budget>> floatCellFactory =
-					new Callback<TableColumn<WeeklyPlanner, Budget>, TableCell<WeeklyPlanner, Budget>>() {
-				public TableCell<WeeklyPlanner, Budget> call(TableColumn<WeeklyPlanner, Budget> p) {
-					return new FloatEditingCell();
-				}
-			};
+					cb -> new FloatEditingCell();
 			
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(endDate);
@@ -118,7 +114,7 @@ public class Table {
 				
 				final int index = i;
 				columns[i].setCellValueFactory(cellData -> {
-					Budget budg = cellData.getValue().getDay(index);						
+					Budget budg = cellData.getValue().getDay(index + 1);						
 					return new SimpleObjectProperty<Budget>(budg);
 				});
 				
@@ -131,7 +127,7 @@ public class Table {
 								t.getTablePosition().getRow());
 						
 						try {	
-							Budget budg = wp.getDay(index);
+							Budget budg = wp.getDay(index + 1);
 							if(budg != null) {
 								budg.setCurrentAmount(t.getNewValue().getCurrentAmount());
 								db.update(budg);
@@ -143,6 +139,9 @@ public class Table {
 					}
 				});
 			}
+			
+			refreshTableView();
+			calculateTotals();
 		}
 	}
 	
@@ -165,25 +164,38 @@ public class Table {
 	
 	@FXML
 	private void onLastButtonClick(ActionEvent ae) {
-//		if(lastIDViewed > 0) {
-//			ObservableList<Budget> lastHundredBudgets = parseLastWeek();
-//			
-//			if(lastHundredBudgets != null && !lastHundredBudgets.isEmpty()) {
-//				tableView.setItems(lastHundredBudgets);
-//			}	
-//		}
+		changeEndDate(-7);
+		refreshTableView();
+		calculateTotals();
 	}
 	
 	@FXML
 	private void onNextButtonClick(ActionEvent ae) {
+		changeEndDate(7);
+		refreshTableView();
+		calculateTotals();
+	}
+	
+	private void refreshTableView() {
 		ObservableList<WeeklyPlanner> wpList = FXCollections.observableArrayList();
-//		WeeklyPlanner wp = new WeeklyPlanner();
-//		Budget budg = new Budget();
-//		budg.setCurrentAmount(500);
-//		wp.setDay(1, budg);
-//		wpList.add(wp);
-		wpList.add(parseThisWeek(CategoryType.GENERAL));
+		for(CategoryType cat : Budget.categoryRank) {
+			wpList.add(parseThisWeek(cat));			
+		}
 		tableView.setItems(wpList);
+	}
+	
+	private void changeEndDate(int days) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(endDate);
+		calendar.add(Calendar.DATE, days);
+		endDate = new Date(calendar.getTime().getTime());
+		Date dateToGrab = null;
+		
+		for(int i = 6; i >= 0; i--) {
+			dateToGrab = new Date(calendar.getTime().getTime());
+			columns[i].setText(dateToGrab.toString());
+			calendar.add(Calendar.DATE, -1);
+		}
 	}
 	
 	private WeeklyPlanner parseThisWeek(CategoryType category) {
@@ -205,6 +217,30 @@ public class Table {
 			calendar.add(Calendar.DATE, -1);
 		}
 		return thisWeek;
+	}
+	
+	private void calculateTotals() {
+		ObservableList<WeeklyPlanner> wpList = tableView.getItems();
+		WeeklyPlanner genWP = new WeeklyPlanner();
+		for(int i = 0; i < columns.length; i++) {
+			genWP.setDay(i + 1, new Budget());
+			Budget genBudgForDay = genWP.getDay(i + 1);
+			genBudgForDay.setCategory(CategoryType.GENERAL);
+			for(int j = 0; j < Budget.categoryRank.length - 1; j++) {
+				Budget catBudgForDay = columns[i].getCellData(j);
+				if(catBudgForDay != null) {
+					genBudgForDay.setCurrentAmount(genBudgForDay.getCurrentAmount() + catBudgForDay.getCurrentAmount());
+					genBudgForDay.setLimit(genBudgForDay.getLimit() + catBudgForDay.getLimit());
+				}
+			}
+		}
+		
+		if(wpList.size() > Budget.categoryRank.length - 1) {
+			wpList.remove(Budget.categoryRank.length - 1);
+		}
+		
+		wpList.add(genWP);
+		
 	}
 	
 	@FXML
