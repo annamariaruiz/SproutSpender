@@ -197,7 +197,7 @@ public class Database {
     
     public void updateBill(Bill b) throws SQLException {
     	String updateSQL =
-    		"Update " + tableName + " "
+    		"Update " + "Bills" + " "
     			+ "SET name = '" + b.getName() + "', "
 				+ "SET duedate = '" + b.getDate().toString() + "', "
 				+ "SET amount = " + b.getAmount() + ", "

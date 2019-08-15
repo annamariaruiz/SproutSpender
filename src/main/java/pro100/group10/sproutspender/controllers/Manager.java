@@ -34,7 +34,7 @@ public class Manager implements Serializable{
 	public void init(String dbName) {
 		if(dbName != null) {
 			HomeController.manager = deserialize(dbName);
-			if(endDate == null) {
+			if(endDate != null) {
 				LocalDate ld = LocalDate.now();
 				Calendar today = Calendar.getInstance();
 				today.clear();
@@ -48,8 +48,8 @@ public class Manager implements Serializable{
 				for(Budget b : budgets) {
 					b.setEndDate(end);
 				}
+				nextCycle(); //Call the fix for the cycles
 			}
-			nextCycle(); //Call the fix for the cycles
 		}
 	}
 
@@ -132,7 +132,7 @@ public class Manager implements Serializable{
 		}
 	}
 	
-	public void updateBills() {
+	public static void updateBills() {
 		//Get from database
 		
 	}

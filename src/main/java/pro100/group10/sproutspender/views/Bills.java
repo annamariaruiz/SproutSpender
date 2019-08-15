@@ -1,6 +1,8 @@
 package pro100.group10.sproutspender.views;
 
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashMap;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,8 +12,9 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -20,17 +23,19 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import pro100.group10.sproutspender.controllers.Manager;
 import pro100.group10.sproutspender.models.Bill;
 import pro100.group10.sproutspender.models.Bill.TimeFrame;
 import pro100.group10.sproutspender.models.Database;
 
 public class Bills {
 	
-	private Stage window = new Stage();
-	private Scene scene;
+	private static Stage window = new Stage();
+	private static Scene primScene;
 	private TableView<Bill> tableView = new TableView<>();
-	private Database db;
+	private static Database db = Table.getDB();
 	private ObservableList<Bill> listedBills = FXCollections.observableArrayList();
+	private ObservableList<TimeFrame> enums = FXCollections.observableArrayList(Bill.TimeFrame.values());
 	
 	@FXML
 	private TextField nameOfBill;
@@ -39,10 +44,21 @@ public class Bills {
 	@FXML
 	private DatePicker nextDate;
 	@FXML
-	private ChoiceBox timeFrame;
-	@FXML
 	private CheckBox paid;
+	@FXML
+	private Button saveNewBill;
+	@FXML
+	private Button saveEditBill;
+	@FXML
+	private Label error;
+	@FXML
+    private ComboBox<Bill.TimeFrame> timetype;
 	
+	public void initialize() {
+		timetype.getItems().removeAll(timetype.getItems());
+	    timetype.getItems().addAll(enums);
+	    timetype.getSelectionModel().select(enums.get(0));
+	}
 	
 	public void init() {
 		window.setTitle("View Your Bills");
@@ -50,27 +66,27 @@ public class Bills {
 		
 		//columns
 		TableColumn<Bill, String> name = new TableColumn<>("Name");
-		name.setMinWidth(250);
 		name.setCellValueFactory(new PropertyValueFactory<>("name"));
+		name.setMinWidth(250);
 		
 		TableColumn<Bill, Float> amount = new TableColumn<>("Amount");
-		amount.setMinWidth(75);
 		amount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+		amount.setMinWidth(75);
 		
 		TableColumn<Bill, Date> date = new TableColumn<>("Date");
-		date.setMinWidth(100);
 		date.setCellValueFactory(new PropertyValueFactory<>("date"));
+		date.setMinWidth(100);
 		
 		TableColumn<Bill, TimeFrame> timeFrame = new TableColumn<>("Time Frame");
-		timeFrame.setMinWidth(100);
 		timeFrame.setCellValueFactory(new PropertyValueFactory<>("timeFrame"));
+		timeFrame.setMinWidth(100);
 		
 		TableColumn<Bill, Boolean> paid = new TableColumn<>("Paid");
-		paid.setMinWidth(25);
 		paid.setCellValueFactory(new PropertyValueFactory<>("paid"));
+		paid.setMinWidth(25);
 		
-		tableView.setItems(getBills());
 		tableView.getColumns().addAll(name, amount, date, timeFrame, paid);
+		tableView.setItems(getBills());
 		tableView.setEditable(true);
 		tableView.setMinHeight(50);
 		
@@ -98,28 +114,18 @@ public class Bills {
 		VBox vertical = new VBox();
 		vertical.getChildren().addAll(tableView, buttons);
 		
-		scene = new Scene(vertical, 600, 400);
-		window.setScene(scene);
+		primScene = new Scene(vertical, 600, 400);
+		window.setScene(primScene);
 		window.show();
-		
-		
-//		try {
-//			Parent root = FXMLLoader.load(getClass().getResource("../views/Bills.fxml"));
-//
-//			scene = new Scene(root, 600, 400);
-//			window.setResizable(false);
-//			window.setScene(scene);
-//			window.show();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
 	}
 	
 	private void editBill() {
+		Bill selected = tableView.getSelectionModel().getSelectedItem();
+		
 		window.setTitle("Add Bill");
 		window.setResizable(false);
 		try {
-			GridPane root = (GridPane)FXMLLoader.load(getClass().getResource("../views/AddBill.fxml"));
+			GridPane root = (GridPane)FXMLLoader.load(getClass().getResource("../views/EditBill.fxml"));
 			Scene scene = new Scene(root,500,375);
 			window.setScene(scene);
 			window.show();
@@ -128,24 +134,39 @@ public class Bills {
 		}
 	}
 	
+	@FXML
 	private void saveEditBill() {
-		//compare changes made to bill
-		//if no change made, leave alone
-		//if change made to field, change that one field
-		//save to database
+		if (!nameOfBill.getText().isEmpty() && !amount.getText().isEmpty() && nextDate.getValue() != null && timetype.getValue() != null) {
+			//compare changes made to bill
+			//if no change made, leave alone
+			//if change made to field, change that one field
+			//save to database
+			tableView.setItems(getBills());
+			window.setScene(primScene);
+			window.show();
+			
+				
+		} else {
+			error.setText("Values must not be empty");
+		}
 	}
 
-	private void deleteBill() {
+	private void deleteBill(){
 		ObservableList<Bill> billSelected, allBills;
 		allBills = tableView.getItems();
 		billSelected = tableView.getSelectionModel().getSelectedItems();
 		
 		for(Bill bill : billSelected) {
 			bill.getId();
-			//removeBIll(id); - Database
-			//Manager.update();
+			try {
+				db.removeBill(bill.getId());
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			Manager.updateBills();
 		}
-		
+
+		tableView.setItems(getBills());
 		billSelected.forEach(allBills::remove);
 	}
 
@@ -158,29 +179,51 @@ public class Bills {
 			window.setScene(scene);
 			window.show();
 		} catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(timetype.getValue());
 		}
 	}
 	
-	private void saveNewBill() {
-		//create new bill
-		Bill newBill = new Bill();
-		
-		//add fields
-		
-		//save to database
-		//HomeController.getDatabase();
-		//Database.creatBi(newBill);
-		//Manager.update();
+	@FXML
+	private void saveNewBill() throws SQLException {
+		//check if fields are empty
+		if (!nameOfBill.getText().isEmpty() && !amount.getText().isEmpty() && nextDate.getValue() != null && timetype.getValue() != null) {
+			//create new bill
+			Bill newBill = new Bill();
+			
+			//store values
+			String newName = nameOfBill.getText().trim();
+			String newamount = amount.getText();
+			float floatAmount = Float.valueOf(newamount.trim()).floatValue();
+			Date date = java.sql.Date.valueOf(nextDate.getValue());
+			Bill.TimeFrame type = timetype.getValue();
+			
+			//add fields
+			newBill.setName(newName);
+			newBill.setAmount(floatAmount);
+			newBill.setDate((java.sql.Date) date);
+			newBill.setTimeFrame(type);
+			
+			//save to database
+			db.createBi(newBill);
+			Manager.updateBills();
+			tableView.setItems(getBills());
+			window.setScene(primScene);
+			window.show();
+		} else {
+			error.setText("Values must not be empty");
+		}
 		
 	}
 
 	private ObservableList<Bill> getBills() {
 		listedBills.clear();
-		int limit = 5; //# of rows in bill table in database
-		for(int i=0;i<limit;i++) {
-			//get bills from table
+		HashMap<String, Bill> temp = db.selectAll();
+		int limit = temp.size();
+		
+		for (String bill : temp.keySet()) {
+			listedBills.add(temp.get(bill));
 		}
+		
 		return listedBills;
 	}
 }
