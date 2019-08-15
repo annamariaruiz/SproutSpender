@@ -245,12 +245,10 @@ public class Database {
     
 	public HashMap<String, Bill> selectAllBills() {
 		HashMap<String, Bill> bills = new HashMap<>();
-		SQLServerDataSource ds = new SQLServerDataSource();
 
 		Statement stmt;
 		try {
-			Connection con = ds.getConnection();
-			stmt = con.createStatement();
+			stmt = connection.createStatement();
 			String sql = "SELECT * FROM Bills";
 			ResultSet rs = stmt.executeQuery(sql);
 			
@@ -276,7 +274,6 @@ public class Database {
 				b.setId(id);
 				bills.put(b.getName(), b);
 			}
-			con.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -285,12 +282,10 @@ public class Database {
     
 	public Budget[] selectAllBudg() {
 		Budget[] budgets = new Budget[5];//Change amount
-		SQLServerDataSource ds = new SQLServerDataSource();
 
 		Statement stmt;
 		try {
-			Connection con = ds.getConnection();
-			stmt = con.createStatement();
+			stmt = connection.createStatement();
 			String sql = "SELECT * FROM Budgets";
 			ResultSet rs = stmt.executeQuery(sql);
 			
@@ -320,7 +315,6 @@ public class Database {
 				budgets[i] = b;
 				i++;
 			}
-			con.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
