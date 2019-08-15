@@ -102,9 +102,6 @@ public class Manager implements Serializable{
 	public void nextCycleBi() {
 		boolean next = false;
 		
-		LocalDate ld = LocalDate.now();
-		Date today = Date.valueOf(ld);
-		
 		for(String bill : bills.keySet()) {
 			if(bills.get(bill).isPaid()) {
 				next = true;
