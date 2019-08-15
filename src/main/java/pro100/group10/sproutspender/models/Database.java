@@ -197,7 +197,7 @@ public class Database {
     
     public void updateBill(Bill b) throws SQLException {
     	String updateSQL =
-    		"Update " + "Bills" + " "
+    		"Update Bills" + " "
     			+ "SET name = '" + b.getName() + "', "
 				+ "SET duedate = '" + b.getDate().toString() + "', "
 				+ "SET amount = " + b.getAmount() + ", "
@@ -243,7 +243,7 @@ public class Database {
 		return size;
     }
     
-	public HashMap<String, Bill> selectAll() {
+	public HashMap<String, Bill> selectAllBills() {
 		HashMap<String, Bill> bills = new HashMap<>();
 		SQLServerDataSource ds = new SQLServerDataSource();
 
@@ -251,7 +251,7 @@ public class Database {
 		try {
 			Connection con = ds.getConnection();
 			stmt = con.createStatement();
-			String sql = "SELECT * FROM Contacts";
+			String sql = "SELECT * FROM Bills";
 			ResultSet rs = stmt.executeQuery(sql);
 			
 			while (rs.next()) {
@@ -260,12 +260,17 @@ public class Database {
 				String dateS = rs.getString("duedate");
 				Date date = Date.valueOf(dateS);
 				boolean paid = rs.getBoolean("paid");
-				String timeFrame = rs.getString("timeFrame");
 				
+				String timeFrame = rs.getString("timeFrame");
 				TimeFrame timeF = Bill.TimeFrame.BIWEEKLY;
 				if(timeF.toString().equalsIgnoreCase(timeFrame)) {
-					
+					timeF = Bill.TimeFrame.BIWEEKLY;
+				} else if("weekly".equalsIgnoreCase(timeFrame)) {
+					timeF = Bill.TimeFrame.WEEKLY;
+				} else if("monthly".equalsIgnoreCase(timeFrame)) {
+					timeF = Bill.TimeFrame.MONTHLY;
 				}
+				
 				int id = rs.getInt("id");
 				Bill b = new Bill(amount, date, name, timeF, paid);
 				b.setId(id);
@@ -276,6 +281,50 @@ public class Database {
 			e.printStackTrace();
 		}
 		return bills;
+	}
+    
+	public Budget[] selectAllBudg() {
+		Budget[] budgets = new Budget[5];//Change amount
+		SQLServerDataSource ds = new SQLServerDataSource();
+
+		Statement stmt;
+		try {
+			Connection con = ds.getConnection();
+			stmt = con.createStatement();
+			String sql = "SELECT * FROM Budgets";
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			int i = 0;
+			while (rs.next()) {
+				Float limit = rs.getFloat("limit");
+				Float currentAmount = rs.getFloat("currentAmount");
+				String dateS = rs.getString("endDate");
+				Date date = Date.valueOf(dateS);
+				
+				String category = rs.getString("CategoryType");
+				CategoryType cat = Budget.CategoryType.GENERAL;
+				if(("food").equalsIgnoreCase(category)) {
+					cat = Budget.CategoryType.FOOD;
+				} else if("transportation".equalsIgnoreCase(category)) {
+					cat = Budget.CategoryType.TRANSPORTATION;
+				} else if("entertainment".equalsIgnoreCase(category)) {
+					cat = Budget.CategoryType.ENTERTAINMENT;
+				} else if("miscellaneous".equalsIgnoreCase(category)) {
+					cat = Budget.CategoryType.MISCELLANEOUS;
+				}
+				
+				int id = rs.getInt("id");
+				Budget b = new Budget(limit, cat, date);
+				b.setID(id);
+				b.setCurrentAmount(currentAmount);
+				budgets[i] = b;
+				i++;
+			}
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return budgets;
 	}
     
     public void canConnect() throws RuntimeException {

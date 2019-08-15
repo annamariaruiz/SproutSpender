@@ -8,12 +8,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.HashMap;
 
 import pro100.group10.sproutspender.models.Bill;
 import pro100.group10.sproutspender.models.Budget;
+import pro100.group10.sproutspender.models.Database;
 
 @SuppressWarnings("serial")
 public class Manager implements Serializable{
@@ -21,17 +23,20 @@ public class Manager implements Serializable{
 	private Date endDate;
 	private HashMap<String, Bill> bills = new HashMap<>();
 	private Budget[] budgets = new Budget[Budget.CategoryType.values().length];
+	private Database db = new Database();
 	
-	public Manager(String dbName) { 
-		init(dbName);
+	public Manager(Database db, String dbName) { 
+		this.db = db;
+		init(db, dbName);
 	}
 	
 	public static void main(String[] args) {
 		@SuppressWarnings("unused")
-		Manager m = new Manager("HelloDarkness");
+		Manager m = new Manager(new Database(), "HelloDarkness");
 	}
 	
-	public void init(String dbName) {
+	public void init(Database db, String dbName) {
+		
 		if(dbName != null) {
 			HomeController.manager = deserialize(dbName);
 			if(endDate != null) {
@@ -48,38 +53,38 @@ public class Manager implements Serializable{
 				for(Budget b : budgets) {
 					b.setEndDate(end);
 				}
-				nextCycle(); //Call the fix for the cycles
+				nextCycleBu();
+				nextCycleBi();
 			}
 		}
 	}
 
-	public void newCycleW(LocalDate ld) {
+	public void newCycle(LocalDate ld) {
 		Date startDate = Date.valueOf(ld);
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
-		calendar.add(Calendar.DATE, 7);
+		if(timeFrame) {
+			calendar.add(Calendar.DATE, 7);
+		} else if(!timeFrame ) {
+			calendar.add(Calendar.MONTH, 1);
+		}
+		
 		Date end = (Date) calendar.getTime();
 		
-		for(Budget b : budgets) {
-			b.setEndDate(end);
+		for(int i = 0; i < budgets.length; i++) {
+			budgets[i].setEndDate(end);
+			
+			Budget b = budgets[i];
+			
+			try {
+				db.update(b);
+			} catch (SQLException e) {e.printStackTrace();};
+			update(db);
 		}
 	}
 	
-	public void newCycleM(LocalDate ld) {
-		Date startDate = Date.valueOf(ld);
-		
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(startDate);		
-		calendar.add(Calendar.MONTH, 1);
-		Date end = (Date) calendar.getTime();
-		
-		for(Budget b : budgets) {
-			b.setEndDate(end);
-		}
-	}
-	
-	public void nextCycle() {
+	public void nextCycleBu() {
 		boolean next = false;
 		
 		LocalDate ld = LocalDate.now();
@@ -89,10 +94,40 @@ public class Manager implements Serializable{
 			next = true;
 		}
 		
-		if(next && timeFrame) {
-			newCycleW(ld);
-		} else if(next && !timeFrame) {
-			newCycleM(ld);
+		if(next) {
+			newCycle(ld);
+		}
+	}
+	
+	public void nextCycleBi() {
+		boolean next = false;
+		
+		LocalDate ld = LocalDate.now();
+		Date today = Date.valueOf(ld);
+		
+		for(String bill : bills.keySet()) {
+			if(bills.get(bill).isPaid()) {
+				next = true;
+			}
+			
+			if(next) {
+				Bill b = bills.get(bill);
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(bills.get(bill).getDate());		
+				if(bills.get(bill).getTimeFrame() == Bill.TimeFrame.BIWEEKLY) {
+					calendar.add(Calendar.DATE, 14);
+				} else if(bills.get(bill).getTimeFrame() == Bill.TimeFrame.MONTHLY) {
+					calendar.add(Calendar.MONTH, 1);
+				} else if(bills.get(bill).getTimeFrame() == Bill.TimeFrame.WEEKLY) {
+					calendar.add(Calendar.DATE, 7);
+				}
+				Date due = (Date) calendar.getTime();
+				b.setDate(due);
+				try {
+					db.updateBill(b);
+				} catch (SQLException e) {e.printStackTrace();};
+				update(db);
+			}
 		}
 	}
 	
@@ -111,30 +146,9 @@ public class Manager implements Serializable{
 		return next;
 	}
 	
-	//CRUD STATEMENT for bills may be irrelevant ~ Make some from the database
-	public void addBill(Bill b) {
-		bills.put(b.getName(), b);
-	}
-	
-	public void updateBill(Bill b) {
-		for(String name : bills.keySet()) {
-			if(b.getName().equals(name)) {
-				bills.replace(name, b);
-			}
-		}
-	}
-	
-	public void deleteBill(Bill b) {
-		for(String name : bills.keySet()) {
-			if(b.getName().equals(name)) {
-				bills.remove(name, bills.get(name));
-			}
-		}
-	}
-	
-	public static void updateBills() {
-		//Get from database
-		
+	public void update(Database db) {
+		bills = db.selectAllBills();
+		budgets = db.selectAllBudg();
 	}
 	
 	public boolean isValid(String str) {
@@ -165,14 +179,9 @@ public class Manager implements Serializable{
 		String fileName = path + dbName + ".ser";
 		
 		try {
-
-			// Saving object into a file
 			fileOut = new FileOutputStream(fileName);
 			out = new ObjectOutputStream(fileOut);
-
-			// Serialization of the object
 			out.writeObject(m);
-			
 
 		} catch (IOException ioe) {
 			System.out.println("Exception is caught");
@@ -202,12 +211,8 @@ public class Manager implements Serializable{
 			ObjectInputStream in = null;
 		
 			try {
-	
-				// Reading the object from a file
 				fileIn = new FileInputStream(path);
 				in = new ObjectInputStream(fileIn);
-	
-				// Deserialization of the object
 				found = (Manager) in.readObject();
 	
 			} catch (IOException ioe) {
