@@ -19,9 +19,9 @@ public class Budget implements Serializable{
 	private int id;
 	private Date date;
 	private Date endDate;
-	private float limit;
+	private float limit = 0;
 	private CategoryType category;
-	private float currentAmount;
+	private float currentAmount = 0;
 	
 	public Budget() {}
 	

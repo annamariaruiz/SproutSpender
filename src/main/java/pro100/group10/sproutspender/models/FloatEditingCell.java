@@ -10,6 +10,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.input.KeyCode;
+import pro100.group10.sproutspender.models.Budget.CategoryType;
 
 public class FloatEditingCell extends TableCell<WeeklyPlanner, Budget> {
 
@@ -32,15 +33,18 @@ public class FloatEditingCell extends TableCell<WeeklyPlanner, Budget> {
 	
 	@Override
 	public void startEdit() {
-		if(!isEmpty()) {
-			super.startEdit();
-			createTextField();
-			setText(null);
-			setGraphic(textField);
-			
-			// .selectAll will place the cursor at the end
+		if(getItem() != null && getItem().getCategory() == CategoryType.GENERAL) {
+			editableProperty().setValue((Boolean) false);
+		} else {
+			if(!isEmpty() && getItem() != null) {
+				super.startEdit();
+				createTextField();
+				setText(null);
+				setGraphic(textField);
+				// .selectAll will place the cursor at the end
 //			textField.selectAll();
-			textField.requestFocus();
+				textField.requestFocus();
+			}
 		}
 	}
 	
