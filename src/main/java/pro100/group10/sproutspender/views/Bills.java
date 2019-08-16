@@ -1,6 +1,8 @@
 package pro100.group10.sproutspender.views;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -38,6 +40,7 @@ public class Bills {
 	private Manager man = HomeController.manager;
 	private ObservableList<Bill> listedBills = FXCollections.observableArrayList();
 	private ObservableList<TimeFrame> enums = FXCollections.observableArrayList(Bill.TimeFrame.values());
+	private Bill currentSelected = null;
 	
 	@FXML
 	private TextField nameOfBill;
@@ -122,7 +125,12 @@ public class Bills {
 	}
 	
 	private void editBill() {
-		Bill selected = tableView.getSelectionModel().getSelectedItem();
+//		currentSelected = tableView.getSelectionModel().getSelectedItem();
+//		nameOfBill.setText(currentSelected.getName());
+//		amount.setText(currentSelected.getAmount() + "");
+//		LocalDate date = currentSelected.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//		nextDate.setValue(date);
+//		timetype.setValue(currentSelected.getTimeFrame());		
 		
 		window.setTitle("Add Bill");
 		window.setResizable(false);
