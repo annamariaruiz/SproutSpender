@@ -133,7 +133,7 @@ public class Database {
 		 
 		 try(Statement stmt = connection.createStatement()) {
 		     String sql = String.format(
-		             "INSERT INTO Bills (name, amount, duedate, timeFrame, paid) VALUES (%s, %2.2f, '%s', '%s', '%d')",
+		             "INSERT INTO Bills (name, amount, duedate, timeFrame, paid) VALUES ('%s', %2.2f, '%s', '%s', '%d')",
 		             b.getName(), b.getAmount(), date.toString(), b.getTimeFrame().toString(), paid);
 		     stmt.executeUpdate(sql);
 		 }
