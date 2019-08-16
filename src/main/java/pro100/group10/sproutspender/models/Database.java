@@ -90,7 +90,7 @@ public class Database {
     private void checkCreateBillsTable() throws SQLException {
         String createSQL;
     	try(Statement stmt = connection.createStatement()) {
-    		createSQL = "IF OBJECT_ID('Bills') IS NULL CREATE TABLE Bills(id INT PRIMARY KEY IDENTITY(1, 1), name VARCHAR(255), amount float, duedate Date, timeframe VARCHAR(255), paid boolean)";
+    		createSQL = "IF OBJECT_ID('Bills') IS NULL CREATE TABLE Bills(id INT PRIMARY KEY IDENTITY(1, 1), name VARCHAR(255), amount float, duedate Date, timeframe VARCHAR(255), paid int)";
     		stmt.executeUpdate(createSQL);
         }
     }
@@ -124,10 +124,18 @@ public class Database {
     public void createBi(Bill b) throws SQLException {
 		 LocalDate now = LocalDate.now();
 		 Date date = Date.valueOf(now);
+		 int paid = 0;
+		 
+		 if(b.isPaid()) {
+			 paid = 1;
+		 } else if(!b.isPaid()) {
+			 paid = 0;
+		 }
+		 
 		 try(Statement stmt = connection.createStatement()) {
 		     String sql = String.format(
-		             "INSERT INTO Bills (name, amount, duedate, timeFrame) VALUES (%s, %2.2f, '%s', '%s')",
-		             b.getName(), b.getAmount(), date.toString(), b.getTimeFrame().toString());
+		             "INSERT INTO Bills (name, amount, duedate, timeFrame, paid) VALUES ('%s', %2.2f, '%s', '%s', '%d')",
+		             b.getName(), b.getAmount(), date.toString(), b.getTimeFrame().toString(), paid);
 		     stmt.executeUpdate(sql);
 		 }
     }
@@ -197,13 +205,17 @@ public class Database {
     }
     
     public void updateBill(Bill b) throws SQLException {
+    	int paid = 0;
+    	if(b.isPaid()) {
+    		paid = 1;
+    	}
     	String updateSQL =
     		"Update Bills" + " "
     			+ "SET name = '" + b.getName() + "', "
 				+ "SET duedate = '" + b.getDate().toString() + "', "
 				+ "SET amount = " + b.getAmount() + ", "
 				+ "SET timeFrame = " + b.getTimeFrame().toString() + ", "
-				+ "SET paid = " + b.isPaid() + " "
+				+ "SET paid = " + paid + " "
 			+ "WHERE id = " + b.getId();
     	
     	try(Statement stmt = connection.createStatement()) {
@@ -258,7 +270,11 @@ public class Database {
 				Float amount = rs.getFloat("amount");
 				String dateS = rs.getString("duedate");
 				Date date = Date.valueOf(dateS);
-				boolean paid = rs.getBoolean("paid");
+				int paidi = rs.getInt("paid");
+				boolean paid = false;
+				if(paidi == 1) {
+					paid = true;
+				}
 				
 				String timeFrame = rs.getString("timeFrame");
 				TimeFrame timeF = Bill.TimeFrame.BIWEEKLY;

@@ -77,9 +77,9 @@ public class Table {
 	private boolean tableIsEditable = false;
 	private Date endDate = Date.valueOf(LocalDate.now());
 	
-	private Database db;
+	private static Database db;
 	
-	public Database getDB() {
+	public static Database getDB() {
 		return db;
 	}
 
