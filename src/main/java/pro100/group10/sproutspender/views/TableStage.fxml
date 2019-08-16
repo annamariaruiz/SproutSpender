@@ -23,12 +23,13 @@
          <menus>
             			<Menu text="File">
                <items>
-                    			<MenuItem text="Exit" />
+                    			<MenuItem onAction="#onMenuItemExit" text="Exit" />
                </items>
                		</Menu>
                			<Menu text="Edit">
                   <items>
-                     			<MenuItem text="Make New Budget" />
+                     			<MenuItem onAction="#onMenuItemMakeNew" text="Make New Budget" />
+                     			<MenuItem onAction="#onMenuItemEditDetails" text = "Edit Selected Budget Details" />
                      			<CheckMenuItem onAction="#onMenuItemEditMode" text="Edit Mode" />
                      			<MenuItem onAction="#onMenuItemRemove" text="Remove Selected Budget" />
                   </items>

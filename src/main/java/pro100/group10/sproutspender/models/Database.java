@@ -111,9 +111,10 @@ public class Database {
     
     public void store(Budget b) throws SQLException {
          try(Statement stmt = connection.createStatement()) {
-             String sql = String.format(
-                     "INSERT INTO Budgets (limit, category, currentAmount, date, endDate) VALUES (%2.2f, '%s', 0, '%s', '%s')",
-                     b.getLimit(), b.getCategory().toString(), b.getDate().toString(), b.getEndDate().toString());
+        	 if(b.getEndDate() == null) b.setEndDate(new Date(0L));
+        	 String sql = String.format(
+                     "INSERT INTO Budgets (limit, category, currentAmount, date, endDate) VALUES (%2.2f, '%s', %2.2f, '%s', '%s')",
+                     b.getLimit(), b.getCategory(), b.getCurrentAmount(), b.getDate(), b.getEndDate());
              stmt.executeUpdate(sql);
          }
     	
@@ -183,8 +184,8 @@ public class Database {
     public void update(Budget b) throws SQLException {
     	String updateSQL =
     		"Update " + TABLE_NAME + " "
-				+ "SET date = '" + b.getDate().toString() + "', "
-				+ "endDate = '" + b.getEndDate().toString() + "', "
+				+ "SET date = '" + b.getDate() + "', "
+				+ "endDate = '" + b.getEndDate() + "', "
 				+ "limit = " + b.getLimit() + ", "
 				+ "category = '" + b.getCategory() + "', "
 				+ "currentAmount = " + b.getCurrentAmount() + " "

@@ -1,5 +1,6 @@
 package pro100.group10.sproutspender.views;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -12,6 +13,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -21,6 +24,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import pro100.group10.sproutspender.models.Budget;
 import pro100.group10.sproutspender.models.Budget.CategoryType;
@@ -30,6 +35,8 @@ import pro100.group10.sproutspender.models.WeeklyPlanner;
 
 public class Table {
 
+	private final String BUDGET_POP_OUT_FXML_LOC = "../views/BudgetPopOut.fxml";
+	
 	@FXML
 	private TableView<WeeklyPlanner> tableView;
 	@FXML
@@ -48,6 +55,8 @@ public class Table {
 	private TableColumn<WeeklyPlanner, Budget> day7Col;
 	TableColumn<WeeklyPlanner, Budget>[] columns;
 	
+	private int selectedID;
+	private boolean createMode = true;
 	@FXML
 	private TextField makeNewDate;
 	@FXML
@@ -125,6 +134,7 @@ public class Table {
 							if(budg != null) {
 								budg.setCurrentAmount(t.getNewValue().getCurrentAmount());
 								db.update(budg);
+								calculateTotals();
 							}
 						} catch(SQLException sqle) {
 							Alert alert = new Alert(AlertType.ERROR, "The budget could not be updated in the M.S. S.Q.L. database.\n" + sqle, ButtonType.CLOSE);
@@ -144,13 +154,42 @@ public class Table {
 		db.close();
 	}
 
-	private void onMenuItemCreateEdit(ActionEvent ae) {
+	@FXML
+	private void onMenuItemMakeNew(ActionEvent ae) {
+		createMode = true;
+		openDetailedEditWindow();
+	}
+	
+	@FXML
+	private void onMenuItemEditDetails(ActionEvent ae) {
+		createMode = false;
+		selectedID = tableView.getSelectionModel().getSelectedItem().getDay(
+				tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1).getID();
+		openDetailedEditWindow();
+	}
+	
+	private void openDetailedEditWindow() {
+		FXMLLoader budgetPopOutLoader = new FXMLLoader();
+		budgetPopOutLoader.setLocation(getClass().getResource(BUDGET_POP_OUT_FXML_LOC));
+		GridPane budgetPopOutRoot = null;
+		final String MAKE_NEW_BUDGET_TITLE = "Create/Edit Budget";
+		budgetPopOutLoader.setController(this);
 		
+		try {
+			budgetPopOutRoot = (GridPane) budgetPopOutLoader.load();
+		} catch(IOException ioe) {
+			//TODO write catch block
+		}
+		
+		Stage budgetPopOutStage = new Stage();
+		budgetPopOutStage.setTitle(MAKE_NEW_BUDGET_TITLE);
+		if(budgetPopOutRoot != null) budgetPopOutStage.setScene(new Scene(budgetPopOutRoot));
+		budgetPopOutStage.show();
 	}
 	
 	@FXML
 	private void onMenuItemExit(ActionEvent ae) {
-		
+		((Stage) tableView.getScene().getWindow()).close();
 	}
 	
 	@FXML
@@ -272,4 +311,49 @@ public class Table {
 		Bills b = new Bills();
 		b.init();
 	}
+
+	@FXML
+	private void onPopOutCancel(ActionEvent ae) {
+		((Stage) ((Button) ae.getSource()).getScene()
+				.getWindow()).close();
+	}
+	
+	@FXML
+	private void onPopOutSubmit(ActionEvent ae) {
+		boolean missingReqField = false;
+		
+		if(makeNewDate.getText().trim().isEmpty()) missingReqField = true;
+		if(makeNewLimit.getText().trim().isEmpty()) missingReqField = true;
+		if(makeNewCat.getText().trim().isEmpty()) missingReqField = true;
+		if(makeNewCurrentAmount.getText().trim().isEmpty()) makeNewCurrentAmount.setText("0.0");
+		
+		if(missingReqField) {
+			//TODO write missing required fields alert
+		} else {
+			try {
+				Budget budg = new Budget(
+					Float.parseFloat(makeNewLimit.getText().trim()),
+					CategoryType.valueOf(makeNewCat.getText().trim()),
+					Date.valueOf(makeNewDate.getText().trim())
+				);
+				
+				budg.setCurrentAmount(Float.parseFloat(makeNewCurrentAmount.getText().trim()));
+				budg.setID(selectedID);
+				
+				if(createMode) {
+					db.store(budg);
+				} else {
+					db.update(budg);
+				}
+			} catch(NumberFormatException nfe) {
+				//TODO write catch block
+			} catch(SQLException sqle) {
+				//TODO write catch block
+			}
+		}
+		
+		refreshTableView();
+		calculateTotals();
+		onPopOutCancel(ae);
+ 	}
 }
