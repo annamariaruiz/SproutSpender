@@ -230,4 +230,7 @@ public class Manager implements Serializable{
 		return found;
 	}
 		
+	public Budget[] getBudgets() {
+		return budgets;
+	}
 }
