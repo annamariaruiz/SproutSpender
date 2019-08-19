@@ -77,7 +77,4 @@ public class Bill implements Serializable {
 	public void setPaid(boolean paid) {
 		this.paid = paid;
 	}
-	
-	
-
 }
