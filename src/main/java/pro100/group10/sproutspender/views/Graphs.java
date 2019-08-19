@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 import pro100.group10.sproutspender.controllers.HomeController;
 import pro100.group10.sproutspender.controllers.Manager;
 import pro100.group10.sproutspender.models.Budget;
+import pro100.group10.sproutspender.models.Database;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.collections.FXCollections;
@@ -17,6 +18,7 @@ public class Graphs {
 	private Stage graphs = new Stage();
 
 	public void init() {
+		
 		graphs.setTitle("Progress");
 		graphs.setResizable(false);
 		
@@ -25,20 +27,33 @@ public class Graphs {
 		
 		String categories[] = { "Food", "Transportation", "Entertainment", "Miscellaneous", "Remainder" };
 		Manager man = HomeController.manager;
+		Database db = man.db;
+		man.update(db);
 		float values[] = new float[5];
 		
 		Budget[] budg = man.getBudgets();
+//		System.out.println(budg.length);
 		float current = 0;
 		float limit = 0;
+		float remainder = 0;
 		int i = 0;
 		for(Budget b : budg) {
-			values[i] = b.getCurrentAmount();
-			limit += b.getLimit();
-			current += b.getCurrentAmount();
+			if(b != null) {
+				values[i] = b.getCurrentAmount();
+				limit += b.getLimit();
+				current += b.getCurrentAmount();
+			} else {
+				values[i] = 0;	
+			}
 			i++;
 		}
-		float remainder = limit - current;
-		values[4] = current;
+		if(limit != 0) {
+			remainder = limit - current;
+		} else {
+//			remainder = 1;
+		}
+		values[4] = remainder;
+		
 		
 		PieChart.Data pieData[] = new PieChart.Data[categories.length];
 		for (i = 0; i < categories.length; i++) {
