@@ -218,7 +218,6 @@ public class Database {
 			statement.executeUpdate(deleteSQL);
 		}
     }
-
     
     public void removeBill(int id) throws SQLException {
     	String deleteSQL = "DELETE FROM Bills WHERE id = " + id;
