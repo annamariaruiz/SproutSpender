@@ -77,9 +77,9 @@ public class Table {
 	private boolean tableIsEditable = false;
 	private Date endDate = Date.valueOf(LocalDate.now());
 	
-	private static Database db;
+	private Database db;
 	
-	public static Database getDB() {
+	public Database getDB() {
 		return db;
 	}
 
@@ -309,6 +309,7 @@ public class Table {
 	@FXML
 	private void onBillsButtonClick(ActionEvent ae) {
 		Bills b = new Bills();
+		Bills.db = db;
 		b.init();
 	}
 

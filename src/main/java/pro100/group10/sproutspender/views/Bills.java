@@ -36,11 +36,20 @@ public class Bills {
 	private static Stage window = new Stage();
 	private static Scene primScene;
 	private TableView<Bill> tableView = new TableView<>();
-	private static Database db = Table.getDB();
+	public static Database db;
 	private Manager man = HomeController.manager;
 	private ObservableList<Bill> listedBills = FXCollections.observableArrayList();
 	private ObservableList<TimeFrame> enums = FXCollections.observableArrayList(Bill.TimeFrame.values());
 	private Bill currentSelected = null;
+	
+	
+//	public Database getDB() {
+//		return db;
+//	}
+//	
+//	public void setDB(Database db) {
+//		this.db = db;
+//	}
 	
 	@FXML
 	private TextField nameOfBill;
