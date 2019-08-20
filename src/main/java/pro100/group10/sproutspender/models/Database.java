@@ -6,9 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
@@ -74,24 +72,15 @@ public class Database {
         connection.close();
         connection = ds.getConnection();
         checkCreateTables();
-        checkCreateBillsTable();
     }
         
     private void checkCreateTables() throws SQLException {
         String createSQL;
     	try(Statement stmt = connection.createStatement()) {
-//            createSQL = "IF OBJECT_ID('Bills') IS NULL CREATE TABLE Bills(id INT PRIMARY KEY IDENTITY(1, 1), name VARCHAR(255), amount float, duedate Date, timeframe BIT )";
-//            stmt.executeUpdate(sql);
+    		createSQL = "IF OBJECT_ID('Bills') IS NULL CREATE TABLE Bills(id INT PRIMARY KEY IDENTITY(1, 1), name VARCHAR(255), amount float, duedate Date, timeframe VARCHAR(255), paid int)";
+            stmt.executeUpdate(createSQL);
             createSQL = "IF OBJECT_ID('Budgets') IS NULL CREATE TABLE Budgets(id INT PRIMARY KEY IDENTITY(1, 1), date DATE, endDate DATE, limit float, category VARCHAR(25), currentAmount float )";
             stmt.executeUpdate(createSQL);
-        }
-    }
-    
-    private void checkCreateBillsTable() throws SQLException {
-        String createSQL;
-    	try(Statement stmt = connection.createStatement()) {
-    		createSQL = "IF OBJECT_ID('Bills') IS NULL CREATE TABLE Bills(id INT PRIMARY KEY IDENTITY(1, 1), name VARCHAR(255), amount float, duedate Date, timeframe VARCHAR(255), paid int)";
-    		stmt.executeUpdate(createSQL);
         }
     }
     
@@ -230,7 +219,6 @@ public class Database {
 			statement.executeUpdate(deleteSQL);
 		}
     }
-
     
     public void removeBill(int id) throws SQLException {
     	String deleteSQL = "DELETE FROM Bills WHERE id = " + id;
