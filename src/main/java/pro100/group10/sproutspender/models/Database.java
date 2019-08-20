@@ -313,7 +313,7 @@ public class Database {
 				String dateS = rs.getString("endDate");
 				Date date = Date.valueOf(dateS);
 				
-				String category = rs.getString("CategoryType");
+				String category = rs.getString("category");
 				CategoryType cat = Budget.CategoryType.GENERAL;
 				if(("food").equalsIgnoreCase(category)) {
 					cat = Budget.CategoryType.FOOD;
