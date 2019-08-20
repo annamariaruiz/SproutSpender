@@ -45,7 +45,7 @@ public class Settings {
 				Stage stage = (Stage) saveButton.getScene().getWindow();
 				stage.close();
 			} else {
-				alert.setText("pick a date ma dude");
+				alert.setText("Please pick a date");
 			}
 		}
 	}
