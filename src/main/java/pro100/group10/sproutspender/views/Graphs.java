@@ -1,17 +1,19 @@
 package pro100.group10.sproutspender.views;
 
+import java.util.ArrayList;
+
+import javafx.collections.FXCollections;
+import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import pro100.group10.sproutspender.controllers.HomeController;
 import pro100.group10.sproutspender.controllers.Manager;
 import pro100.group10.sproutspender.models.Budget;
 import pro100.group10.sproutspender.models.Database;
-import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
-import javafx.collections.FXCollections;
-import javafx.geometry.Side;
 
 public class Graphs {
 	
@@ -25,39 +27,39 @@ public class Graphs {
 		GridPane grid = new GridPane();
 		GridPane upperGra = new GridPane();
 		
-		String categories[] = { "Food", "Transportation", "Entertainment", "Miscellaneous", "Remainder" };
+		ArrayList<String> categories = new ArrayList<String>();
 		Manager man = HomeController.manager;
 		Database db = man.db;
 		man.update(db);
 		float values[] = new float[5];
 		
 		Budget[] budg = man.getBudgets();
-//		System.out.println(budg.length);
 		float current = 0;
 		float limit = 0;
 		float remainder = 0;
 		int i = 0;
 		for(Budget b : budg) {
 			if(b != null) {
+				categories.add(b.getCategory().toString());
 				values[i] = b.getCurrentAmount();
 				limit += b.getLimit();
 				current += b.getCurrentAmount();
-			} else {
-				values[i] = 0;	
+				i++;
 			}
-			i++;
 		}
-		if(limit != 0) {
 			remainder = limit - current;
-		} else {
-//			remainder = 1;
-		}
-		values[4] = remainder;
+			
+			values[i] = remainder;
 		
 		
-		PieChart.Data pieData[] = new PieChart.Data[categories.length];
-		for (i = 0; i < categories.length; i++) {
-			pieData[i] = new PieChart.Data(categories[i], values[i]);
+		PieChart.Data pieData[] = new PieChart.Data[categories.size() + 1];
+		for (i = 0; i <= categories.size(); i++) {
+			if(i == categories.size()) {
+				pieData[i] = new PieChart.Data("AVAILABLE", values[i]);
+			} else {
+				pieData[i] = new PieChart.Data(categories.get(i), values[i]);
+			}
+			
 		}
 		PieChart chart = new PieChart(FXCollections.observableArrayList(pieData));
 		chart.setLabelsVisible(false);
