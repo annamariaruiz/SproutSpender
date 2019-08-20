@@ -211,6 +211,7 @@ public class Table {
 		} catch (SQLException sqle) {
 			// TODO write catch block
 		}
+		calculateTotals();
 	}
 	
 	@FXML
