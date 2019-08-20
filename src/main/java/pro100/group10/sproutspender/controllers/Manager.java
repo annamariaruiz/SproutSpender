@@ -23,7 +23,7 @@ public class Manager implements Serializable{
 	private Date endDate;
 	private HashMap<String, Bill> bills = new HashMap<>();
 	private Budget[] budgets = new Budget[Budget.CategoryType.values().length];
-	private Database db = new Database();
+	public Database db = new Database();
 	
 	public Manager(Database db, String dbName) { 
 		this.db = db;
