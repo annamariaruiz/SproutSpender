@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -14,8 +11,9 @@
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane minHeight="630.0" minWidth="690.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane minHeight="630.0" minWidth="690.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
 	<top>
 		<VBox>
    <children>
@@ -29,7 +27,7 @@
                			<Menu text="Edit">
                   <items>
                      			<MenuItem onAction="#onMenuItemMakeNew" text="Make New Budget" />
-                     			<MenuItem onAction="#onMenuItemEditDetails" text = "Edit Selected Budget Details" />
+                     			<MenuItem onAction="#onMenuItemEditDetails" text="Edit Selected Budget Details" />
                      			<CheckMenuItem onAction="#onMenuItemEditMode" text="Edit Mode" />
                      			<MenuItem onAction="#onMenuItemRemove" text="Remove Selected Budget" />
                   </items>
@@ -40,11 +38,11 @@
          		</MenuBar>
          		<ToolBar>
             <items>
-                 		<Button onAction="#onLastButtonClick" styleClass="toolbarbutton">Last</Button>
-                 		<Button onAction="#onNextButtonClick" styleClass="toolbarbutton">Next</Button>
             			<Button fx:id="bills" onAction="#onBillsButtonClick" styleClass="toolbarbutton">Bills</Button>
             			<Button fx:id="graphs" onAction="#onGraphButtonClick" styleClass="toolbarbutton">Graphs</Button>
             			<Button fx:id="settings" onAction="#onSettingsButtonClick" styleClass="toolbarbutton">Settings</Button>
+                 		<Button onAction="#onLastButtonClick" styleClass="toolbarbutton" text="&lt;&lt;" translateX="500.0">Last</Button>
+                 		<Button onAction="#onNextButtonClick" styleClass="toolbarbutton" text="&gt;&gt;" translateX="500.0">Next</Button>
             </items>
          		</ToolBar>
    </children>
@@ -83,7 +81,7 @@
                <font>
                   <Font size="18.0" />
                </font></Label>
-   	      <Label prefHeight="21.0" prefWidth="73.0" text="General" translateY="38.0" BorderPane.alignment="CENTER">
+   	      <Label prefHeight="21.0" prefWidth="73.0" text="Total" translateY="38.0" BorderPane.alignment="CENTER">
                <font>
                   <Font size="18.0" />
                </font></Label>
