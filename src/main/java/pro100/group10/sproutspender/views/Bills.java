@@ -209,8 +209,10 @@ public class Bills {
 			
 			//store values
 			String newName = nameOfBill.getText().trim();
-			String newamount = amount.getText();
-			float floatAmount = Float.valueOf(newamount.trim()).floatValue();
+			String newAmount = amount.getText();
+			newAmount = newAmount.replace("$", "");
+			newAmount = newAmount.replace(",", "");
+			float floatAmount = Float.valueOf(newAmount.trim()).floatValue();
 			Date date = java.sql.Date.valueOf(nextDate.getValue());
 			Bill.TimeFrame type = timetype.getValue();
 			

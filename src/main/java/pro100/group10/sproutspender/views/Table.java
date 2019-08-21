@@ -87,7 +87,7 @@ public class Table {
 		this.db = db;
 	}
 
-	@SuppressWarnings({ "unchecked", "restriction" })
+	@SuppressWarnings({ "unchecked"})
 	@FXML
 	private void initialize() {
 		if(!hasInitialized) {
@@ -216,6 +216,7 @@ public class Table {
 		} catch (SQLException sqle) {
 			// TODO write catch block
 		}
+		calculateTotals();
 	}
 	
 	@FXML
@@ -337,8 +338,11 @@ public class Table {
 			//TODO write missing required fields alert
 		} else {
 			try {
+				String newLimit = makeNewLimit.getText().trim();
+				newLimit = newLimit.replace("$", "");
+				newLimit = newLimit.replace(",", "");
 				Budget budg = new Budget(
-					Float.parseFloat(makeNewLimit.getText().trim()),
+					Float.parseFloat(newLimit),
 					CategoryType.valueOf(makeNewCat.getText().trim()),
 					Date.valueOf(makeNewDate.getText().trim())
 				);
