@@ -132,7 +132,7 @@ public class Bills {
 //		nextDate.setValue(date);
 //		timetype.setValue(currentSelected.getTimeFrame());		
 		
-		window.setTitle("Add Bill");
+		window.setTitle("Edit Bill");
 		window.setResizable(false);
 		try {
 			GridPane root = (GridPane)FXMLLoader.load(getClass().getResource("../views/EditBill.fxml"));
@@ -202,8 +202,10 @@ public class Bills {
 			
 			//store values
 			String newName = nameOfBill.getText().trim();
-			String newamount = amount.getText();
-			float floatAmount = Float.valueOf(newamount.trim()).floatValue();
+			String newAmount = amount.getText();
+			newAmount = newAmount.replace("$", "");
+			newAmount = newAmount.replace(",", "");
+			float floatAmount = Float.valueOf(newAmount.trim()).floatValue();
 			Date date = java.sql.Date.valueOf(nextDate.getValue());
 			Bill.TimeFrame type = timetype.getValue();
 			

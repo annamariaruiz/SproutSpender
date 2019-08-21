@@ -83,7 +83,7 @@
                <font>
                   <Font size="18.0" />
                </font></Label>
-   	      <Label prefHeight="21.0" prefWidth="73.0" text="General" translateY="38.0" BorderPane.alignment="CENTER">
+   	      <Label prefHeight="21.0" prefWidth="73.0" text="Total" translateY="38.0" BorderPane.alignment="CENTER">
                <font>
                   <Font size="18.0" />
                </font></Label>
