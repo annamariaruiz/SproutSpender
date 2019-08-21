@@ -106,6 +106,11 @@ public class Table {
 			Callback<TableColumn<WeeklyPlanner, Budget>, TableCell<WeeklyPlanner, Budget>> floatCellFactory =
 					cb -> new FloatEditingCell();
 			
+			for(TableColumn tc : columns) {
+				tc.setResizable(false);
+				tc.setSortable(false);
+			}
+			
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(endDate);
 			Date dateToGrab = null;

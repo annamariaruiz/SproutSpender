@@ -31,8 +31,8 @@
                   <Font name="Verdana Bold" size="14.0" />
                </font>
             </Button>
-            <TextField fx:id="dbName" layoutX="218.0" layoutY="49.0" prefHeight="40.0" prefWidth="164.0" text="SproutSpenderDB"/>
-            <Label layoutX="228.0" layoutY="14.0" text="Database Name">
+            <TextField fx:id="dbName" layoutX="218.0" layoutY="49.0" prefHeight="40.0" prefWidth="164.0" text="SproutSpenderDB" />
+            <Label layoutX="213.0" layoutY="14.0" text="Name Your Sprout ">
                <font>
                   <Font name="Verdana" size="18.0" />
                </font>
