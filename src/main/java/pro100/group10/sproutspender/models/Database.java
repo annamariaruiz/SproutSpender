@@ -46,7 +46,9 @@ public class Database {
             connection = ds.getConnection();
             checkCreateDB();
         } catch (SQLServerException sqle) {
-        
+        	System.out.println("connection unestablished");
+        	System.out.println(sqle.getMessage());
+        	
         }
     }
     

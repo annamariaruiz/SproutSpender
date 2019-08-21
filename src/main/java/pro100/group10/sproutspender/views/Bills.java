@@ -1,9 +1,6 @@
 package pro100.group10.sproutspender.views;
 
-import java.io.IOException;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -29,11 +26,8 @@ import javafx.stage.Stage;
 import pro100.group10.sproutspender.controllers.HomeController;
 import pro100.group10.sproutspender.controllers.Manager;
 import pro100.group10.sproutspender.models.Bill;
-import pro100.group10.sproutspender.models.Budget;
 import pro100.group10.sproutspender.models.Bill.TimeFrame;
-import pro100.group10.sproutspender.models.Budget.CategoryType;
 import pro100.group10.sproutspender.models.Database;
-import pro100.group10.sproutspender.models.WeeklyPlanner;
 
 public class Bills {
 	
