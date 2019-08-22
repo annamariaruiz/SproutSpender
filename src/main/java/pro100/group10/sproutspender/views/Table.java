@@ -80,6 +80,8 @@ public class Table {
 	private Button bills;
 	@FXML
 	private Button graphs;
+	@FXML
+	private DatePicker goToDate;
 	
 	private boolean hasInitialized = false;
 	private boolean tableIsEditable = false;
@@ -270,9 +272,11 @@ public class Table {
 		}
 	}
 	
-	private void changeEndDate(Date date) {
+	@FXML
+	private void changeEndDate() {
+		Date goTo = java.sql.Date.valueOf(goToDate.getValue());
 		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
+		calendar.setTime(goTo);
 		endDate = new Date(calendar.getTime().getTime());
 		Date dateToGrab = null;
 		

@@ -39,6 +39,7 @@ public class Bills {
 	private static ObservableList<Bill> listedBills = FXCollections.observableArrayList();
 	private ObservableList<TimeFrame> enums = FXCollections.observableArrayList(Bill.TimeFrame.values());
 	private static ObservableList<Bill> currentSelected;
+	private static boolean edit = false;
 	
 	@FXML
 	private TextField nameOfBill;
@@ -57,30 +58,25 @@ public class Bills {
 	@FXML
     private ComboBox<Bill.TimeFrame> timetype;
 	
-	public void initialize() throws SQLException {
+	public void initialize() {
 		timetype.getItems().removeAll(timetype.getItems());
 	    timetype.getItems().addAll(enums);
 	    timetype.getSelectionModel().select(enums.get(0));
 	    
-		for(Bill bill : currentSelected) {
-			nameOfBill.setText(bill.getName());
-			amount.setText(bill.getAmount() + "");
-			nextDate.setValue(bill.getDate().toLocalDate());
-			paid.setSelected(bill.isPaid());
-			timetype.setValue(bill.getTimeFrame());	
-		}
+	    if(edit) {
+	    	for(Bill bill : currentSelected) {
+	    		nameOfBill.setText(bill.getName());
+	    		amount.setText(bill.getAmount() + "");
+	    		nextDate.setValue(bill.getDate().toLocalDate());
+	    		paid.setSelected(bill.isPaid());
+	    		timetype.setValue(bill.getTimeFrame());	
+	    	}	    	
+	    }
 	}
 	
 	public void init() {
 		window.setTitle("View Your Bills");
 		window.setResizable(false);
-		
-		//columns
-		TableColumn<Bill, Integer> id = new TableColumn<>("ID");
-		id.setCellValueFactory(new PropertyValueFactory<>("id"));
-		id.setMaxWidth(25);
-		id.setResizable(false);
-		id.setSortable(false);
 		
 		TableColumn<Bill, String> name = new TableColumn<>("Name");
 		name.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -112,7 +108,7 @@ public class Bills {
 		paid.setResizable(false);
 		paid.setSortable(false);
 		
-		tableView.getColumns().addAll(id, name, amount, date, timeFrame, paid);
+		tableView.getColumns().addAll(name, amount, date, timeFrame, paid);
 		tableView.setItems(getBills());
 		tableView.setEditable(true);
 		tableView.setMinHeight(50);
@@ -147,6 +143,7 @@ public class Bills {
 	}
 	
 	private void editBill() {	
+		edit = true;
 	    currentSelected = tableView.getSelectionModel().getSelectedItems();
 		window.setTitle("Edit Bill");
 		window.setResizable(false);
@@ -161,8 +158,23 @@ public class Bills {
 	}
 	
 	@FXML
-	private void saveEditBill() {
+	private void saveEditBill() throws SQLException {
 		if (!nameOfBill.getText().isEmpty() && !amount.getText().isEmpty() && nextDate.getValue() != null && timetype.getValue() != null) {
+			
+	    	for(Bill bill : currentSelected) {
+				String newAmount = amount.getText();
+				newAmount = newAmount.replace("$", "");
+				newAmount = newAmount.replace(",", "");
+				float floatAmount = Float.valueOf(newAmount.trim()).floatValue();
+				Date date = java.sql.Date.valueOf(nextDate.getValue());
+				
+				bill.setName(nameOfBill.getText());
+				bill.setAmount(floatAmount);
+				bill.setDate((java.sql.Date) date);
+				bill.setTimeFrame(timetype.getValue());
+				bill.setPaid(paid.isSelected());
+				db.updateBill(bill);
+	    	}	
 			
 			tableView.setItems(getBills());
 			window.setScene(primScene);
@@ -192,6 +204,7 @@ public class Bills {
 	}
 
 	private void addBill() {
+		edit = false;
 		window.setTitle("Add Bill");
 		window.setResizable(false);
 		try {
@@ -200,7 +213,7 @@ public class Bills {
 			window.setScene(scene);
 			window.show();
 		} catch(Exception e) {
-			System.out.println(timetype.getValue());
+			System.out.println(e.getMessage());
 		}
 	}
 	

@@ -42,9 +42,9 @@
             			<Button fx:id="bills" onAction="#onBillsButtonClick" styleClass="toolbarbutton">Bills</Button>
             			<Button fx:id="graphs" onAction="#onGraphButtonClick" styleClass="toolbarbutton">Graphs</Button>
             			<Button fx:id="settings" onAction="#onSettingsButtonClick" styleClass="toolbarbutton">Settings</Button>
-                  <DatePicker fx:id="goToDate" translateX="400.0" />
-                 		<Button onAction="#onLastButtonClick" styleClass="toolbarbutton" text="&lt;&lt;" translateX="400.0">Last</Button>
-                 		<Button onAction="#onNextButtonClick" styleClass="toolbarbutton" text="&gt;&gt;" translateX="400.0">Next</Button>
+                  		<DatePicker fx:id="goToDate" onAction="#changeEndDate" translateX="335.0" />
+                 		<Button onAction="#onLastButtonClick" styleClass="toolbarbutton" text="Prev Week" translateX="335.0">Last</Button>
+                 		<Button onAction="#onNextButtonClick" styleClass="toolbarbutton" text="Next Week" translateX="335.0">Next</Button>
             </items>
          		</ToolBar>
    </children>
