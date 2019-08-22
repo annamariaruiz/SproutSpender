@@ -31,7 +31,7 @@ public class Manager implements Serializable{
 	private Date prevEndDate;
 	private HashMap<String, Bill> bills = new HashMap<>();
 	private ArrayList<Budget> budgets = new ArrayList<>();
-	private ArrayList<Budget> allBudgets = new ArrayList<>();
+	private ArrayList<Budget> allBudgets = new ArrayList<>(); //Populate allBudgets
 	private HashMap<String, Float> budgetLimits = new HashMap<>();
 	public Database db = new Database();
 	
@@ -58,6 +58,11 @@ public class Manager implements Serializable{
 			nextCycleBi();
 			if(endDate != null) {
 				nextCycleBu();//TODO Make a default start date?
+				for (Budget b : allBudgets) {
+					if(b.getEndDate().after(startDate)) {
+						budgets.add(b);
+					}
+				}
 			} else {//Make the end Date and previous End Date here since it would need to be null to get in here.
 				LocalDate ld = LocalDate.now(); //Find the local date that is today.
 				Calendar endCal = Calendar.getInstance(); //Make a new Calendar variable.
@@ -73,13 +78,26 @@ public class Manager implements Serializable{
 				Date prevEnd = new Date(prevEndD.getTime());//Turn into a sql.date object
 				prevEndDate = prevEnd;
 				
-				timeFrame = false; //Default timeFrame
+				//Default Start Date
+				Calendar startCal = Calendar.getInstance();
+				startCal.set(ld.getYear(), ld.getMonthValue(), 1);
+				java.util.Date startD = startCal.getTime();
+				Date start = new Date(startD.getTime());
+				startDate = start;
+				
+				timeFrame = false; //Default timeFrame = Month
 				
 				//Default limits
 				budgetLimits.put("Food", (float) 843);
 				budgetLimits.put("Transportation", (float) 843);
 				budgetLimits.put("Entertainment", (float) 843);
 				budgetLimits.put("Miscellaneous", (float) 843);
+				
+				for (Budget b : allBudgets) {
+					if(b.getEndDate().after(startDate)) {
+						budgets.add(b);
+					}
+				}
 			}
 		}
 	}
@@ -100,11 +118,13 @@ public class Manager implements Serializable{
 		} else if(newStart.before(Date.valueOf(LocalDate.now()))) {
 			newStart = newStartPast(newS, newStart);
 		}
-		
-		//Fix the budgets to only be the ones located in the current window of time
-//		for (Budget b : allBudgets) {
-//			if()
-//		}
+		startDate = newStart;
+	
+		for (Budget b : allBudgets) {//Fix the budgets to only be the ones located in the current window of time
+			if(b.getEndDate().after(startDate)) {
+				budgets.add(b);
+			}
+		}
 		
 		newCycle(null, newStart); //New end date for the manager
 		
@@ -285,7 +305,7 @@ public class Manager implements Serializable{
 	
 	public void update(Database db) {
 		bills = db.selectAllBills();
-		budgets = db.selectAllBudg();
+		allBudgets = db.selectAllBudg();
 	}
 	
 	public boolean isValid(String str) {
