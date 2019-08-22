@@ -3,6 +3,8 @@ package pro100.group10.sproutspender.views;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Optional;
@@ -90,6 +92,8 @@ public class Table {
 	@SuppressWarnings({ "unchecked", "restriction" })
 	@FXML
 	private void initialize() {
+		
+		
 		if(!hasInitialized) {
 			hasInitialized = true;
 			tableView.setEditable(tableIsEditable);
@@ -112,7 +116,7 @@ public class Table {
 			
 			for(int i = 6; i >= 0; i--) {
 				dateToGrab = new Date(calendar.getTime().getTime());
-				columns[i].setText(dateToGrab.toString());
+				columns[i].setText(new SimpleDateFormat("EEE, MMM d ").format(dateToGrab));
 				calendar.add(Calendar.DATE, -1);
 				
 				final int index = i;
@@ -245,7 +249,7 @@ public class Table {
 		
 		for(int i = 6; i >= 0; i--) {
 			dateToGrab = new Date(calendar.getTime().getTime());
-			columns[i].setText(dateToGrab.toString());
+			columns[i].setText(new SimpleDateFormat("EEE, MMM d ").format(dateToGrab));
 			calendar.add(Calendar.DATE, -1);
 		}
 	}

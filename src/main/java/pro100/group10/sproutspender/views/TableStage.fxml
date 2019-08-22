@@ -54,13 +54,13 @@
 	<center>
 		<TableView fx:id="tableView">
 			<columns>
-	            <TableColumn fx:id="day1Col" prefWidth="90.0" />
-	            <TableColumn fx:id="day2Col" prefWidth="90.0" />
-	            <TableColumn fx:id="day3Col" prefWidth="90.0" />
-	            <TableColumn fx:id="day4Col" prefWidth="90.0" />
-	            <TableColumn fx:id="day5Col" prefWidth="90.0" />
-	            <TableColumn fx:id="day6Col" prefWidth="90.0" />
-	            <TableColumn fx:id="day7Col" prefWidth="90.0" />
+	            <TableColumn fx:id="day1Col" prefWidth="102.0" />
+	            <TableColumn fx:id="day2Col" prefWidth="102.0" />
+	            <TableColumn fx:id="day3Col" prefWidth="102.0" />
+	            <TableColumn fx:id="day4Col" prefWidth="102.0" />
+	            <TableColumn fx:id="day5Col" prefWidth="102.0" />
+	            <TableColumn fx:id="day6Col" prefWidth="102.0" />
+	            <TableColumn fx:id="day7Col" prefWidth="102.0" />
 			</columns>
          </TableView>
 	</center>
