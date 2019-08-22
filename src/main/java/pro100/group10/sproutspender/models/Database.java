@@ -47,7 +47,9 @@ public class Database {
             connection = ds.getConnection();
             checkCreateDB();
         } catch (SQLServerException sqle) {
-        
+        	System.out.println("connection unestablished");
+        	System.out.println(sqle.getMessage());
+        	
         }
     }
     
@@ -202,10 +204,10 @@ public class Database {
     	String updateSQL =
     		"Update Bills" + " "
     			+ "SET name = '" + b.getName() + "', "
-				+ "SET duedate = '" + b.getDate().toString() + "', "
-				+ "SET amount = " + b.getAmount() + ", "
-				+ "SET timeFrame = " + b.getTimeFrame().toString() + ", "
-				+ "SET paid = " + paid + " "
+				+ "duedate = '" + b.getDate().toString() + "', "
+				+ "amount = " + b.getAmount() + ", "
+				+ "timeframe = '" + b.getTimeFrame().toString() + "', "
+				+ "paid = " + paid + " "
 			+ "WHERE id = " + b.getId();
     	
     	try(Statement stmt = connection.createStatement()) {

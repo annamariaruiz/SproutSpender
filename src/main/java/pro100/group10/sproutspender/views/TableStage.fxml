@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -41,8 +42,9 @@
             			<Button fx:id="bills" onAction="#onBillsButtonClick" styleClass="toolbarbutton">Bills</Button>
             			<Button fx:id="graphs" onAction="#onGraphButtonClick" styleClass="toolbarbutton">Graphs</Button>
             			<Button fx:id="settings" onAction="#onSettingsButtonClick" styleClass="toolbarbutton">Settings</Button>
-                 		<Button onAction="#onLastButtonClick" styleClass="toolbarbutton" text="&lt;&lt;" translateX="500.0">Last</Button>
-                 		<Button onAction="#onNextButtonClick" styleClass="toolbarbutton" text="&gt;&gt;" translateX="500.0">Next</Button>
+                  		<DatePicker fx:id="goToDate" onAction="#changeEndDate" translateX="335.0" />
+                 		<Button onAction="#onLastButtonClick" styleClass="toolbarbutton" text="Prev Week" translateX="335.0">Last</Button>
+                 		<Button onAction="#onNextButtonClick" styleClass="toolbarbutton" text="Next Week" translateX="335.0">Next</Button>
             </items>
          		</ToolBar>
    </children>

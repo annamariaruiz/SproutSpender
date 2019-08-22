@@ -35,7 +35,6 @@ public class HomeController {
 		boolean valid = m.isValid(dbName.getText().trim());
 		boolean empty = dbName.getText().trim().isEmpty();
 		
-		
 		Stage stage = Main.getStage();
 		
 		//String username, String password, String server, int port, String dbName
@@ -56,6 +55,20 @@ public class HomeController {
 				db.canConnect();
 				manager = new Manager(db, dbName.getText().trim());
 				//call to open table
+				try {
+					FXMLLoader tableLoader = new FXMLLoader();
+					tableLoader.setLocation(getClass().getResource("../views/TableStage.fxml"));
+					Table table = new Table();
+					table.setDB(db);
+					tableLoader.setController(table);
+					Parent root = tableLoader.load();
+					Scene scene = new Scene(root);
+					stage.setScene(scene);
+					stage.setOnHidden(eh -> table.cleanUp());
+					stage.show();
+				} catch(Exception e) {
+					e.printStackTrace();
+				}	
 			} catch (RuntimeException e) {
 				alert.setText("Login failed");
 			}
@@ -68,19 +81,5 @@ public class HomeController {
 			System.out.println("Idk, something broke");
 		}
 		
-		try {
-			FXMLLoader tableLoader = new FXMLLoader();
-			tableLoader.setLocation(getClass().getResource("../views/TableStage.fxml"));
-			Table table = new Table();
-			table.setDB(db);
-			tableLoader.setController(table);
-			Parent root = tableLoader.load();
-			Scene scene = new Scene(root, 850, 450);
-			stage.setScene(scene);
-			stage.setOnHidden(eh -> table.cleanUp());
-			stage.show();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}	
 	}
 }
