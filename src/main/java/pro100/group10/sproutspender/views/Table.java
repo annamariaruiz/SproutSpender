@@ -248,7 +248,7 @@ public class Table {
 	}
 	
 	private void changeEndDate(int days) {
-		Calendar calendar = Calendar.getInstance();
+ 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(endDate);
 		calendar.add(Calendar.DATE, days);
 		endDate = new Date(calendar.getTime().getTime());
@@ -272,6 +272,8 @@ public class Table {
 			columns[i].setText(dateToGrab.toString());
 			calendar.add(Calendar.DATE, -1);
 		}
+		refreshTableView();
+		calculateTotals();
 	}
 	
 	private WeeklyPlanner parseThisWeek(CategoryType category) {

@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -22,7 +23,7 @@ public class Manager implements Serializable{
 	private boolean timeFrame;
 	private Date endDate;
 	private HashMap<String, Bill> bills = new HashMap<>();
-	private Budget[] budgets = new Budget[Budget.CategoryType.values().length];
+	private ArrayList<Budget> budgets = new ArrayList<>();
 	public Database db = new Database();
 	
 	public Manager(Database db, String dbName) { 
@@ -72,10 +73,10 @@ public class Manager implements Serializable{
 		
 		Date end = (Date) calendar.getTime();
 		
-		for(int i = 0; i < budgets.length; i++) {
-			budgets[i].setEndDate(end);
+		for(int i = 0; i < budgets.size(); i++) {
+			budgets.get(i).setEndDate(end);
 			
-			Budget b = budgets[i];
+			Budget b = budgets.get(i);
 			
 			try {
 				db.update(b);
@@ -230,7 +231,7 @@ public class Manager implements Serializable{
 		return found;
 	}
 		
-	public Budget[] getBudgets() {
+	public ArrayList<Budget> getBudgets() {
 		return budgets;
 	}
 }
