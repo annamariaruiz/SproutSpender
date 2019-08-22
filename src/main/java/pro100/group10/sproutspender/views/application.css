@@ -1,1 +1,5 @@
 /* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+.chart-title {
+    -fx-text-fill: #b83f3f;
+    -fx-font-size: 1.3em;
+  }

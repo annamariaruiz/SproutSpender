@@ -270,6 +270,19 @@ public class Table {
 		}
 	}
 	
+	private void changeEndDate(Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		endDate = new Date(calendar.getTime().getTime());
+		Date dateToGrab = null;
+		
+		for(int i = 6; i >= 0; i--) {
+			dateToGrab = new Date(calendar.getTime().getTime());
+			columns[i].setText(dateToGrab.toString());
+			calendar.add(Calendar.DATE, -1);
+		}
+	}
+	
 	private WeeklyPlanner parseThisWeek(CategoryType category) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(endDate);
