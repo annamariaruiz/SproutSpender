@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Optional;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,6 +25,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -92,8 +94,6 @@ public class Table {
 	@SuppressWarnings({ "unchecked"})
 	@FXML
 	private void initialize() {
-		
-		
 		if(!hasInitialized) {
 			hasInitialized = true;
 			tableView.setEditable(tableIsEditable);
@@ -152,6 +152,8 @@ public class Table {
 					}
 				});
 			}
+			
+			tableView.getSelectionModel().setCellSelectionEnabled(true);
 			
 			refreshTableView();
 			calculateTotals();
