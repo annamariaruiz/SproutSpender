@@ -151,12 +151,12 @@ public class Graphs {
 		Manager man = HomeController.manager;
 		ArrayList<Budget> budg = man.getBudgets();
 		for(Budget b : budg) {
-			if(b != null && buds.containsKey(b.getCategory().toString())) {
+			if(buds.containsKey(b.getCategory().toString())) {
 				Budget bu = new Budget();
 				bu.setCategory(b.getCategory());
 				bu.setCurrentAmount(buds.get(b.getCategory().toString()).getCurrentAmount() + b.getCurrentAmount());
 				bu.setLimit(b.getLimit());
-			} else if(b != null) {
+			} else  {
 				buds.put(b.getCategory().toString(), b);
 			}
 		}

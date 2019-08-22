@@ -289,12 +289,12 @@ public class Database {
 	}
     
 	public ArrayList<Budget> selectAllBudg() {
-		ArrayList<Budget> budgets = new ArrayList<>();//Change amount
+		ArrayList<Budget> budgets = new ArrayList<>();
 
 		Statement stmt;
 		try {
 			stmt = connection.createStatement();
-			String sql = "SELECT * FROM Budgets";
+			String sql = "SELECT * FROM Budgets WHERE ";//TODO Dates things
 			ResultSet rs = stmt.executeQuery(sql);
 			
 			while (rs.next()) {
