@@ -282,7 +282,7 @@ public class Table {
 		
 		for(int i = 6; i >= 0; i--) {
 			dateToGrab = new Date(calendar.getTime().getTime());
-			columns[i].setText(dateToGrab.toString());
+			columns[i].setText(new SimpleDateFormat("EEE, MMM d ").format(dateToGrab));
 			calendar.add(Calendar.DATE, -1);
 		}
 		refreshTableView();
