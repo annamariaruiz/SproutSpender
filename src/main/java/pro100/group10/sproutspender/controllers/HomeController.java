@@ -62,7 +62,7 @@ public class HomeController {
 					table.setDB(db);
 					tableLoader.setController(table);
 					Parent root = tableLoader.load();
-					Scene scene = new Scene(root, 750, 450);
+					Scene scene = new Scene(root);
 					stage.setScene(scene);
 					stage.setOnHidden(eh -> table.cleanUp());
 					stage.show();

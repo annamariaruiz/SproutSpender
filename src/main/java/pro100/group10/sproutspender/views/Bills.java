@@ -38,6 +38,7 @@ public class Bills {
 	private Manager man = HomeController.manager;
 	private static ObservableList<Bill> listedBills = FXCollections.observableArrayList();
 	private ObservableList<TimeFrame> enums = FXCollections.observableArrayList(Bill.TimeFrame.values());
+	private static ObservableList<Bill> currentSelected;
 	
 	@FXML
 	private TextField nameOfBill;
@@ -56,10 +57,18 @@ public class Bills {
 	@FXML
     private ComboBox<Bill.TimeFrame> timetype;
 	
-	public void initialize() {
+	public void initialize() throws SQLException {
 		timetype.getItems().removeAll(timetype.getItems());
 	    timetype.getItems().addAll(enums);
 	    timetype.getSelectionModel().select(enums.get(0));
+	    
+		for(Bill bill : currentSelected) {
+			nameOfBill.setText(bill.getName());
+			amount.setText(bill.getAmount() + "");
+			nextDate.setValue(bill.getDate().toLocalDate());
+			paid.setSelected(bill.isPaid());
+			timetype.setValue(bill.getTimeFrame());	
+		}
 	}
 	
 	public void init() {
@@ -67,6 +76,12 @@ public class Bills {
 		window.setResizable(false);
 		
 		//columns
+		TableColumn<Bill, Integer> id = new TableColumn<>("ID");
+		id.setCellValueFactory(new PropertyValueFactory<>("id"));
+		id.setMaxWidth(25);
+		id.setResizable(false);
+		id.setSortable(false);
+		
 		TableColumn<Bill, String> name = new TableColumn<>("Name");
 		name.setCellValueFactory(new PropertyValueFactory<>("name"));
 		name.setMinWidth(250);
@@ -97,7 +112,7 @@ public class Bills {
 		paid.setResizable(false);
 		paid.setSortable(false);
 		
-		tableView.getColumns().addAll(name, amount, date, timeFrame, paid);
+		tableView.getColumns().addAll(id, name, amount, date, timeFrame, paid);
 		tableView.setItems(getBills());
 		tableView.setEditable(true);
 		tableView.setMinHeight(50);
@@ -126,19 +141,13 @@ public class Bills {
 		VBox vertical = new VBox();
 		vertical.getChildren().addAll(tableView, buttons);
 		
-		primScene = new Scene(vertical, 600, 400);
+		primScene = new Scene(vertical, 650, 400);
 		window.setScene(primScene);
 		window.show();
 	}
 	
-	private void editBill() {
-//		currentSelected = tableView.getSelectionModel().getSelectedItem();
-//		nameOfBill.setText(currentSelected.getName());
-//		amount.setText(currentSelected.getAmount() + "");
-//		LocalDate date = currentSelected.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//		nextDate.setValue(date);
-//		timetype.setValue(currentSelected.getTimeFrame());		
-		
+	private void editBill() {	
+	    currentSelected = tableView.getSelectionModel().getSelectedItems();
 		window.setTitle("Edit Bill");
 		window.setResizable(false);
 		try {
@@ -154,15 +163,10 @@ public class Bills {
 	@FXML
 	private void saveEditBill() {
 		if (!nameOfBill.getText().isEmpty() && !amount.getText().isEmpty() && nextDate.getValue() != null && timetype.getValue() != null) {
-			//compare changes made to bill
-			//if no change made, leave alone
-			//if change made to field, change that one field
-			//save to database
+			
 			tableView.setItems(getBills());
 			window.setScene(primScene);
 			window.show();
-			
-				
 		} else {
 			error.setText("Values must not be empty");
 		}
@@ -203,10 +207,7 @@ public class Bills {
 	@FXML
 	private void saveNewBill() throws SQLException {
 		//check if fields are empty
-		if (!nameOfBill.getText().isEmpty() && !amount.getText().isEmpty() && nextDate.getValue() != null && timetype.getValue() != null) {
-			//create new bill
-//			Bill newBill = new Bill();
-			
+		if (!nameOfBill.getText().isEmpty() && !amount.getText().isEmpty() && nextDate.getValue() != null && timetype.getValue() != null) {			
 			//store values
 			String newName = nameOfBill.getText().trim();
 			String newAmount = amount.getText();
@@ -216,14 +217,7 @@ public class Bills {
 			Date date = java.sql.Date.valueOf(nextDate.getValue());
 			Bill.TimeFrame type = timetype.getValue();
 			
-//			public Bill(float amount, Date date, String name, TimeFrame timeF, boolean paid)
 			Bill nb = new Bill(floatAmount, (java.sql.Date) date, newName, type, false);
-			
-			//add fields
-//			newBill.setName(newName);
-//			newBill.setAmount(floatAmount);
-//			newBill.setDate((java.sql.Date) date);
-//			newBill.setTimeFrame(type);
 			
 			//save to database
 			db.createBi(nb);
@@ -231,23 +225,6 @@ public class Bills {
 			man.update(db);
 			window.setScene(primScene);
 			window.show();
-			
-//			ObservableList<Bill> billSelected, allBills;
-//			allBills = tableView.getItems();
-//			billSelected = tableView.getSelectionModel().getSelectedItems();
-//			
-//			for(Bill bill : billSelected) {
-//				bill.getId();
-//				try {
-//					db.removeBill(bill.getId());
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//				man.update(db);
-//			}
-//
-//			tableView.setItems(getBills());
-//			billSelected.forEach(allBills::remove);
 		} else {
 			error.setText("Values must not be empty");
 		}
@@ -264,20 +241,5 @@ public class Bills {
 		}
 		
 		return listedBills;
-		
-		
-//			contacts.clear();
-//				try {
-//					if (i==(int) (cd.file.length()/1044)) {
-//						return contacts;
-//					}
-//				} catch (IOException e) {
-//					System.out.println("IOException caught in getContact");
-//				}
-//				Contact contact = cd.getContact(i);
-//				if(contact != null) {
-//					contacts.add(contact);
-//				}
-//		return contacts;
 	}
 }
