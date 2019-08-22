@@ -19,6 +19,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
@@ -36,6 +38,11 @@ import pro100.group10.sproutspender.models.WeeklyPlanner;
 public class Table {
 
 	private final String BUDGET_POP_OUT_FXML_LOC = "../views/BudgetPopOut.fxml";
+	private ObservableList<CategoryType> enums = FXCollections.observableArrayList(
+			Budget.CategoryType.FOOD, 
+			Budget.CategoryType.ENTERTAINMENT, 
+			Budget.CategoryType.MISCELLANEOUS, 
+			Budget.CategoryType.TRANSPORTATION);
 	
 	@FXML
 	private TableView<WeeklyPlanner> tableView;
@@ -58,11 +65,11 @@ public class Table {
 	private int selectedID;
 	private boolean createMode = true;
 	@FXML
-	private TextField makeNewDate;
+	private DatePicker makeNewDate;
 	@FXML
 	private TextField makeNewLimit;
 	@FXML
-	private TextField makeNewCat;
+	private ComboBox<Budget.CategoryType> makeNewCat;
 	@FXML
 	private TextField makeNewCurrentAmount;
 	
@@ -180,8 +187,13 @@ public class Table {
 		final String MAKE_NEW_BUDGET_TITLE = "Create/Edit Budget";
 		budgetPopOutLoader.setController(this);
 		
+
+		
 		try {
 			budgetPopOutRoot = (GridPane) budgetPopOutLoader.load();
+			makeNewCat.getItems().removeAll(makeNewCat.getItems());
+			makeNewCat.getItems().addAll(enums);
+			makeNewCat.getSelectionModel().select(enums.get(0));
 		} catch(IOException ioe) {
 			//TODO write catch block
 		}
@@ -329,9 +341,9 @@ public class Table {
 	private void onPopOutSubmit(ActionEvent ae) {
 		boolean missingReqField = false;
 		
-		if(makeNewDate.getText().trim().isEmpty()) missingReqField = true;
+		if(makeNewDate.getValue() == null) missingReqField = true;
 		if(makeNewLimit.getText().trim().isEmpty()) missingReqField = true;
-		if(makeNewCat.getText().trim().isEmpty()) missingReqField = true;
+		if(makeNewCat.getSelectionModel().isEmpty()) missingReqField = true;
 		if(makeNewCurrentAmount.getText().trim().isEmpty()) makeNewCurrentAmount.setText("0.0");
 		
 		if(missingReqField) {
@@ -343,8 +355,8 @@ public class Table {
 				newLimit = newLimit.replace(",", "");
 				Budget budg = new Budget(
 					Float.parseFloat(newLimit),
-					CategoryType.valueOf(makeNewCat.getText().trim()),
-					Date.valueOf(makeNewDate.getText().trim())
+					makeNewCat.getValue(),
+					Date.valueOf(makeNewDate.getValue())
 				);
 				
 				budg.setCurrentAmount(Float.parseFloat(makeNewCurrentAmount.getText().trim()));

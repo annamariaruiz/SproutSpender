@@ -35,7 +35,6 @@ public class HomeController {
 		boolean valid = m.isValid(dbName.getText().trim());
 		boolean empty = dbName.getText().trim().isEmpty();
 		
-		
 		Stage stage = Main.getStage();
 		
 		//String username, String password, String server, int port, String dbName
