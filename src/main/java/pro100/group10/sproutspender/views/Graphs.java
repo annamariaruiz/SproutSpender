@@ -1,6 +1,8 @@
 package pro100.group10.sproutspender.views;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
@@ -27,19 +29,19 @@ public class Graphs {
 	public void init() {
 		
 		graphs.setTitle("Progress");
-		graphs.setResizable(false);
 		
 		GridPane grid = new GridPane();
 		GridPane upperGra = createBigGraph(); 
 		HBox catGraphs = new HBox();
 		
 		Manager man = HomeController.manager;
-		Budget[] budg = man.getBudgets();
-		for(Budget b : budg) {
-			if(b != null) {
-				catGraphs.getChildren().add(createSmallGraph(b.getCategory().toString()));
-			}
+		HashMap<String, Budget> cats = createCats();
+		for(String s : cats.keySet()) {
+			Budget b =  cats.get(s);
+			catGraphs.getChildren().add(createSmallGraph(cats, b.getCategory().toString()));
 		}
+		
+		
 		upperGra.setLayoutY(100);
 		upperGra.setLayoutY(100);
 		upperGra.setMinSize(400, 400);
@@ -66,12 +68,35 @@ public class Graphs {
 		man.update(db);
 		float values[] = new float[5];
 		
-		Budget[] budg = man.getBudgets();
+		ArrayList<Budget> budg = man.getBudgets();
 		float current = 0;
 		float limit = 0;
 		float remainder = 0;
 		int i = 0;
+//		for(Budget b : budg) {
+//			if(b != null) {
+//				categories.add(b.getCategory().toString());
+//				values[i] = b.getCurrentAmount();
+//				limit += b.getLimit();
+//				current += b.getCurrentAmount();
+//				i++;
+//			}
+//		}
+		
+		HashMap<String, Budget> buds = new HashMap<String, Budget>();
 		for(Budget b : budg) {
+			if(b != null && buds.containsKey(b.getCategory().toString())) {
+				Budget bu = new Budget();
+				bu.setCategory(b.getCategory());
+				bu.setCurrentAmount(buds.get(b.getCategory().toString()).getCurrentAmount() + b.getCurrentAmount());
+				bu.setLimit(b.getLimit());
+			} else if(b != null) {
+				buds.put(b.getCategory().toString(), b);
+			}
+		}
+		//How am I only going to get the budgets for that time period?
+		for(String s : buds.keySet()) {
+			Budget b =  buds.get(s);
 			if(b != null) {
 				categories.add(b.getCategory().toString());
 				values[i] = b.getCurrentAmount();
@@ -121,7 +146,24 @@ public class Graphs {
 		return upperGra;
 	}
 	
-	private VBox createSmallGraph(String cat) {
+	private HashMap<String, Budget> createCats() {
+		HashMap<String, Budget> buds = new HashMap<String, Budget>();
+		Manager man = HomeController.manager;
+		ArrayList<Budget> budg = man.getBudgets();
+		for(Budget b : budg) {
+			if(b != null && buds.containsKey(b.getCategory().toString())) {
+				Budget bu = new Budget();
+				bu.setCategory(b.getCategory());
+				bu.setCurrentAmount(buds.get(b.getCategory().toString()).getCurrentAmount() + b.getCurrentAmount());
+				bu.setLimit(b.getLimit());
+			} else if(b != null) {
+				buds.put(b.getCategory().toString(), b);
+			}
+		}
+		return buds;
+	}
+	
+	private VBox createSmallGraph(HashMap<String, Budget> buds ,String cat) {
 		VBox individ = new VBox();
 		
 		Manager man = HomeController.manager;
@@ -129,12 +171,13 @@ public class Graphs {
 		man.update(db);
 		float values[] = new float[2];
 		
-		Budget[] budg = man.getBudgets();
+		//How am I only going to get the budgets for that time period?
 		float current = 0;
 		float limit = 0;
 		float remainder = 0;
 		int i = 0;
-		for(Budget b : budg) {
+		for(String s : buds.keySet()) {
+			Budget b =  buds.get(s);
 			if(b != null && b.getCategory().toString().equalsIgnoreCase(cat)) {
 				values[i] = b.getCurrentAmount();
 				limit += b.getLimit();

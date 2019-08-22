@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
@@ -285,8 +286,8 @@ public class Database {
 		return bills;
 	}
     
-	public Budget[] selectAllBudg() {
-		Budget[] budgets = new Budget[5];//Change amount
+	public ArrayList<Budget> selectAllBudg() {
+		ArrayList<Budget> budgets = new ArrayList<>();//Change amount
 
 		Statement stmt;
 		try {
@@ -294,7 +295,6 @@ public class Database {
 			String sql = "SELECT * FROM Budgets";
 			ResultSet rs = stmt.executeQuery(sql);
 			
-			int i = 0;
 			while (rs.next()) {
 				Float limit = rs.getFloat("limit");
 				Float currentAmount = rs.getFloat("currentAmount");
@@ -317,8 +317,7 @@ public class Database {
 				Budget b = new Budget(limit, cat, date);
 				b.setID(id);
 				b.setCurrentAmount(currentAmount);
-				budgets[i] = b;
-				i++;
+				budgets.add(b);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -335,6 +334,10 @@ public class Database {
     	} catch(SQLException sqle) {
     		throw new RuntimeException("Could not create database.\n" + sqle);
     	}
+    }
+    
+    public Connection getConnection() {
+		return connection;
     }
     
     public void setConnection(String username, String password, String dbName) {
