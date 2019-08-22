@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import pro100.group10.sproutspender.models.Bill;
@@ -24,11 +26,13 @@ import pro100.group10.sproutspender.models.Database;
 @SuppressWarnings("serial")
 public class Manager implements Serializable{
 	private boolean timeFrame;
+	private Date startDate;
 	private Date endDate;
 	private Date prevEndDate;
 	private HashMap<String, Bill> bills = new HashMap<>();
 	private ArrayList<Budget> budgets = new ArrayList<>();
-	private float[] budgetLimits = new float[4];
+	private ArrayList<Budget> allBudgets = new ArrayList<>();
+	private HashMap<String, Float> budgetLimits = new HashMap<>();
 	public Database db = new Database();
 	
 	public Manager(Database db, String dbName) { 
@@ -53,7 +57,7 @@ public class Manager implements Serializable{
 			HomeController.manager = deserialize(dbName);
 			nextCycleBi();
 			if(endDate != null) {
-				nextCycleBu();
+				nextCycleBu();//TODO Make a default start date?
 			} else {//Make the end Date and previous End Date here since it would need to be null to get in here.
 				LocalDate ld = LocalDate.now(); //Find the local date that is today.
 				Calendar endCal = Calendar.getInstance(); //Make a new Calendar variable.
@@ -71,27 +75,52 @@ public class Manager implements Serializable{
 				
 				timeFrame = false; //Default timeFrame
 				
-				for(int i = 0; i < budgetLimits.length; i++) {
-					budgetLimits[i] = 843; //Default limit
-				}
+				//Default limits
+				budgetLimits.put("Food", (float) 843);
+				budgetLimits.put("Transportation", (float) 843);
+				budgetLimits.put("Entertainment", (float) 843);
+				budgetLimits.put("Miscellaneous", (float) 843);
 			}
 		}
 	}
 	
-	public void changeSettings(LocalDate newS, boolean timeFrame) { //Depending on the new start date, the end date  would change
-		this.timeFrame = timeFrame;
+	public void changeSettings(LocalDate newS, boolean timeFrame, float food, float transit, float entertain, float misc) throws SQLException { //Depending on the new start date, the end date  would change
+		this.timeFrame = timeFrame; //Update the time frame
+		
+		budgetLimits.clear(); //Update the limits
+		budgetLimits.put("Food", food);
+		budgetLimits.put("Transportation", transit);
+		budgetLimits.put("Entertainment", entertain);
+		budgetLimits.put("Miscellaneous", misc);
+		
+		//Ensure the new start date is valid.
 		Date newStart = Date.valueOf(newS); //new Start Date
 		if(newStart.after(Date.valueOf(LocalDate.now()))) {//If the new start date is in the future
 			newStart = newStartFuture(newS, newStart);
 		} else if(newStart.before(Date.valueOf(LocalDate.now()))) {
-			
+			newStart = newStartPast(newS, newStart);
 		}
-		//Change the settings, the endDate would change for current to future
-		//Change every budget from the new start date onward
 		
+		//Fix the budgets to only be the ones located in the current window of time
+//		for (Budget b : allBudgets) {
+//			if()
+//		}
 		
-		newCycle(null, newStart);
-		//Manipulate the affected budgets with the new end-date (Current start date -> Future Start date)
+		newCycle(null, newStart); //New end date for the manager
+		
+		 for(Budget b : budgets) { //New end dates and limits for the specified categories
+			 b.setEndDate(endDate);
+			 if(b.getCategory() == Budget.CategoryType.FOOD) {
+				 b.setLimit(food);
+			 } else if(b.getCategory() == Budget.CategoryType.TRANSPORTATION) {
+				 b.setLimit(transit);
+			 } else if(b.getCategory() == Budget.CategoryType.ENTERTAINMENT) {
+				 b.setLimit(entertain);
+			 } else if(b.getCategory() == Budget.CategoryType.MISCELLANEOUS) {
+				 b.setLimit(misc);
+			 } 
+			 db.update(b);
+		 }
 	}
 	
 	private Date newStartFuture(LocalDate newS, Date newStart) {
@@ -182,6 +211,7 @@ public class Manager implements Serializable{
 		} else {
 			startDate = d;
 		}
+		this.startDate = startDate;
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
@@ -190,9 +220,7 @@ public class Manager implements Serializable{
 		} else if(!timeFrame ) {
 			calendar.add(Calendar.MONTH, 1);
 		}
-		
 		Date end = (Date) calendar.getTime();
-		
 		endDate = end;
 	}
 	
