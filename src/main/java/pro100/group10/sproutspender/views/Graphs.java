@@ -3,11 +3,17 @@ package pro100.group10.sproutspender.views;
 import java.util.ArrayList;
 
 import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import pro100.group10.sproutspender.controllers.HomeController;
@@ -25,6 +31,31 @@ public class Graphs {
 		graphs.setResizable(false);
 		
 		GridPane grid = new GridPane();
+		GridPane upperGra = createBigGraph(); 
+		HBox catGraphs = new HBox();
+		
+		Manager man = HomeController.manager;
+		Budget[] budg = man.getBudgets();
+		for(Budget b : budg) {
+			if(b != null) {
+				catGraphs.getChildren().add(createSmallGraph(b.getCategory().toString()));
+			}
+		}
+		upperGra.setLayoutY(100);
+		upperGra.setLayoutY(100);
+		upperGra.setMinSize(400, 400);
+		catGraphs.setMaxHeight(300);
+		
+		grid.add(upperGra, 0, 0);
+		grid.add(catGraphs, 0, 1);
+		
+		Scene scene = new Scene(grid, 800, 800);
+		graphs.setResizable(false);
+		graphs.setScene(scene);
+		graphs.show();
+	}
+	
+	private GridPane createBigGraph() {
 		GridPane upperGra = new GridPane();
 		
 		ArrayList<String> categories = new ArrayList<String>();
@@ -48,7 +79,6 @@ public class Graphs {
 			}
 		}
 			remainder = limit - current;
-			
 			values[i] = remainder;
 		
 		
@@ -63,50 +93,89 @@ public class Graphs {
 		}
 		PieChart chart = new PieChart(FXCollections.observableArrayList(pieData));
 		chart.setLabelsVisible(false);
-		chart.setLegendSide(Side.BOTTOM);
+		chart.setLegendSide(Side.RIGHT);
 		
 		Label caption = new Label("");
-		caption.setTextFill(Color.DARKORANGE);
+		caption.setTextFill(Color.BLACK);
 		caption.setStyle("-fx-font: 24 arial;");
 
-		grid.add(chart, 0, 0);
+		upperGra.add(chart, 0, 1);
+		upperGra.add(caption, 0, 0);
 		
-		Scene scene = new Scene(grid, 800, 500);
-		graphs.setResizable(false);
-		graphs.setScene(scene);
-		graphs.show();
+		for (final PieChart.Data d : pieData) {
+			d.getNode().addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent e) {
+					caption.setTranslateX(e.getSceneX() + 10);
+					caption.setTranslateY(e.getSceneY());
+					String pieV = String.format("%.2f", d.getPieValue());
+					pieV = "$" + String.valueOf(pieV);
+					caption.setText(pieV);
+				}
+			});
+		}
+		return upperGra;
 	}
 	
-//	private void createBigGraph(String[][] data) {
-//		String categories[] = { "Groceries", "Idk", "AnotherCategoryUwU", "anotha one" };
-//		double values[] = { 30.5, 6, 10, 3.55 };
-//		PieChart.Data pieData[] = new PieChart.Data[categories.length];
-//		for (int i = 0; i < categories.length; i++) {
-//			pieData[i] = new PieChart.Data(categories[i], values[i]);
-//		}
-//		PieChart chart = new PieChart(FXCollections.observableArrayList(pieData));
-//
-//		// Make the labels (on lines) not visible
-//		chart.setLabelsVisible(false);
-//
-//		// Change legend location
-//		chart.setLegendSide(Side.TOP);
-//
-//		Label caption = new Label("");
-//		caption.setTextFill(Color.DARKORANGE);
-//		caption.setStyle("-fx-font: 24 arial;");
-//
-//		root.getChildren().addAll(chart, caption);
-//
-//		for (final PieChart.Data d : pieData) {
-//			d.getNode().addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
-//				@Override
-//				public void handle(MouseEvent e) {
-//					caption.setTranslateX(e.getSceneX());
-//					caption.setTranslateY(e.getSceneY());
-//					caption.setText(String.valueOf(d.getPieValue()));
-//				}
-//			});
-//		}
-//	}
+	private VBox createSmallGraph(String cat) {
+		VBox individ = new VBox();
+		
+		Manager man = HomeController.manager;
+		Database db = man.db;
+		man.update(db);
+		float values[] = new float[2];
+		
+		Budget[] budg = man.getBudgets();
+		float current = 0;
+		float limit = 0;
+		float remainder = 0;
+		int i = 0;
+		for(Budget b : budg) {
+			if(b != null && b.getCategory().toString().equalsIgnoreCase(cat)) {
+				values[i] = b.getCurrentAmount();
+				limit += b.getLimit();
+				current += b.getCurrentAmount();
+				i++;
+			}
+		}
+			remainder = limit - current;
+			values[i] = remainder;
+		
+		Label l = new Label(cat);
+		l.setTranslateX(200);
+		PieChart.Data pieData[] = new PieChart.Data[2];
+		for (i = 0; i < 2; i++) {
+			if(i == 1) {
+				pieData[i] = new PieChart.Data("AVAILABLE", values[i]);
+			} else {
+				pieData[i] = new PieChart.Data("SPENT", values[i]);
+			}
+			
+		}
+		PieChart chart = new PieChart(FXCollections.observableArrayList(pieData));
+		chart.setLabelsVisible(false);
+		chart.setLegendSide(Side.TOP);
+		
+		Label caption = new Label("");
+		caption.setTextFill(Color.BLACK);
+		caption.setStyle("-fx-font: 24 arial;");
+
+		
+		for (final PieChart.Data d : pieData) {
+			d.getNode().addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent e) {
+					caption.setTranslateX(e.getSceneX() + 10);
+					caption.setTranslateY(e.getSceneY());
+					String pieV = String.format("%.2f", d.getPieValue());
+					pieV = "$" + String.valueOf(pieV);
+					caption.setText(pieV);
+				}
+			});
+		}
+		
+		individ.getChildren().addAll(l, chart, caption);
+		return individ;
+	}
+
 }

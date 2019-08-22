@@ -35,7 +35,7 @@ public class Settings {
 			if (startDate != null) {
 				// newCycleW(startDate);
 				Stage stage = (Stage) saveButton.getScene().getWindow();
-				stage.close();
+				alert.setText("Saved");
 			} else {
 				alert.setText("pick a date ma dude");
 			}
@@ -45,7 +45,7 @@ public class Settings {
 				Stage stage = (Stage) saveButton.getScene().getWindow();
 				stage.close();
 			} else {
-				alert.setText("pick a date ma dude");
+				alert.setText("Please pick a date");
 			}
 		}
 	}

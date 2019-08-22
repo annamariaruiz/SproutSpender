@@ -89,7 +89,7 @@ public class Table {
 		this.db = db;
 	}
 
-	@SuppressWarnings({ "unchecked", "restriction" })
+	@SuppressWarnings({ "unchecked"})
 	@FXML
 	private void initialize() {
 		
@@ -109,6 +109,11 @@ public class Table {
 			
 			Callback<TableColumn<WeeklyPlanner, Budget>, TableCell<WeeklyPlanner, Budget>> floatCellFactory =
 					cb -> new FloatEditingCell();
+			
+			for(TableColumn tc : columns) {
+				tc.setResizable(false);
+				tc.setSortable(false);
+			}
 			
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(endDate);
@@ -337,8 +342,11 @@ public class Table {
 			//TODO write missing required fields alert
 		} else {
 			try {
+				String newLimit = makeNewLimit.getText().trim();
+				newLimit = newLimit.replace("$", "");
+				newLimit = newLimit.replace(",", "");
 				Budget budg = new Budget(
-					Float.parseFloat(makeNewLimit.getText().trim()),
+					Float.parseFloat(newLimit),
 					CategoryType.valueOf(makeNewCat.getText().trim()),
 					Date.valueOf(makeNewDate.getText().trim())
 				);

@@ -57,7 +57,7 @@ public class HomeController {
 				manager = new Manager(db, dbName.getText().trim());
 				//call to open table
 			} catch (RuntimeException e) {
-				alert.setText("Connection failed");
+				alert.setText("Login failed");
 			}
 			
 		} else if (valid && empty) {
@@ -75,7 +75,7 @@ public class HomeController {
 			table.setDB(db);
 			tableLoader.setController(table);
 			Parent root = tableLoader.load();
-			Scene scene = new Scene(root);
+			Scene scene = new Scene(root, 850, 450);
 			stage.setScene(scene);
 			stage.setOnHidden(eh -> table.cleanUp());
 			stage.show();
