@@ -3,10 +3,13 @@ package pro100.group10.sproutspender.views;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Optional;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,6 +27,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -124,7 +128,7 @@ public class Table {
 			
 			for(int i = 6; i >= 0; i--) {
 				dateToGrab = new Date(calendar.getTime().getTime());
-				columns[i].setText(dateToGrab.toString());
+				columns[i].setText(new SimpleDateFormat("EEE, MMM d ").format(dateToGrab));
 				calendar.add(Calendar.DATE, -1);
 				
 				final int index = i;
@@ -155,6 +159,8 @@ public class Table {
 					}
 				});
 			}
+			
+			tableView.getSelectionModel().setCellSelectionEnabled(true);
 			
 			refreshTableView();
 			calculateTotals();
@@ -262,7 +268,7 @@ public class Table {
 		
 		for(int i = 6; i >= 0; i--) {
 			dateToGrab = new Date(calendar.getTime().getTime());
-			columns[i].setText(dateToGrab.toString());
+			columns[i].setText(new SimpleDateFormat("EEE, MMM d ").format(dateToGrab));
 			calendar.add(Calendar.DATE, -1);
 		}
 	}

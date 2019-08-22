@@ -10,6 +10,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
 import pro100.group10.sproutspender.models.Budget.CategoryType;
 
 public class FloatEditingCell extends TableCell<WeeklyPlanner, Budget> {
@@ -23,7 +24,7 @@ public class FloatEditingCell extends TableCell<WeeklyPlanner, Budget> {
 			if(!arg2) {
 				if(getItem() != null) {
 					getItem().setCurrentAmount(Float.parseFloat(textField.getText().trim()));
-					commitEdit(getItem());					
+					commitEdit(getItem());
 				}
 			}
 		}
