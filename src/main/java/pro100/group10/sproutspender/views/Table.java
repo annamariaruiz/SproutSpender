@@ -3,14 +3,17 @@ package pro100.group10.sproutspender.views;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Optional;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -27,6 +30,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -65,6 +69,8 @@ public class Table {
 	@FXML
 	private TableColumn<WeeklyPlanner, Budget> day7Col;
 	TableColumn<WeeklyPlanner, Budget>[] columns;
+	
+	private SimpleObjectProperty<Date>[] obsDates;
 	
 	private int selectedID;
 	private boolean createMode = true;
@@ -117,6 +123,8 @@ public class Table {
 			columns[5] = day6Col;
 			columns[6] = day7Col;
 			
+			obsDates = new SimpleObjectProperty[7];
+			
 			Callback<TableColumn<WeeklyPlanner, Budget>, TableCell<WeeklyPlanner, Budget>> floatCellFactory =
 					cb -> new FloatEditingCell();
 			
@@ -125,8 +133,13 @@ public class Table {
 			Date dateToGrab = null;
 			
 			for(int i = 6; i >= 0; i--) {
+				final int colIndex = i;
 				dateToGrab = new Date(calendar.getTime().getTime());
-				columns[i].setText(new SimpleDateFormat("EEE, MMM d ").format(dateToGrab));
+				obsDates[i] = new SimpleObjectProperty<Date>();
+				obsDates[i].addListener((observable, oldValue, newValue) -> {
+					columns[colIndex].setText(new SimpleDateFormat("EEE, MMM d ").format(newValue));
+				});
+				obsDates[i].setValue(dateToGrab);
 				calendar.add(Calendar.DATE, -1);
 				columns[i].setResizable(false);
 				columns[i].setSortable(false);
@@ -137,7 +150,6 @@ public class Table {
 					return new SimpleObjectProperty<Budget>(budg);
 				});
 				
-				final int colIndex = i;
 				columns[i].setCellFactory(tc -> {
 					TableCell<WeeklyPlanner, Budget> cell = floatCellFactory.call(columns[colIndex]);
 					cell.itemProperty().addListener((obs, oldVal, newVal) -> {
@@ -183,31 +195,54 @@ public class Table {
 	@FXML
 	private void onMenuItemMakeNew(ActionEvent ae) {
 		createMode = true;
-		openDetailedEditWindow();
+		Budget selectedBudg = tableView.getSelectionModel().getSelectedItem().getDay(
+				tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1);
+		if(selectedBudg == null) {
+			TablePosition pos = tableView.getSelectionModel().getSelectedCells().get(0);
+			selectedBudg = new Budget();
+			selectedBudg.setDate(obsDates[pos.getColumn()].get());
+			selectedBudg.setCategory(Budget.categoryRank[pos.getRow()]);
+			selectedBudg.setCurrentAmount(0);
+			selectedBudg.setLimit(0);
+			openDetailedEditWindow(selectedBudg);
+		} else {
+			//TODO write alert
+		}
 	}
 	
 	@FXML
 	private void onMenuItemEditDetails(ActionEvent ae) {
 		createMode = false;
-		selectedID = tableView.getSelectionModel().getSelectedItem().getDay(
-				tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1).getID();
-		openDetailedEditWindow();
+		Budget selectedBudg = tableView.getSelectionModel().getSelectedItem().getDay(
+				tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1);
+		
+		if(selectedBudg != null && selectedBudg.getCategory() != CategoryType.GENERAL) {
+			selectedID = selectedBudg.getID();
+			openDetailedEditWindow(selectedBudg);
+		} else {
+			//TODO write alert
+		}
 	}
 	
-	private void openDetailedEditWindow() {
+	private void openDetailedEditWindow(Budget budg) {
 		FXMLLoader budgetPopOutLoader = new FXMLLoader();
 		budgetPopOutLoader.setLocation(getClass().getResource(BUDGET_POP_OUT_FXML_LOC));
 		GridPane budgetPopOutRoot = null;
 		final String MAKE_NEW_BUDGET_TITLE = "Create/Edit Budget";
 		budgetPopOutLoader.setController(this);
 		
-
-		
 		try {
 			budgetPopOutRoot = (GridPane) budgetPopOutLoader.load();
 			makeNewCat.getItems().removeAll(makeNewCat.getItems());
 			makeNewCat.getItems().addAll(enums);
-			makeNewCat.getSelectionModel().select(enums.get(0));
+			if(budg.getDate() != null) makeNewDate.setValue(budg.getDate().toLocalDate());
+			if(budg.getCategory() != null) {
+				makeNewCat.getSelectionModel().select(budg.getCategory());
+			} else {
+				makeNewCat.getSelectionModel().select(enums.get(0));
+			}
+			if(budg.getCurrentAmount() > 0) makeNewCurrentAmount.setText(String.valueOf(budg.getCurrentAmount()));
+			
 		} catch(IOException ioe) {
 			//TODO write catch block
 		}
@@ -277,7 +312,7 @@ public class Table {
 		
 		for(int i = 6; i >= 0; i--) {
 			dateToGrab = new Date(calendar.getTime().getTime());
-			columns[i].setText(new SimpleDateFormat("EEE, MMM d ").format(dateToGrab));
+			obsDates[i].setValue(dateToGrab);
 			calendar.add(Calendar.DATE, -1);
 		}
 	}
@@ -292,7 +327,7 @@ public class Table {
 		
 		for(int i = 6; i >= 0; i--) {
 			dateToGrab = new Date(calendar.getTime().getTime());
-			columns[i].setText(new SimpleDateFormat("EEE, MMM d ").format(dateToGrab));
+			obsDates[i].setValue(dateToGrab);
 			calendar.add(Calendar.DATE, -1);
 		}
 		refreshTableView();
