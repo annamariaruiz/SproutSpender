@@ -19,7 +19,7 @@
     <RowConstraints maxHeight="293.0" minHeight="10.0" prefHeight="293.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Label alignment="CENTER" prefHeight="17.0" prefWidth="641.0" text="Sprout Spender" textAlignment="CENTER">
+      <Label alignment="CENTER" prefHeight="17.0" prefWidth="641.0" text="Sprout Spender" textAlignment="CENTER" textFill="#158032">
          <font>
             <Font name="Papyrus" size="48.0" />
          </font>
@@ -45,6 +45,11 @@
             </Label>
             <TextField fx:id="username" layoutX="101.0" layoutY="147.0" prefHeight="40.0" prefWidth="164.0" text="sproutspender" />
             <PasswordField fx:id="password" layoutX="335.0" layoutY="147.0" prefHeight="40.0" prefWidth="164.0" text="sproutspender" />
+            <Label fx:id="createNewUser" layoutX="129.0" layoutY="216.0" onMouseClicked="#openCredentials" text="Create New Login" underline="true">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
          </children>
       </Pane>
    </children>

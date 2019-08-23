@@ -247,7 +247,6 @@ public class Bills {
 	private ObservableList<Bill> getBills() {
 		listedBills.clear();
 		HashMap<String, Bill> temp = db.selectAllBills();
-		int limit = temp.size();
 		
 		for (String bill : temp.keySet()) {
 			listedBills.add(temp.get(bill));

@@ -3,3 +3,11 @@
     -fx-text-fill: #b83f3f;
     -fx-font-size: 1.3em;
   }
+  
+.button {
+    -fx-border-color: #158032;
+}
+
+.button:selected {
+    -fx-border-color: yellow;
+}
