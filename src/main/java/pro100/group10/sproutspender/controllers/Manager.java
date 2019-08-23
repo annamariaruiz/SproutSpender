@@ -22,7 +22,7 @@ import pro100.group10.sproutspender.models.Database;
 
 @SuppressWarnings("serial")
 public class Manager implements Serializable{
-	private boolean timeFrame;
+	private boolean timeFrame;//285 -> Manager
 	private Date startDate;
 	private Date endDate;
 	private Date prevEndDate;
@@ -114,7 +114,7 @@ public class Manager implements Serializable{
 			}
 		}
 		
-		newCycle(null, newStart); //New end date for the manager
+		newCycle(null, newStart, null); //New end date for the manager
 		
 		 for(Budget b : budgets) { //New end dates and limits for the specified categories
 			 b.setEndDate(endDate);
@@ -174,7 +174,8 @@ public class Manager implements Serializable{
 		} else if(!timeFrame ) {
 			calendar.add(Calendar.MONTH, 1);
 		}
-		Date end = (Date) calendar.getTime();
+		java.util.Date endD = calendar.getTime(); //Turn into a java.util.Date object
+		Date end = new Date(endD.getTime()); //Turn into a sql.date object
 		
 		if(end.before(Date.valueOf(LocalDate.now()))) {
 			if(timeFrame) { //Week
@@ -212,8 +213,8 @@ public class Manager implements Serializable{
 		return newStart;
 	}
 	
-	public Date newCycle(LocalDate ld, Date d) {
-		Date startDate = null;
+	public Date newCycle(LocalDate ld, Date d, Budget b) {
+		Date startDay = null;
 		if(ld != null) {
 			startDate = Date.valueOf(ld);
 		} else {
@@ -232,7 +233,7 @@ public class Manager implements Serializable{
 		Date end = new Date(endD.getTime()); //Turn into a sql.date object
 		endDate = end;
 		
-		for(Budget b : budgets) {
+		if(b != null ) {
 			b.setEndDate(end);
 			try {
 				db.update(b);
@@ -240,6 +241,7 @@ public class Manager implements Serializable{
 				e.printStackTrace();
 			}
 		}
+		
 		return end;
 	}
 	
@@ -254,7 +256,7 @@ public class Manager implements Serializable{
 		}
 		
 		if(next) {
-			newCycle(ld, null);
+			newCycle(ld, null, null);
 		}
 	}
 	
@@ -277,7 +279,8 @@ public class Manager implements Serializable{
 				} else if(bills.get(bill).getTimeFrame() == Bill.TimeFrame.WEEKLY) {
 					calendar.add(Calendar.DATE, 7);
 				}
-				Date due = (Date) calendar.getTime();
+				java.util.Date end = calendar.getTime(); //Turn into a java.util.Date object
+				Date due = new Date(end.getTime()); //Turn into a sql.date object
 				b.setDate(due);
 				b.setPaid(false);
 				try {

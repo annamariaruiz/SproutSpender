@@ -112,7 +112,7 @@ public class Database {
         	 if(b.getEndDate() == null) b.setEndDate(new Date(0L));
         	 String sql = null;
         	 if(call) {
-        		 Date end = man.newCycle(null, b.getDate());
+        		 Date end = man.newCycle(null, b.getDate(), null);
         		 sql = String.format(
                          "INSERT INTO Budgets (limit, category, currentAmount, date, endDate) VALUES (%.2f, '%s', %.2f, '%s', '%s')",
                          b.getLimit(), b.getCategory(), b.getCurrentAmount(), b.getDate(), end);
