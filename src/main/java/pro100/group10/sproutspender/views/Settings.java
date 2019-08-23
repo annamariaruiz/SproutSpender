@@ -37,7 +37,7 @@ public class Settings {
 				Stage stage = (Stage) saveButton.getScene().getWindow();
 				alert.setText("Saved");
 			} else {
-				alert.setText("pick a date ma dude");
+				alert.setText("Please pick a date");
 			}
 		} else if (monthTime.isSelected()) {
 			if (startDate != null) {

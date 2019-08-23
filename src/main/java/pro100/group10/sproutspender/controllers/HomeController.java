@@ -82,6 +82,8 @@ public class HomeController {
 				// call to open table
 			} catch (RuntimeException e) {
 				alert.setText("Login failed");
+				System.out.println(e.getMessage());
+				e.printStackTrace();
 			}
 
 		} else if (valid && empty) {
