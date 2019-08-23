@@ -22,7 +22,7 @@ import pro100.group10.sproutspender.models.Database;
 
 @SuppressWarnings("serial")
 public class Manager implements Serializable{
-	private boolean timeFrame;
+	private boolean timeFrame;//285 -> Manager
 	private Date startDate;
 	private Date endDate;
 	private Date prevEndDate;
@@ -114,7 +114,7 @@ public class Manager implements Serializable{
 			}
 		}
 		
-		newCycle(null, newStart); //New end date for the manager
+		newCycle(null, newStart, null); //New end date for the manager
 		
 		 for(Budget b : budgets) { //New end dates and limits for the specified categories
 			 b.setEndDate(endDate);
@@ -212,7 +212,7 @@ public class Manager implements Serializable{
 		return newStart;
 	}
 	
-	public Date newCycle(LocalDate ld, Date d) {
+	public Date newCycle(LocalDate ld, Date d, Budget b) {
 		Date startDay = null;
 		if(ld != null) {
 			startDay = Date.valueOf(ld);
@@ -232,18 +232,15 @@ public class Manager implements Serializable{
 		Date end = new Date(endD.getTime()); //Turn into a sql.date object
 		endDate = end;
 		
-		System.out.println("Budgets after newCycle");
-		for(Budget b : budgets) {
+		if(b != null ) {
 			b.setEndDate(end);
-			System.out.println(b.getID());
-			System.out.println("Start Date: " + b.getDate());
-			System.out.println("End Date: " + b.getEndDate());
 			try {
 				db.update(b);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
+		
 		return end;
 	}
 	
@@ -258,7 +255,7 @@ public class Manager implements Serializable{
 		}
 		
 		if(next) {
-			newCycle(ld, null);
+			newCycle(ld, null, null);
 		}
 	}
 	
@@ -281,7 +278,8 @@ public class Manager implements Serializable{
 				} else if(bills.get(bill).getTimeFrame() == Bill.TimeFrame.WEEKLY) {
 					calendar.add(Calendar.DATE, 7);
 				}
-				Date due = (Date) calendar.getTime();
+				java.util.Date end = calendar.getTime(); //Turn into a java.util.Date object
+				Date due = new Date(end.getTime()); //Turn into a sql.date object
 				b.setDate(due);
 				b.setPaid(false);
 				try {
