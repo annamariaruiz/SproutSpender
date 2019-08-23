@@ -10,7 +10,10 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import pro100.group10.sproutspender.models.Bill;
@@ -20,9 +23,14 @@ import pro100.group10.sproutspender.models.Database;
 @SuppressWarnings("serial")
 public class Manager implements Serializable{
 	private boolean timeFrame;
+	private Date startDate;
 	private Date endDate;
+	private Date prevEndDate;
 	private HashMap<String, Bill> bills = new HashMap<>();
-	private Budget[] budgets = new Budget[Budget.CategoryType.values().length];
+	private ArrayList<Budget> budgets = new ArrayList<>();
+	private ArrayList<Budget> allBudgets = new ArrayList<>();
+	private HashMap<String, Float> budgetLimits = new HashMap<>();
+
 	public Database db = new Database();
 	
 	public Manager(Database db, String dbName) { 
@@ -30,37 +38,188 @@ public class Manager implements Serializable{
 		init(db, dbName);
 	}
 	
-	public static void main(String[] args) {
-		@SuppressWarnings("unused")
-		Manager m = new Manager(new Database(), "HelloDarkness");
-	}
+//	public static void main(String[] args) {
+//		@SuppressWarnings("unused")
+//		Manager m = new Manager(new Database(), "HelloDarkness");
+//	}
 	
 	public void init(Database db, String dbName) {
-		
 		if(dbName != null) {
 			HomeController.manager = deserialize(dbName);
+			update(db);
+			nextCycleBi();
 			if(endDate != null) {
-				LocalDate ld = LocalDate.now();
-				Calendar today = Calendar.getInstance();
-				today.clear();
-				today.set(ld.getYear(), ld.getMonthValue(), 1);
-				today.add(Calendar.DATE, -1);
-				java.util.Date endD = today.getTime();
-				Date end = new Date(endD.getTime());
-				
-				endDate = end;
-				timeFrame = false;
-				for(Budget b : budgets) {
-					b.setEndDate(end);
-				}
 				nextCycleBu();
-				nextCycleBi();
+			} else {//Make the end Date and previous End Date here since it would need to be null to get in here.
+				LocalDate ld = LocalDate.now(); //Find the local date that is today.
+				Calendar endCal = Calendar.getInstance(); //Make a new Calendar variable.
+				endCal.set(ld.getYear(), ld.getMonthValue() + 1, 1); //Set endCal to be the current year, next month, and the first day 
+				endCal.add(Calendar.DATE, -1); //Change the end date to be the last day of the previous month
+				java.util.Date endD = endCal.getTime(); //Turn into a java.util.Date object
+				Date end = new Date(endD.getTime()); //Turn into a sql.date object
+				endDate = end; //Set the class level endDate to be the new end made
+				
+				Calendar defaul = Calendar.getInstance();//Make a new Calendar variable
+				defaul.set(2000, 1, 1);//Set the default date to January 1st 2000
+				java.util.Date prevEndD = defaul.getTime(); // Turn into a java.util.date object
+				Date prevEnd = new Date(prevEndD.getTime());//Turn into a sql.date object
+				prevEndDate = prevEnd;
+				
+				//Default Start Date
+				Calendar startCal = Calendar.getInstance();
+				startCal.add(Calendar.MONTH, -1);
+				startCal.add(Calendar.DATE, 1);
+				java.util.Date startD = startCal.getTime();
+				Date start = new Date(startD.getTime());
+				startDate = start;
+				
+				timeFrame = false; //Default timeFrame = Month
+				
+				//Default limits
+				budgetLimits.put("FOOD", (float) 843);
+				budgetLimits.put("TRANSPORTATION", (float) 843);
+				budgetLimits.put("ENTERTAINMENT", (float) 843);
+				budgetLimits.put("MISCELLANEOUS", (float) 843);
+				
+			}
+			for (Budget b : allBudgets) {
+				if(b.getEndDate().after(startDate)) {//TODO Check and see if the end date is before or after the start date
+					budgets.add(b);
+				}
 			}
 		}
 	}
+	
+	public void changeSettings(LocalDate newS, boolean timeFrame, float food, float transit, float entertain, float misc) throws SQLException { //Depending on the new start date, the end date  would change
+		this.timeFrame = timeFrame; //Update the time frame
+		
+		budgetLimits.clear(); //Update the limits
+		budgetLimits.put("FOOD", food);
+		budgetLimits.put("TRANSPORTATION", transit);
+		budgetLimits.put("ENTERTAINMENT", entertain);
+		budgetLimits.put("MISCELLANEOUS", misc);
+		
+		//Ensure the new start date is valid.
+		Date newStart = Date.valueOf(newS); //new Start Date
+		if(newStart.after(Date.valueOf(LocalDate.now()))) {//If the new start date is in the future
+			newStart = newStartFuture(newS, newStart);
+		} else if(newStart.before(Date.valueOf(LocalDate.now()))) {
+			newStart = newStartPast(newS, newStart);
+		}
+		startDate = newStart;
+	
+		for (Budget b : allBudgets) {//Fix the budgets to only be the ones located in the current window of time
+			if(b.getEndDate().after(startDate)) {
+				budgets.add(b);
+			}
+		}
+		
+		newCycle(null, newStart); //New end date for the manager
+		
+		 for(Budget b : budgets) { //New end dates and limits for the specified categories
+			 b.setEndDate(endDate);
+			 if(b.getCategory() == Budget.CategoryType.FOOD) {
+				 b.setLimit(food);
+			 } else if(b.getCategory() == Budget.CategoryType.TRANSPORTATION) {
+				 b.setLimit(transit);
+			 } else if(b.getCategory() == Budget.CategoryType.ENTERTAINMENT) {
+				 b.setLimit(entertain);
+			 } else if(b.getCategory() == Budget.CategoryType.MISCELLANEOUS) {
+				 b.setLimit(misc);
+			 } 
+			 db.update(b);
+		 }
+	}
+	
+	private Date newStartFuture(LocalDate newS, Date newStart) {
+		if(timeFrame) {//If the timeFrame goes by weeks
+			Period period = Period.between(newS, LocalDate.now());
+		    int diff = period.getDays(); //Difference between the future start date and today
+		    if(diff % 7 == 0) { //If there is no remainder then set the new startdate to be today
+		    	Calendar official = Calendar.getInstance();
+		    	official.set(newS.getYear(), newS.getMonthValue(), newS.getDayOfMonth());
+		    	official.add(Calendar.DATE, -diff);
+		    	java.util.Date temp = official.getTime();
+		    	newStart = new Date(temp.getTime());
+		    } else { //If there is a remainder
+		    	int base = diff / 7; //How many weeks you can go back without passing today
+		    	int newDiff = (base + 1) * 7;
+		    	Calendar official = Calendar.getInstance();
+		    	official.set(newS.getYear(), newS.getMonthValue(), newS.getDayOfMonth());
+		    	official.add(Calendar.DATE, -newDiff);
+		    	java.util.Date temp = official.getTime();
+		    	newStart = new Date(temp.getTime());
+		    }
+		} else if(!timeFrame) {//If the timeFrame goes by months
+			Calendar startCalendar = new GregorianCalendar();
+			startCalendar.setTime(Date.valueOf(LocalDate.now()));
+			Calendar endCalendar = new GregorianCalendar();
+			endCalendar.setTime(newStart);
+			int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
+			int diffMonth = diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
+	    	Calendar official = Calendar.getInstance();
+	    	official.set(newS.getYear(), newS.getMonthValue(), newS.getDayOfMonth());
+	    	official.add(Calendar.DATE, -diffMonth);
+	    	java.util.Date temp = official.getTime();
+	    	newStart = new Date(temp.getTime());
+		} 
+		return newStart;
+	}
 
-	public void newCycle(LocalDate ld) {
-		Date startDate = Date.valueOf(ld);
+	private Date newStartPast(LocalDate newS, Date newStart) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(newStart);
+		if(timeFrame) {
+			calendar.add(Calendar.DATE, 7);
+		} else if(!timeFrame ) {
+			calendar.add(Calendar.MONTH, 1);
+		}
+		Date end = (Date) calendar.getTime();
+		
+		if(end.before(Date.valueOf(LocalDate.now()))) {
+			if(timeFrame) { //Week
+				Period period = Period.between(LocalDate.now(), newS);
+			    int diff = period.getDays(); //Difference between the future start date and today
+			    if(diff % 7 == 0) { //If there is no remainder then set the new startdate to be today 
+			    	Calendar official = Calendar.getInstance();
+			    	official.set(newS.getYear(), newS.getMonthValue(), newS.getDayOfMonth());
+			    	official.add(Calendar.DATE, -diff);
+			    	java.util.Date temp = official.getTime();
+			    	newStart = new Date(temp.getTime());
+			    } else { //If there is a remainder
+			    	int base = diff / 7; //How many weeks you can go forward without passing today
+			    	int newDiff = base * 7;
+			    	Calendar official = Calendar.getInstance();
+			    	official.set(newS.getYear(), newS.getMonthValue(), newS.getDayOfMonth());
+			    	official.add(Calendar.DATE, newDiff);
+			    	java.util.Date temp = official.getTime();
+			    	newStart = new Date(temp.getTime());
+			    }
+			} else { //Month
+				Calendar startCalendar = new GregorianCalendar();
+				startCalendar.setTime(newStart);
+				Calendar endCalendar = new GregorianCalendar();
+				endCalendar.setTime(Date.valueOf(LocalDate.now()));
+				int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
+				int diffMonth = diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
+		    	Calendar official = Calendar.getInstance();
+		    	official.set(newS.getYear(), newS.getMonthValue(), newS.getDayOfMonth());
+		    	official.add(Calendar.DATE, diffMonth);
+		    	java.util.Date temp = official.getTime();
+		    	newStart = new Date(temp.getTime());
+			}
+		}
+		return newStart;
+	}
+	
+	public Date newCycle(LocalDate ld, Date d) {
+		Date startDate = null;
+		if(ld != null) {
+			startDate = Date.valueOf(ld);
+		} else {
+			startDate = d;
+		}
+		this.startDate = startDate;
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
@@ -69,19 +228,19 @@ public class Manager implements Serializable{
 		} else if(!timeFrame ) {
 			calendar.add(Calendar.MONTH, 1);
 		}
+		java.util.Date endD = calendar.getTime(); //Turn into a java.util.Date object
+		Date end = new Date(endD.getTime()); //Turn into a sql.date object
+		endDate = end;
 		
-		Date end = (Date) calendar.getTime();
-		
-		for(int i = 0; i < budgets.length; i++) {
-			budgets[i].setEndDate(end);
-			
-			Budget b = budgets[i];
-			
+		for(Budget b : budgets) {
+			b.setEndDate(end);
 			try {
 				db.update(b);
-			} catch (SQLException e) {e.printStackTrace();};
-			update(db);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
+		return end;
 	}
 	
 	public void nextCycleBu() {
@@ -95,18 +254,18 @@ public class Manager implements Serializable{
 		}
 		
 		if(next) {
-			newCycle(ld);
+			newCycle(ld, null);
 		}
 	}
 	
 	public void nextCycleBi() {
+		//Call this when you pay a bill
 		boolean next = false;
 		
 		for(String bill : bills.keySet()) {
 			if(bills.get(bill).isPaid()) {
 				next = true;
 			}
-			
 			if(next) {
 				Bill b = bills.get(bill);
 				Calendar calendar = Calendar.getInstance();
@@ -120,6 +279,7 @@ public class Manager implements Serializable{
 				}
 				Date due = (Date) calendar.getTime();
 				b.setDate(due);
+				b.setPaid(false);
 				try {
 					db.updateBill(b);
 				} catch (SQLException e) {e.printStackTrace();};
@@ -145,7 +305,7 @@ public class Manager implements Serializable{
 	
 	public void update(Database db) {
 		bills = db.selectAllBills();
-		budgets = db.selectAllBudg();
+		allBudgets = db.selectAllBudg();
 	}
 	
 	public boolean isValid(String str) {
@@ -230,7 +390,15 @@ public class Manager implements Serializable{
 		return found;
 	}
 		
-	public Budget[] getBudgets() {
+	public ArrayList<Budget> getBudgets() {
 		return budgets;
+	}
+	
+	public HashMap<String, Float> getBudgetLimits() {
+		return budgetLimits;
+	}
+
+	public Date getPrevEndDate() {
+		return prevEndDate;
 	}
 }

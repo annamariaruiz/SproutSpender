@@ -5,12 +5,17 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 
+import pro100.group10.sproutspender.controllers.HomeController;
+import pro100.group10.sproutspender.controllers.Manager;
 import pro100.group10.sproutspender.models.Bill.TimeFrame;
 import pro100.group10.sproutspender.models.Budget.CategoryType;
 
@@ -46,7 +51,9 @@ public class Database {
             connection = ds.getConnection();
             checkCreateDB();
         } catch (SQLServerException sqle) {
-        
+        	System.out.println("connection unestablished");
+        	System.out.println(sqle.getMessage());
+        	
         }
     }
     
@@ -98,12 +105,22 @@ public class Database {
     	return lastID;
     }
     
-    public void store(Budget b) throws SQLException {
+    public void store(Budget b, boolean call) throws SQLException {
+    	Manager man = HomeController.manager;
+    	
          try(Statement stmt = connection.createStatement()) {
         	 if(b.getEndDate() == null) b.setEndDate(new Date(0L));
-        	 String sql = String.format(
-                     "INSERT INTO Budgets (limit, category, currentAmount, date, endDate) VALUES (%2.2f, '%s', %2.2f, '%s', '%s')",
-                     b.getLimit(), b.getCategory(), b.getCurrentAmount(), b.getDate(), b.getEndDate());
+        	 String sql = null;
+        	 if(call) {
+        		 Date end = man.newCycle(null, b.getDate());
+        		 sql = String.format(
+                         "INSERT INTO Budgets (limit, category, currentAmount, date, endDate) VALUES (%.2f, '%s', %.2f, '%s', '%s')",
+                         b.getLimit(), b.getCategory(), b.getCurrentAmount(), b.getDate(), end);
+         	} else if (!call) {
+         		sql = String.format(
+                        "INSERT INTO Budgets (limit, category, currentAmount, date, endDate) VALUES (%.2f, '%s', %.2f, '%s', '%s')",
+                        b.getLimit(), b.getCategory(), b.getCurrentAmount(), b.getDate(), b.getEndDate());
+         	}
              stmt.executeUpdate(sql);
          }
     	
@@ -123,7 +140,7 @@ public class Database {
 		 
 		 try(Statement stmt = connection.createStatement()) {
 		     String sql = String.format(
-		             "INSERT INTO Bills (name, amount, duedate, timeFrame, paid) VALUES ('%s', %2.2f, '%s', '%s', '%d')",
+		             "INSERT INTO Bills (name, amount, duedate, timeFrame, paid) VALUES ('%s', %.2f, '%s', '%s', '%d')",
 		             b.getName(), b.getAmount(), date.toString(), b.getTimeFrame().toString(), paid);
 		     stmt.executeUpdate(sql);
 		 }
@@ -201,10 +218,10 @@ public class Database {
     	String updateSQL =
     		"Update Bills" + " "
     			+ "SET name = '" + b.getName() + "', "
-				+ "SET duedate = '" + b.getDate().toString() + "', "
-				+ "SET amount = " + b.getAmount() + ", "
-				+ "SET timeFrame = " + b.getTimeFrame().toString() + ", "
-				+ "SET paid = " + paid + " "
+				+ "duedate = '" + b.getDate().toString() + "', "
+				+ "amount = " + b.getAmount() + ", "
+				+ "timeframe = '" + b.getTimeFrame().toString() + "', "
+				+ "paid = " + paid + " "
 			+ "WHERE id = " + b.getId();
     	
     	try(Statement stmt = connection.createStatement()) {
@@ -285,8 +302,8 @@ public class Database {
 		return bills;
 	}
     
-	public Budget[] selectAllBudg() {
-		Budget[] budgets = new Budget[5];//Change amount
+	public ArrayList<Budget> selectAllBudg() {
+		ArrayList<Budget> budgets = new ArrayList<>();
 
 		Statement stmt;
 		try {
@@ -294,12 +311,26 @@ public class Database {
 			String sql = "SELECT * FROM Budgets";
 			ResultSet rs = stmt.executeQuery(sql);
 			
-			int i = 0;
 			while (rs.next()) {
 				Float limit = rs.getFloat("limit");
 				Float currentAmount = rs.getFloat("currentAmount");
 				String dateS = rs.getString("endDate");
-				Date date = Date.valueOf(dateS);
+				java.util.Date dateJ = null;
+				try {
+					dateJ = new SimpleDateFormat("yyyy-MM-dd").parse(dateS);
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				Date date = new Date(dateJ.getTime());
+				
+				String enDateS = rs.getString("endDate");
+				java.util.Date enDateJ = null;
+				try {
+					enDateJ = new SimpleDateFormat("yyyy-MM-dd").parse(enDateS);
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				Date enDate = new Date(enDateJ.getTime());
 				
 				String category = rs.getString("category");
 				CategoryType cat = Budget.CategoryType.GENERAL;
@@ -314,11 +345,11 @@ public class Database {
 				}
 				
 				int id = rs.getInt("id");
-				Budget b = new Budget(limit, cat, date);
+				Budget b = new Budget(limit, cat, enDate);
+				b.setEndDate(date);
 				b.setID(id);
 				b.setCurrentAmount(currentAmount);
-				budgets[i] = b;
-				i++;
+				budgets.add(b);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -335,6 +366,10 @@ public class Database {
     	} catch(SQLException sqle) {
     		throw new RuntimeException("Could not create database.\n" + sqle);
     	}
+    }
+    
+    public Connection getConnection() {
+		return connection;
     }
     
     public void setConnection(String username, String password, String dbName) {

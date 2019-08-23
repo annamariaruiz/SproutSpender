@@ -3,13 +3,11 @@ package pro100.group10.sproutspender.views;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Optional;
 
-import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -23,11 +21,12 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumn.CellEditEvent;
-import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -43,6 +42,11 @@ import pro100.group10.sproutspender.models.WeeklyPlanner;
 public class Table {
 
 	private final String BUDGET_POP_OUT_FXML_LOC = "../views/BudgetPopOut.fxml";
+	private ObservableList<CategoryType> enums = FXCollections.observableArrayList(
+			Budget.CategoryType.FOOD, 
+			Budget.CategoryType.ENTERTAINMENT, 
+			Budget.CategoryType.MISCELLANEOUS, 
+			Budget.CategoryType.TRANSPORTATION);
 	
 	@FXML
 	private TableView<WeeklyPlanner> tableView;
@@ -65,11 +69,11 @@ public class Table {
 	private int selectedID;
 	private boolean createMode = true;
 	@FXML
-	private TextField makeNewDate;
+	private DatePicker makeNewDate;
 	@FXML
 	private TextField makeNewLimit;
 	@FXML
-	private TextField makeNewCat;
+	private ComboBox<Budget.CategoryType> makeNewCat;
 	@FXML
 	private TextField makeNewCurrentAmount;
 	
@@ -79,6 +83,8 @@ public class Table {
 	private Button bills;
 	@FXML
 	private Button graphs;
+	@FXML
+	private DatePicker goToDate;
 	
 	private boolean hasInitialized = false;
 	private boolean tableIsEditable = false;
@@ -195,8 +201,13 @@ public class Table {
 		final String MAKE_NEW_BUDGET_TITLE = "Create/Edit Budget";
 		budgetPopOutLoader.setController(this);
 		
+
+		
 		try {
 			budgetPopOutRoot = (GridPane) budgetPopOutLoader.load();
+			makeNewCat.getItems().removeAll(makeNewCat.getItems());
+			makeNewCat.getItems().addAll(enums);
+			makeNewCat.getSelectionModel().select(enums.get(0));
 		} catch(IOException ioe) {
 			//TODO write catch block
 		}
@@ -258,7 +269,7 @@ public class Table {
 	}
 	
 	private void changeEndDate(int days) {
-		Calendar calendar = Calendar.getInstance();
+ 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(endDate);
 		calendar.add(Calendar.DATE, days);
 		endDate = new Date(calendar.getTime().getTime());
@@ -269,6 +280,23 @@ public class Table {
 			columns[i].setText(new SimpleDateFormat("EEE, MMM d ").format(dateToGrab));
 			calendar.add(Calendar.DATE, -1);
 		}
+	}
+	
+	@FXML
+	private void changeEndDate() {
+		Date goTo = java.sql.Date.valueOf(goToDate.getValue());
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(goTo);
+		endDate = new Date(calendar.getTime().getTime());
+		Date dateToGrab = null;
+		
+		for(int i = 6; i >= 0; i--) {
+			dateToGrab = new Date(calendar.getTime().getTime());
+			columns[i].setText(new SimpleDateFormat("EEE, MMM d ").format(dateToGrab));
+			calendar.add(Calendar.DATE, -1);
+		}
+		refreshTableView();
+		calculateTotals();
 	}
 	
 	private WeeklyPlanner parseThisWeek(CategoryType category) {
@@ -345,29 +373,25 @@ public class Table {
 	private void onPopOutSubmit(ActionEvent ae) {
 		boolean missingReqField = false;
 		
-		if(makeNewDate.getText().trim().isEmpty()) missingReqField = true;
-		if(makeNewLimit.getText().trim().isEmpty()) missingReqField = true;
-		if(makeNewCat.getText().trim().isEmpty()) missingReqField = true;
+		if(makeNewDate.getValue() == null) missingReqField = true;
+		if(makeNewCat.getSelectionModel().isEmpty()) missingReqField = true;
 		if(makeNewCurrentAmount.getText().trim().isEmpty()) makeNewCurrentAmount.setText("0.0");
 		
 		if(missingReqField) {
 			//TODO write missing required fields alert
 		} else {
 			try {
-				String newLimit = makeNewLimit.getText().trim();
-				newLimit = newLimit.replace("$", "");
-				newLimit = newLimit.replace(",", "");
 				Budget budg = new Budget(
-					Float.parseFloat(newLimit),
-					CategoryType.valueOf(makeNewCat.getText().trim()),
-					Date.valueOf(makeNewDate.getText().trim())
+					0,
+					makeNewCat.getValue(),
+					Date.valueOf(makeNewDate.getValue())
 				);
 				
 				budg.setCurrentAmount(Float.parseFloat(makeNewCurrentAmount.getText().trim()));
 				budg.setID(selectedID);
 				
 				if(createMode) {
-					db.store(budg);
+					db.store(budg, true);
 				} else {
 					db.update(budg);
 				}
