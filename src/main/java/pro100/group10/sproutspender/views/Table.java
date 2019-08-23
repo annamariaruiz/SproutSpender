@@ -364,7 +364,6 @@ public class Table {
 		boolean missingReqField = false;
 		
 		if(makeNewDate.getValue() == null) missingReqField = true;
-		if(makeNewLimit.getText().trim().isEmpty()) missingReqField = true;
 		if(makeNewCat.getSelectionModel().isEmpty()) missingReqField = true;
 		if(makeNewCurrentAmount.getText().trim().isEmpty()) makeNewCurrentAmount.setText("0.0");
 		
@@ -372,11 +371,8 @@ public class Table {
 			//TODO write missing required fields alert
 		} else {
 			try {
-				String newLimit = makeNewLimit.getText().trim();
-				newLimit = newLimit.replace("$", "");
-				newLimit = newLimit.replace(",", "");
 				Budget budg = new Budget(
-					Float.parseFloat(newLimit),
+					0,
 					makeNewCat.getValue(),
 					Date.valueOf(makeNewDate.getValue())
 				);
@@ -385,7 +381,7 @@ public class Table {
 				budg.setID(selectedID);
 				
 				if(createMode) {
-					db.store(budg);
+					db.store(budg, true);
 				} else {
 					db.update(budg);
 				}

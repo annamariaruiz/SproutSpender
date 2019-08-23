@@ -54,6 +54,7 @@ public class HomeController {
 				db.setConnection(username.getText().trim(), password.getText().trim(), dbName.getText().trim());
 				db.canConnect();
 				manager = new Manager(db, dbName.getText().trim());
+				manager.update(db);
 				//call to open table
 				try {
 					FXMLLoader tableLoader = new FXMLLoader();
