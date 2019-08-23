@@ -241,7 +241,6 @@ public class Manager implements Serializable{
 				e.printStackTrace();
 			}
 		}
-		
 		return end;
 	}
 	
