@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.DatePicker?>
@@ -14,7 +18,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane minHeight="630.0" minWidth="690.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane minHeight="400.0" maxHeight="400.0" minWidth="730.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 	<top>
 		<VBox>
    <children>
@@ -42,9 +46,9 @@
             			<Button fx:id="bills" onAction="#onBillsButtonClick" styleClass="toolbarbutton">Bills</Button>
             			<Button fx:id="graphs" onAction="#onGraphButtonClick" styleClass="toolbarbutton">Graphs</Button>
             			<Button fx:id="settings" onAction="#onSettingsButtonClick" styleClass="toolbarbutton">Settings</Button>
-                  		<DatePicker fx:id="goToDate" onAction="#changeEndDate" translateX="335.0" />
-                 		<Button onAction="#onLastButtonClick" styleClass="toolbarbutton" text="Prev Week" translateX="335.0">Last</Button>
-                 		<Button onAction="#onNextButtonClick" styleClass="toolbarbutton" text="Next Week" translateX="335.0">Next</Button>
+                  		<DatePicker fx:id="goToDate" onAction="#changeEndDate" translateX="200.0" />
+                 		<Button onAction="#onLastButtonClick" styleClass="toolbarbutton" text="Prev Week" translateX="200.0">Last</Button>
+                 		<Button onAction="#onNextButtonClick" styleClass="toolbarbutton" text="Next Week" translateX="200.0">Next</Button>
             </items>
          		</ToolBar>
    </children>
