@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -24,11 +25,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import pro100.group10.sproutspender.models.Budget;
@@ -97,6 +100,7 @@ public class Table {
 		if(!hasInitialized) {
 			hasInitialized = true;
 			tableView.setEditable(tableIsEditable);
+			tableView.getSelectionModel().setCellSelectionEnabled(true);
 			
 			columns = (TableColumn<WeeklyPlanner, Budget>[]) new TableColumn[7];
 			columns[0] = day1Col;
@@ -110,11 +114,6 @@ public class Table {
 			Callback<TableColumn<WeeklyPlanner, Budget>, TableCell<WeeklyPlanner, Budget>> floatCellFactory =
 					cb -> new FloatEditingCell();
 			
-			for(TableColumn tc : columns) {
-				tc.setResizable(false);
-				tc.setSortable(false);
-			}
-			
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(endDate);
 			Date dateToGrab = null;
@@ -123,14 +122,26 @@ public class Table {
 				dateToGrab = new Date(calendar.getTime().getTime());
 				columns[i].setText(new SimpleDateFormat("EEE, MMM d ").format(dateToGrab));
 				calendar.add(Calendar.DATE, -1);
+				columns[i].setResizable(false);
+				columns[i].setSortable(false);
 				
 				final int index = i;
 				columns[i].setCellValueFactory(cellData -> {
-					Budget budg = cellData.getValue().getDay(index + 1);						
+					Budget budg = cellData.getValue().getDay(index + 1);
 					return new SimpleObjectProperty<Budget>(budg);
 				});
 				
-				columns[i].setCellFactory(floatCellFactory);
+				final int colIndex = i;
+				columns[i].setCellFactory(tc -> {
+					TableCell<WeeklyPlanner, Budget> cell = floatCellFactory.call(columns[colIndex]);
+					cell.itemProperty().addListener((obs, oldVal, newVal) -> {
+						if(newVal != null && newVal.getCurrentAmount() < newVal.getLimit()) {
+							cell.setTextFill(Color.FORESTGREEN);
+						}
+					});
+					
+					return cell;
+				});
 				
 				columns[i].setOnEditCommit(new EventHandler<CellEditEvent<WeeklyPlanner, Budget>>() {
 					@Override
@@ -152,8 +163,6 @@ public class Table {
 					}
 				});
 			}
-			
-			tableView.getSelectionModel().setCellSelectionEnabled(true);
 			
 			refreshTableView();
 			calculateTotals();
@@ -244,6 +253,7 @@ public class Table {
 		for(CategoryType cat : Budget.categoryRank) {
 			wpList.add(parseThisWeek(cat));			
 		}
+		
 		tableView.setItems(wpList);
 	}
 	
