@@ -174,7 +174,8 @@ public class Manager implements Serializable{
 		} else if(!timeFrame ) {
 			calendar.add(Calendar.MONTH, 1);
 		}
-		Date end = (Date) calendar.getTime();
+		java.util.Date endD = calendar.getTime(); //Turn into a java.util.Date object
+		Date end = new Date(endD.getTime()); //Turn into a sql.date object
 		
 		if(end.before(Date.valueOf(LocalDate.now()))) {
 			if(timeFrame) { //Week
