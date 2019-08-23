@@ -2,6 +2,7 @@ package pro100.group10.sproutspender.views;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
@@ -24,6 +25,7 @@ import pro100.group10.sproutspender.models.Database;
 public class Graphs {
 	
 	private Stage graphs = new Stage();
+	private int numOfGraphs = 0; 
 
 	public void init() {
 		
@@ -41,6 +43,7 @@ public class Graphs {
 			catGraphs.getChildren().add(createSmallGraph(cats, b.getCategory().toString()));
 		}
 		
+		upperGra.setLayoutY(100);
 		upperGra.setLayoutY(100);
 		upperGra.setMinSize(400, 400);
 		catGraphs.setMaxHeight(300);
@@ -111,16 +114,7 @@ public class Graphs {
 			d.getNode().addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent e) {
-					if(buds.size() == 2) {
-						caption.setTranslateX(e.getSceneX() - 150);
-					} else if(buds.size() == 4) {
-						caption.setTranslateX(e.getSceneX() - 150);
-					} else if(buds.size() == 3) {
-						caption.setTranslateX(e.getSceneX() - 150);
-					} else if(buds.size() == 1) {
-						caption.setTranslateX(e.getSceneX());
-					}
-					
+					caption.setTranslateX(e.getSceneX() - 150);
 					caption.setTranslateY(e.getSceneY());
 					String pieV = String.format("%.2f", d.getPieValue());
 					pieV = "$" + String.valueOf(pieV);

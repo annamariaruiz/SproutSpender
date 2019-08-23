@@ -1,6 +1,7 @@
 package pro100.group10.sproutspender.models;
 
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -15,8 +16,19 @@ import pro100.group10.sproutspender.models.Budget.CategoryType;
 public class FloatEditingCell extends TableCell<WeeklyPlanner, Budget> {
 
 	private TextField textField;
-	
-	protected ChangeListener<Boolean> changeListener = (observable, oldVal, newVal) -> registerChange(newVal);
+
+	protected ChangeListener<Boolean> changeListener = new ChangeListener<Boolean>() {
+		@Override
+		public void changed(ObservableValue<? extends Boolean> arg0,
+				Boolean arg1, Boolean arg2) {
+			if(!arg2) {
+				if(getItem() != null) {
+					getItem().setCurrentAmount(Float.parseFloat(textField.getText().trim()));
+					commitEdit(getItem());
+				}
+			}
+		}
+	};
 	
 	public FloatEditingCell() {}
 	
@@ -42,16 +54,24 @@ public class FloatEditingCell extends TableCell<WeeklyPlanner, Budget> {
 		textField = new TextField(getString());
 		textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
 		textField.focusedProperty().addListener(changeListener);
-		textField.setOnAction(evt -> registerChange());
+		textField.setOnAction(evt -> {
+			if(getItem() != null) {
+				getItem().setCurrentAmount(Float.parseFloat(textField.getText().trim()));
+				commitEdit(getItem());					
+			}
+		});
 		
 		textField.setOnKeyPressed((key) -> {
 			if(key.getCode().equals(KeyCode.ESCAPE)) {
 				textField.focusedProperty().removeListener(changeListener);
-				cancelEdit();
+			cancelEdit();
 			}
 			
 			if(key.getCode().equals(KeyCode.ENTER)) {
-				registerChange();
+				if(getItem() != null) {
+					getItem().setCurrentAmount(Float.parseFloat(textField.getText().trim()));
+					commitEdit(getItem());					
+				}
 			}
 		});
 	}
@@ -113,22 +133,5 @@ public class FloatEditingCell extends TableCell<WeeklyPlanner, Budget> {
 		
 		// Stops neighboring cell from being edited without a double-click
 		getTableView().getSelectionModel().clearSelection();
-	}
-
-	private void registerChange(boolean hasValue) {
-		if(getItem() != null) {
-//			if(getItem().getCurrentAmount() < getItem().getLimit()) {
-//				setTextFill(Color.FORESTGREEN);
-//			}
-			
-			if(!hasValue) {
-				getItem().setCurrentAmount(Float.parseFloat(textField.getText().trim()));
-				commitEdit(getItem());				
-			}
-		}
-	}
-	
-	private void registerChange() {
-		registerChange(false);
 	}
 }

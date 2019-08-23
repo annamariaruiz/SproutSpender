@@ -213,16 +213,16 @@ public class Manager implements Serializable{
 	}
 	
 	public Date newCycle(LocalDate ld, Date d) {
-		Date startDay = null;
+		Date startDate = null;
 		if(ld != null) {
-			startDay = Date.valueOf(ld);
+			startDate = Date.valueOf(ld);
 		} else {
-			startDay = d;
+			startDate = d;
 		}
-		startDate = startDay;
+		this.startDate = startDate;
 		
 		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(startDay);
+		calendar.setTime(startDate);
 		if(timeFrame) {
 			calendar.add(Calendar.DATE, 7);
 		} else if(!timeFrame ) {
@@ -232,12 +232,8 @@ public class Manager implements Serializable{
 		Date end = new Date(endD.getTime()); //Turn into a sql.date object
 		endDate = end;
 		
-		System.out.println("Budgets after newCycle");
 		for(Budget b : budgets) {
 			b.setEndDate(end);
-			System.out.println(b.getID());
-			System.out.println("Start Date: " + b.getDate());
-			System.out.println("End Date: " + b.getEndDate());
 			try {
 				db.update(b);
 			} catch (SQLException e) {
@@ -310,15 +306,6 @@ public class Manager implements Serializable{
 	public void update(Database db) {
 		bills = db.selectAllBills();
 		allBudgets = db.selectAllBudg();
-		
-		budgets.clear();
-		for (Budget b : allBudgets) {
-			java.util.Date temp = Date.valueOf(LocalDate.now());
-	    	Date temp2 = new Date(temp.getTime());
-			if(b.getEndDate().after(temp2)) {//TODO Check and see if the end date is before or after the start date
-				budgets.add(b);
-			}
-		}
 	}
 	
 	public boolean isValid(String str) {

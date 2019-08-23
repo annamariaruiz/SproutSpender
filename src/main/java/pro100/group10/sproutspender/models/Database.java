@@ -107,6 +107,7 @@ public class Database {
     
     public void store(Budget b, boolean call) throws SQLException {
     	Manager man = HomeController.manager;
+    	
          try(Statement stmt = connection.createStatement()) {
         	 if(b.getEndDate() == null) b.setEndDate(new Date(0L));
         	 String sql = null;
