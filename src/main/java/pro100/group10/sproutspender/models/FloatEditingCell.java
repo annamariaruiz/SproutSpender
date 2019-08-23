@@ -117,9 +117,9 @@ public class FloatEditingCell extends TableCell<WeeklyPlanner, Budget> {
 
 	private void registerChange(boolean hasValue) {
 		if(getItem() != null) {
-			if(getItem().getCurrentAmount() < getItem().getLimit()) {
-				setTextFill(Color.FORESTGREEN);
-			}
+//			if(getItem().getCurrentAmount() < getItem().getLimit()) {
+//				setTextFill(Color.FORESTGREEN);
+//			}
 			
 			if(!hasValue) {
 				getItem().setCurrentAmount(Float.parseFloat(textField.getText().trim()));

@@ -149,11 +149,11 @@ public class Table {
 				
 				columns[i].setCellFactory(tc -> {
 					TableCell<WeeklyPlanner, Budget> cell = floatCellFactory.call(columns[colIndex]);
-					cell.itemProperty().addListener((obs, oldVal, newVal) -> {
-						if(newVal != null && newVal.getCurrentAmount() < newVal.getLimit()) {
-							cell.setTextFill(Color.FORESTGREEN);
-						}
-					});
+//					cell.itemProperty().addListener((obs, oldVal, newVal) -> {
+//						if(newVal != null && newVal.getCurrentAmount() < newVal.getLimit()) {
+//							cell.setTextFill(Color.FORESTGREEN);
+//						}
+//					});
 					
 					return cell;
 				});
