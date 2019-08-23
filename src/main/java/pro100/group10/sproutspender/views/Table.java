@@ -30,6 +30,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import pro100.group10.sproutspender.controllers.HomeController;
+import pro100.group10.sproutspender.controllers.Manager;
 import pro100.group10.sproutspender.models.Budget;
 import pro100.group10.sproutspender.models.Budget.CategoryType;
 import pro100.group10.sproutspender.models.Database;
@@ -256,6 +258,8 @@ public class Table {
 			wpList.add(parseThisWeek(cat));			
 		}
 		tableView.setItems(wpList);
+		Manager man = HomeController.manager;
+		man.update(db);
 	}
 	
 	private void changeEndDate(int days) {
