@@ -6,6 +6,7 @@
   
 .button {
     -fx-border-color: #158032;
+    -fx-border-radius: 5;
 }
 
 .button:selected {
