@@ -12,13 +12,14 @@ public class Budget implements Serializable{
 		ENTERTAINMENT,
 		MISCELLANEOUS
 	}
-	
+	//DO THE PREVIOUS END-DATE THING
 	public static final CategoryType[] categoryRank = new CategoryType[] { CategoryType.FOOD,
 			CategoryType.TRANSPORTATION, CategoryType.ENTERTAINMENT, CategoryType.MISCELLANEOUS, CategoryType.GENERAL };
 	
 	private int id;
 	private Date date;
 	private Date endDate;
+	private Date prevEndDate;
 	private float limit = 0;
 	private CategoryType category;
 	private float currentAmount = 0;
@@ -83,6 +84,14 @@ public class Budget implements Serializable{
 		this.endDate = endDate;
 	}
 	
+	public Date getPrevEndDate() {
+		return prevEndDate;
+	}
+
+	public void setPrevEndDate(Date prevEndDate) {
+		this.prevEndDate = prevEndDate;
+	}
+
 	@Override
 	public String toString() {
 		return String.valueOf(getCurrentAmount());
