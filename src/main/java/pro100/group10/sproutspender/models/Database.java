@@ -208,9 +208,15 @@ public class Database {
     }
 
     public Budget lookUpByDayAndCat(Date date, CategoryType cat) throws SQLException {
-    	String selectSQL =
+    	String selectSQL = null;
+    	try {
+    		selectSQL=
     		"SELECT * FROM " + TABLE_NAME
     		+ " WHERE date = '" + date.toString() + "' AND category = '" + cat.toString() + "' AND ManagerID = " + HomeController.manager.getID();
+    	
+    	} catch (NullPointerException npe) {
+    		
+    	}
     	
     	ResultSet dayRow = null;
     	Budget foundBudg = null;
@@ -226,6 +232,8 @@ public class Database {
 				foundBudg.setCategory(CategoryType.valueOf(dayRow.getString("category")));
 				foundBudg.setCurrentAmount(dayRow.getFloat("currentAmount"));
     		}
+    	} catch (NullPointerException npe) {
+    		
     	}
     	
     	return foundBudg;

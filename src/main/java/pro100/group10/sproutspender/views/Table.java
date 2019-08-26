@@ -297,6 +297,7 @@ public class Table {
 		
 		tableView.setItems(wpList);
 		HomeController.manager.update(HomeController.manager.db);
+		
 	}
 	
 	private void changeEndDate(int days) {
