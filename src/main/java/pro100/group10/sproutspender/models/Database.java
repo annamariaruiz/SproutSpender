@@ -63,6 +63,7 @@ public class Database {
 				connection.close();
 				connection = null;
 			} catch (SQLException sqle) {
+				System.out.println(sqle.getMessage());
 				throw new RuntimeException("Failed to close connection\n", sqle);
 			}
 		}
@@ -295,8 +296,8 @@ public class Database {
 				b.setId(id);
 				bills.put(b.getName(), b);
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} catch (SQLException sqle) {
+			System.out.println(sqle.getMessage());
 		}
 		return bills;
 	}
@@ -317,8 +318,8 @@ public class Database {
 				java.util.Date dateJ = null;
 				try {
 					dateJ = new SimpleDateFormat("yyyy-MM-dd").parse(dateS);
-				} catch (ParseException e) {
-					e.printStackTrace();
+				} catch (ParseException pe) {
+					System.out.println(pe.getMessage());
 				}
 				Date date = new Date(dateJ.getTime());
 				
@@ -326,8 +327,8 @@ public class Database {
 				java.util.Date enDateJ = null;
 				try {
 					enDateJ = new SimpleDateFormat("yyyy-MM-dd").parse(enDateS);
-				} catch (ParseException e) {
-					e.printStackTrace();
+				} catch (ParseException pe) {
+					pe.getMessage();
 				}
 				Date enDate = new Date(enDateJ.getTime());
 				
@@ -350,8 +351,8 @@ public class Database {
 				b.setCurrentAmount(currentAmount);
 				budgets.add(b);
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} catch (SQLException sqle) {
+			System.out.println(sqle.getMessage());
 		}
 		return budgets;
 	}
@@ -361,8 +362,10 @@ public class Database {
     		connection = ds.getConnection();
     		checkCreateDB();
     	} catch(SQLServerException sse) {
+    		System.out.println(sse.getMessage());
     		throw new RuntimeException("Could not connect to database.\n" + sse);
     	} catch(SQLException sqle) {
+    		System.out.println(sqle.getMessage());
     		throw new RuntimeException("Could not create database.\n" + sqle);
     	}
     }
