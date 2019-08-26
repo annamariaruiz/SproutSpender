@@ -192,32 +192,36 @@ public class Table {
 	@FXML
 	private void onMenuItemMakeNew(ActionEvent ae) {
 		createMode = true;
-		Budget selectedBudg = tableView.getSelectionModel().getSelectedItem().getDay(
-				tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1);
-		if(selectedBudg == null) {
-			TablePosition pos = tableView.getSelectionModel().getSelectedCells().get(0);
-			selectedBudg = new Budget();
-			selectedBudg.setDate(obsDates[pos.getColumn()].get());
-			selectedBudg.setCategory(Budget.categoryRank[pos.getRow()]);
-			selectedBudg.setCurrentAmount(0);
-			selectedBudg.setLimit(0);
-			openDetailedEditWindow(selectedBudg);
-		} else {
-			//TODO write alert
+		if(tableView.getSelectionModel().getSelectedItem() != null) {
+			Budget selectedBudg = tableView.getSelectionModel().getSelectedItem().getDay(
+					tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1);
+			if(selectedBudg == null) {
+				TablePosition pos = tableView.getSelectionModel().getSelectedCells().get(0);
+				selectedBudg = new Budget();
+				selectedBudg.setDate(obsDates[pos.getColumn()].get());
+				selectedBudg.setCategory(Budget.categoryRank[pos.getRow()]);
+				selectedBudg.setCurrentAmount(0);
+				selectedBudg.setLimit(0);
+				openDetailedEditWindow(selectedBudg);
+			} else {
+				//TODO write alert
+			}
 		}
 	}
 	
 	@FXML
 	private void onMenuItemEditDetails(ActionEvent ae) {
 		createMode = false;
-		Budget selectedBudg = tableView.getSelectionModel().getSelectedItem().getDay(
-				tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1);
-		
-		if(selectedBudg != null && selectedBudg.getCategory() != CategoryType.GENERAL) {
-			selectedID = selectedBudg.getID();
-			openDetailedEditWindow(selectedBudg);
-		} else {
-			//TODO write alert
+		if(tableView.getSelectionModel().getSelectedItem() != null) {
+			Budget selectedBudg = tableView.getSelectionModel().getSelectedItem().getDay(
+					tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1);
+			
+			if(selectedBudg != null && selectedBudg.getCategory() != CategoryType.GENERAL) {
+				selectedID = selectedBudg.getID();
+				openDetailedEditWindow(selectedBudg);
+			} else {
+				//TODO write alert
+			}			
 		}
 	}
 	
@@ -263,18 +267,20 @@ public class Table {
 	
 	@FXML
 	private void onMenuItemRemove(ActionEvent ae) {
-		int day = tableView.getFocusModel().getFocusedCell().getColumn() + 1;
-		int row = tableView.getFocusModel().getFocusedCell().getRow();
-		int id = tableView.getFocusModel().getFocusedItem().getDay(day).getID();
-		WeeklyPlanner wp = tableView.getItems().get(row);
-		wp.setDay(day, null);
-		tableView.getItems().set(row, wp);
-		try {
-			HomeController.manager.db.remove(id);
-		} catch (SQLException sqle) {
-			// TODO write catch block
+		if(tableView.getSelectionModel().getSelectedItem() != null) {
+			int day = tableView.getFocusModel().getFocusedCell().getColumn() + 1;
+			int row = tableView.getFocusModel().getFocusedCell().getRow();
+			int id = tableView.getFocusModel().getFocusedItem().getDay(day).getID();
+			WeeklyPlanner wp = tableView.getItems().get(row);
+			wp.setDay(day, null);
+			tableView.getItems().set(row, wp);
+			try {
+				db.remove(id);
+			} catch (SQLException sqle) {
+				// TODO write catch block
+			}
+			calculateTotals();
 		}
-		calculateTotals();
 	}
 	
 	@FXML
