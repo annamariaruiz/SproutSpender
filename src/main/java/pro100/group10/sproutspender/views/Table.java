@@ -159,6 +159,7 @@ public class Table {
 				});
 				
 				columns[i].setOnEditCommit(new EventHandler<CellEditEvent<WeeklyPlanner, Budget>>() {
+					@SuppressWarnings("unused")
 					@Override
 					public void handle(CellEditEvent<WeeklyPlanner, Budget> t) {
 						WeeklyPlanner wp = (WeeklyPlanner) t.getTableView().getItems().get(
@@ -189,6 +190,7 @@ public class Table {
 		db.close();
 	}
 
+	@SuppressWarnings("rawtypes")
 	@FXML
 	private void onMenuItemMakeNew(ActionEvent ae) {
 		createMode = true;
@@ -275,7 +277,7 @@ public class Table {
 			wp.setDay(day, null);
 			tableView.getItems().set(row, wp);
 			try {
-				db.remove(id);
+				HomeController.manager.db.remove(id);
 			} catch (SQLException sqle) {
 				// TODO write catch block
 			}
@@ -304,8 +306,7 @@ public class Table {
 		}
 		
 		tableView.setItems(wpList);
-		Manager man = HomeController.manager;
-		man.update(db);
+		HomeController.manager.update(HomeController.manager.db);
 	}
 	
 	private void changeEndDate(int days) {
@@ -426,12 +427,15 @@ public class Table {
 					makeNewCat.getValue(),
 					Date.valueOf(makeNewDate.getValue())
 				);
-				
-				budg.setCurrentAmount(Float.parseFloat(makeNewCurrentAmount.getText().trim()));
+				String newAmount = makeNewCurrentAmount.getText().trim();
+				newAmount = newAmount.replace("$", "");
+				newAmount = newAmount.replace(",", "");
+				budg.setCurrentAmount(Float.parseFloat(newAmount));
 				budg.setID(selectedID);
+				budg.setManagerID(HomeController.manager.getID());
 				
 				if(createMode) {
-					db.store(budg, true);
+					db.store(budg);
 				} else {
 					db.update(budg);
 				}

@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import pro100.group10.sproutspender.app.Main;
 import pro100.group10.sproutspender.models.Database;
+import pro100.group10.sproutspender.models.User;
 import pro100.group10.sproutspender.views.Credentials;
 import pro100.group10.sproutspender.views.Table;
 
@@ -54,19 +55,20 @@ public class HomeController {
 
 	@FXML
 	public void init() {
-		Manager m = new Manager(null, null);
+		Manager m = new Manager();
 		boolean valid = m.isValid(dbName.getText().trim());
 		boolean empty = dbName.getText().trim().isEmpty();
 
 		Stage stage = Main.getStage();
 
-		// String username, String password, String server, int port, String dbName
+		// String username, String password, String server, int port, String dbName   password.getText().trim()
 		Database db = null;
 		try {
-			db = new Database(username.getText().trim(), password.getText().trim(), "localhost", 1433,
-					dbName.getText().trim());
+			db = new Database("admin", "admin" , "localhost", 1433,
+					"SproutSpenderDB");
+			db.setConnection("admin", "admin", "SproutSpenderDB");
+			db.canConnect();
 		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -75,12 +77,25 @@ public class HomeController {
 
 			// create database
 			try {
-				db.setConnection(username.getText().trim(), password.getText().trim(), dbName.getText().trim());
-				db.canConnect();
-				manager = new Manager(db, dbName.getText().trim());
-				manager.update(db);
+				User u = db.login(username.getText().trim(), password.getText().trim());
+				Manager mana = new Manager(db, dbName.getText().trim(), u);
+				manager.db.setConnection(db.getConnection());
+				mana.db.setConnection(db.getConnection());
+				mana.setName(dbName.getText().trim());
+				if(u != null ) {
+					mana.update(db);
+					mana.setUserID(u.getId());
+					mana.setID(db.importManager(dbName.getText().trim(), u).getID());
+				}
+				if(mana.getID() == 0) {
+					db.createManager(mana);
+					mana.setID(db.importManager(dbName.getText().trim(), u).getID());
+					manager = mana;
+				}
+				
 				// call to open table
-			} catch (RuntimeException e) {
+			} catch (RuntimeException | SQLException e) {
+				e.printStackTrace();
 				alert.setText("Login failed");
 			}
 
@@ -107,7 +122,17 @@ public class HomeController {
 
 	@FXML
 	private void openCredentials() {
+		Database db = null;
+		try {
+			db = new Database("admin", "admin" , "localhost", 1433,
+					"SproutSpenderDB");
+			db.setConnection("admin", "admin", "SproutSpenderDB");
+			db.canConnect();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
 		Credentials c = new Credentials();
-		c.init();
+		c.init(db);
 	}
 }

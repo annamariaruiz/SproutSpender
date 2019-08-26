@@ -17,9 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import pro100.group10.sproutspender.controllers.HomeController;
-import pro100.group10.sproutspender.controllers.Manager;
 import pro100.group10.sproutspender.models.Budget;
-import pro100.group10.sproutspender.models.Database;
 
 public class Graphs {
 	
@@ -28,8 +26,7 @@ public class Graphs {
 	public void init() {
 		
 		graphs.setTitle("Progress");
-		Manager man = HomeController.manager;
-		man.update(man.db);
+		HomeController.manager.update(HomeController.manager.db);
 		HashMap<String, Budget> cats = createCats();
 		
 		GridPane grid = new GridPane();
@@ -61,9 +58,7 @@ public class Graphs {
 		GridPane upperGra = new GridPane();
 		
 		ArrayList<String> categories = new ArrayList<String>();
-		Manager man = HomeController.manager;
-		Database db = man.db;
-		man.update(db);
+//		HomeController.manager.update(HomeController.manager.db);
 		float values[] = new float[5];
 		
 		float current = 0;
@@ -76,7 +71,7 @@ public class Graphs {
 			if(b != null) {
 				categories.add(b.getCategory().toString());
 				values[i] = b.getCurrentAmount();
-				limit += man.getBudgetLimits().get(b.getCategory().toString());
+				limit += HomeController.manager.getBudgetLimits().get(b.getCategory().toString());
 				current += b.getCurrentAmount();
 				i++;
 			}
@@ -133,14 +128,13 @@ public class Graphs {
 	
 	private HashMap<String, Budget> createCats() {
 		HashMap<String, Budget> buds = new HashMap<String, Budget>();
-		Manager man = HomeController.manager;
-		ArrayList<Budget> budg = man.getBudgets();
+		ArrayList<Budget> budg = HomeController.manager.getBudgets();
 		for(Budget b : budg) {
 			Budget bu = new Budget();
 			if(buds.containsKey(b.getCategory().toString())) {
 				bu.setCategory(b.getCategory());
 				bu.setCurrentAmount(buds.get(b.getCategory().toString()).getCurrentAmount() + b.getCurrentAmount());
-				bu.setLimit(man.getBudgetLimits().get(b.getCategory().toString()));
+				bu.setLimit(HomeController.manager.getBudgetLimits().get(b.getCategory().toString()));
 				buds.remove(b.getCategory().toString());
 				buds.put(b.getCategory().toString(), bu);
 			} else  {
@@ -153,14 +147,10 @@ public class Graphs {
 	private VBox createSmallGraph(HashMap<String, Budget> buds ,String cat) {
 		VBox individ = new VBox();
 		
-		Manager man = HomeController.manager;
-		Database db = man.db;
-		man.update(db);
+//		HomeController.manager.update(HomeController.manager.db);
 		float values[] = new float[2];
-		
-		//How am I only going to get the budgets for that time period?
 		float current = 0;
-		float limit = man.getBudgetLimits().get(cat);
+		float limit = HomeController.manager.getBudgetLimits().get(cat);
 		float remainder = 0;
 		int i = 0;
 		for(String s : buds.keySet()) {
