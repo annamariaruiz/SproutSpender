@@ -1,11 +1,5 @@
 package pro100.group10.sproutspender.controllers;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -19,13 +13,25 @@ import java.util.HashMap;
 import pro100.group10.sproutspender.models.Bill;
 import pro100.group10.sproutspender.models.Budget;
 import pro100.group10.sproutspender.models.Database;
+import pro100.group10.sproutspender.models.User;
 
 @SuppressWarnings("serial")
 public class Manager implements Serializable{
-	private boolean timeFrame;//285 -> Manager
+	
+	public enum Timeframe {
+		WEEKLY,
+		MONTHLY
+	}
+	
+	private int ID;
+	private int UserID;
+	private String name;
+//	private boolean timeFrame;//285 -> Manager
+	private Timeframe timeFrame;//285 -> Manager
 	private Date startDate;
 	private Date endDate;
 	private Date prevEndDate;
+	private User user;
 	private HashMap<String, Bill> bills = new HashMap<>();
 	private ArrayList<Budget> budgets = new ArrayList<>();
 	private ArrayList<Budget> allBudgets = new ArrayList<>();
@@ -33,22 +39,34 @@ public class Manager implements Serializable{
 
 	public Database db = new Database();
 	
-	public Manager(Database db, String dbName) { 
-		this.db = db;
-		init(db, dbName);
+	public Manager(Database db, String dbName, User u) { 
+		if(u != null) {
+			this.db = db;
+			init(db, dbName, u);
+		} else {
+			System.out.println("Login failed.");
+		}
+		
 	}
 	
-//	public static void main(String[] args) {
-//		@SuppressWarnings("unused")
-//		Manager m = new Manager(new Database(), "HelloDarkness");
-//	}
+	public Manager(int iD, String name, Timeframe timeFrame, Date startDate, Date endDate, Date prevEndDate, HashMap<String, Float> budgetLimits) {
+		ID = iD;
+		this.name = name;
+		this.timeFrame = timeFrame;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.prevEndDate = prevEndDate;
+		this.budgetLimits = budgetLimits;
+	}
 	
-	public void init(Database db, String dbName) {
+	public Manager() {}
+
+	public void init(Database db, String dbName, User u) {
 		if(dbName != null) {
-			HomeController.manager = deserialize(dbName);
+			HomeController.manager = db.importManager(dbName, u);
 			update(db);
 			nextCycleBi();
-			if(endDate != null) {
+			if(HomeController.manager.timeFrame != null) {
 				nextCycleBu();
 			} else {//Make the end Date and previous End Date here since it would need to be null to get in here.
 				LocalDate ld = LocalDate.now(); //Find the local date that is today.
@@ -58,12 +76,14 @@ public class Manager implements Serializable{
 				java.util.Date endD = endCal.getTime(); //Turn into a java.util.Date object
 				Date end = new Date(endD.getTime()); //Turn into a sql.date object
 				endDate = end; //Set the class level endDate to be the new end made
+				HomeController.manager.endDate = endDate;
 				
 				Calendar defaul = Calendar.getInstance();//Make a new Calendar variable
 				defaul.set(2000, 1, 1);//Set the default date to January 1st 2000
 				java.util.Date prevEndD = defaul.getTime(); // Turn into a java.util.date object
 				Date prevEnd = new Date(prevEndD.getTime());//Turn into a sql.date object
 				prevEndDate = prevEnd;
+				HomeController.manager.prevEndDate = prevEndDate;
 				
 				//Default Start Date
 				Calendar startCal = Calendar.getInstance();
@@ -73,31 +93,43 @@ public class Manager implements Serializable{
 				Date start = new Date(startD.getTime());
 				startDate = start;
 				
-				timeFrame = false; //Default timeFrame = Month
+				timeFrame = Timeframe.MONTHLY; //Default timeFrame = Month
+				HomeController.manager.timeFrame = timeFrame;
 				
 				//Default limits
 				budgetLimits.put("FOOD", (float) 843);
 				budgetLimits.put("TRANSPORTATION", (float) 843);
 				budgetLimits.put("ENTERTAINMENT", (float) 843);
 				budgetLimits.put("MISCELLANEOUS", (float) 843);
-				
+				HomeController.manager.budgetLimits = budgetLimits;
 			}
+			allBudgets.clear();
 			for (Budget b : allBudgets) {
-				if(b.getEndDate().after(startDate)) {//TODO Check and see if the end date is before or after the start date
+				if(b.getEndDate().after(HomeController.manager.startDate)) {//TODO Check and see if the end date is before or after the start date
 					budgets.add(b);
 				}
 			}
 		}
 	}
 	
-	public void changeSettings(LocalDate newS, boolean timeFrame, float food, float transit, float entertain, float misc) throws SQLException { //Depending on the new start date, the end date  would change
+	public void changeSettings(LocalDate newS, String timeFram, float food, float transit, float entertain, float misc) throws SQLException { //Depending on the new start date, the end date  would change
+		Manager temp = new Manager();
+		
+		Timeframe timeFrame = null;
+		if(timeFram.equalsIgnoreCase(Timeframe.MONTHLY.toString())) {
+			timeFrame = Timeframe.MONTHLY;
+		} else if(timeFram.equalsIgnoreCase(Timeframe.WEEKLY.toString())) {
+			timeFrame = Timeframe.WEEKLY;
+		}	
 		this.timeFrame = timeFrame; //Update the time frame
+		temp.setTimeFrame(timeFrame);
 		
 		budgetLimits.clear(); //Update the limits
 		budgetLimits.put("FOOD", food);
 		budgetLimits.put("TRANSPORTATION", transit);
 		budgetLimits.put("ENTERTAINMENT", entertain);
 		budgetLimits.put("MISCELLANEOUS", misc);
+		temp.setBudgetLimits(budgetLimits);
 		
 		//Ensure the new start date is valid.
 		Date newStart = Date.valueOf(newS); //new Start Date
@@ -107,6 +139,11 @@ public class Manager implements Serializable{
 			newStart = newStartPast(newS, newStart);
 		}
 		startDate = newStart;
+		temp.setStartDate(newStart);
+		temp.setEndDate(endDate);
+		temp.setID(ID);
+		temp.setPrevEndDate(prevEndDate);
+		temp.setName(name);
 	
 		for (Budget b : allBudgets) {//Fix the budgets to only be the ones located in the current window of time
 			if(b.getEndDate().after(startDate)) {
@@ -127,12 +164,14 @@ public class Manager implements Serializable{
 			 } else if(b.getCategory() == Budget.CategoryType.MISCELLANEOUS) {
 				 b.setLimit(misc);
 			 } 
+			 temp.setEndDate(endDate);
 			 db.update(b);
+			 db.updateManager(temp);
 		 }
 	}
-	
+
 	private Date newStartFuture(LocalDate newS, Date newStart) {
-		if(timeFrame) {//If the timeFrame goes by weeks
+		if(timeFrame.equals(Timeframe.WEEKLY)) {//If the timeFrame goes by weeks
 			Period period = Period.between(newS, LocalDate.now());
 		    int diff = period.getDays(); //Difference between the future start date and today
 		    if(diff % 7 == 0) { //If there is no remainder then set the new startdate to be today
@@ -150,7 +189,7 @@ public class Manager implements Serializable{
 		    	java.util.Date temp = official.getTime();
 		    	newStart = new Date(temp.getTime());
 		    }
-		} else if(!timeFrame) {//If the timeFrame goes by months
+		} else if(timeFrame.equals(Timeframe.MONTHLY)) {//If the timeFrame goes by months
 			Calendar startCalendar = new GregorianCalendar();
 			startCalendar.setTime(Date.valueOf(LocalDate.now()));
 			Calendar endCalendar = new GregorianCalendar();
@@ -169,16 +208,16 @@ public class Manager implements Serializable{
 	private Date newStartPast(LocalDate newS, Date newStart) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(newStart);
-		if(timeFrame) {
+		if(timeFrame.equals(Timeframe.WEEKLY)) {
 			calendar.add(Calendar.DATE, 7);
-		} else if(!timeFrame ) {
+		} else if(timeFrame.equals(Timeframe.MONTHLY)) {
 			calendar.add(Calendar.MONTH, 1);
 		}
 		java.util.Date endD = calendar.getTime(); //Turn into a java.util.Date object
 		Date end = new Date(endD.getTime()); //Turn into a sql.date object
 		
 		if(end.before(Date.valueOf(LocalDate.now()))) {
-			if(timeFrame) { //Week
+			if(timeFrame.equals(Timeframe.WEEKLY)) { //Week
 				Period period = Period.between(LocalDate.now(), newS);
 			    int diff = period.getDays(); //Difference between the future start date and today
 			    if(diff % 7 == 0) { //If there is no remainder then set the new startdate to be today 
@@ -220,23 +259,24 @@ public class Manager implements Serializable{
 		} else {
 			startDay = d;
 		}
-		startDate = startDay;
+		HomeController.manager.startDate = startDay;
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDay);
-		if(timeFrame) {
+		timeFrame = HomeController.manager.timeFrame;
+		if(HomeController.manager.timeFrame.equals(Timeframe.WEEKLY)) {
 			calendar.add(Calendar.DATE, 7);
-		} else if(!timeFrame ) {
+		} else if(timeFrame.equals(Timeframe.MONTHLY)) {
 			calendar.add(Calendar.MONTH, 1);
 		}
 		java.util.Date endD = calendar.getTime(); //Turn into a java.util.Date object
 		Date end = new Date(endD.getTime()); //Turn into a sql.date object
-		endDate = end;
+		HomeController.manager.endDate = end;
 		
 		if(b != null ) {
 			b.setEndDate(end);
 			try {
-				db.update(b);
+				HomeController.manager.db.update(b);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -250,7 +290,7 @@ public class Manager implements Serializable{
 		LocalDate ld = LocalDate.now();
 		Date today = Date.valueOf(ld);
 		
-		if(endDate.before(today)) {
+		if(HomeController.manager.endDate.before(today)) {
 			next = true;
 		}
 		
@@ -331,74 +371,12 @@ public class Manager implements Serializable{
 		return vali;
 	}
 
-	public boolean isTimeFrame() {
+	public Timeframe getTimeFrame() {
 		return timeFrame;
 	}
 
-	public void setTimeFrame(boolean timeFrame) {
+	public void setTimeFrame(Timeframe timeFrame) {
 		this.timeFrame = timeFrame;
-	}
-	
-	public void serialize(Manager m, String dbName) {
-		String path = ".\\src\\managers\\";
-		FileOutputStream fileOut = null;
-		ObjectOutputStream out = null;
-
-		String fileName = path + dbName + ".ser";
-		
-		try {
-			fileOut = new FileOutputStream(fileName);
-			out = new ObjectOutputStream(fileOut);
-			out.writeObject(m);
-
-		} catch (IOException ioe) {
-			System.out.println("Exception is caught");
-		} finally {
-			try {
-			out.close();
-			fileOut.close();
-			System.out.println("Serialization completed.");
-			} catch(IOException ioe2) {
-				System.out.println("Exception is caught");
-			} catch(NullPointerException npe) {
-				
-			}
-		}
-	}
-	
-	public Manager deserialize(String dbName) {
-		String path = ".\\src\\managers\\" + dbName + ".ser";
-		
-		File target = new File(path);
-		
-		Manager found = null;
-		
-		if(target.exists()) {
-
-			FileInputStream fileIn = null;
-			ObjectInputStream in = null;
-		
-			try {
-				fileIn = new FileInputStream(path);
-				in = new ObjectInputStream(fileIn);
-				found = (Manager) in.readObject();
-	
-			} catch (IOException ioe) {
-				System.out.println("Exception is caught");
-			} catch (ClassNotFoundException ex) {
-				System.out.println("ClassNotFoundException is caught.");
-			} finally {
-				try {
-				in.close();
-				fileIn.close();
-				System.out.println("Deserialization completed.");
-				} catch(IOException ioe2) {
-					System.out.println("Exception is caught");
-				}
-			}
-		}		
-		
-		return found;
 	}
 		
 	public ArrayList<Budget> getBudgets() {
@@ -411,5 +389,67 @@ public class Manager implements Serializable{
 
 	public Date getPrevEndDate() {
 		return prevEndDate;
+	}
+
+	
+	public User getUser() {
+		return user;
+	}
+
+	
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	
+	public String getName() {
+		return name;
+	}
+
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	
+	public int getID() {
+		return ID;
+	}
+
+	
+	public void setID(int iD) {
+		ID = iD;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+	
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public void setPrevEndDate(Date prevEndDate) {
+		this.prevEndDate = prevEndDate;
+	}
+
+	public void setBudgetLimits(HashMap<String, Float> budgetLimits) {
+		this.budgetLimits = budgetLimits;
+	}
+
+	public int getUserID() {
+		return UserID;
+	}
+
+	public void setUserID(int userID) {
+		UserID = userID;
 	}
 }
