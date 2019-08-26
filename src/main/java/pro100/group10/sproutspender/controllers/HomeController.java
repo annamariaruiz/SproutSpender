@@ -80,6 +80,7 @@ public class HomeController {
 				User u = db.login(username.getText().trim(), password.getText().trim());
 				Manager mana = new Manager(db, dbName.getText().trim(), u);
 				manager.db.setConnection(db.getConnection());
+				mana.db.setConnection(db.getConnection());
 				mana.setName(dbName.getText().trim());
 				if(u != null ) {
 					mana.update(db);
@@ -87,10 +88,10 @@ public class HomeController {
 					mana.setID(db.importManager(dbName.getText().trim(), u).getID());
 				}
 				if(mana.getID() == 0) {
-					db.createManager(manager);
+					db.createManager(mana);
 					mana.setID(db.importManager(dbName.getText().trim(), u).getID());
+					manager = mana;
 				}
-				
 				
 				// call to open table
 			} catch (RuntimeException | SQLException e) {
