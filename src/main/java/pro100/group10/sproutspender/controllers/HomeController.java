@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -49,6 +50,12 @@ public class HomeController {
 			@Override
 			public void handle(MouseEvent e) {
 				createNewUser.setTextFill(Color.web("#000"));
+			}
+		});
+		
+		password.setOnKeyPressed(key -> {
+			if(key.getCode().equals(KeyCode.ENTER)) {
+				init();
 			}
 		});
 	}
@@ -125,8 +132,8 @@ public class HomeController {
 		Database db = null;
 		try {
 			db = new Database("admin", "admin" , "localhost", 1433,
-					"SproutSpenderDB");
-			db.setConnection("admin", "admin", "SproutSpenderDB");
+					"master");
+			db.setConnection("admin", "admin", "master");
 			db.canConnect();
 		} catch (SQLException e1) {
 			e1.printStackTrace();

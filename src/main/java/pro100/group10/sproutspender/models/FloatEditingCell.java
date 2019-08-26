@@ -57,7 +57,7 @@ public class FloatEditingCell extends TableCell<WeeklyPlanner, Budget> {
 	}
 	
 	private String getString() {
-		return getItem() == null ? "" : getItem().toString();
+		return getItem() == null ? "" : "$" + String.format("%.2f", getItem().getCurrentAmount());
 	}
 	
 	@Override
@@ -122,8 +122,9 @@ public class FloatEditingCell extends TableCell<WeeklyPlanner, Budget> {
 //			}
 			
 			if(!hasValue) {
-				getItem().setCurrentAmount(Float.parseFloat(textField.getText().trim()));
-				commitEdit(getItem());				
+				String removedFormatting = textField.getText().trim().replaceAll("[$]*", "").replaceAll("[,]*", "");
+				getItem().setCurrentAmount(Float.parseFloat(removedFormatting));
+				commitEdit(getItem());
 			}
 		}
 	}

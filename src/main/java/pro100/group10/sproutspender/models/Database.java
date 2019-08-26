@@ -71,15 +71,22 @@ public class Database {
     }
 
     private void checkCreateDB() throws SQLException {
-        ds.setDatabaseName("master");
+//        ds.setDatabaseName("master");
+//        try(Statement stmt = connection.createStatement()) {
+//        	String sql = "IF DB_ID('" + ds.getDatabaseName() + "') IS NULL CREATE DATABASE " + ds.getDatabaseName();
+//        	stmt.executeUpdate(sql);
+//        }
+        
+//        if(ds.getDatabaseName() == "master") ds.setDatabaseName("SproutSpenderDB");
+//        connection.close();
+ 
+    	ds.setDatabaseName("master");
         try(Statement stmt = connection.createStatement()) {
-        	String sql = "IF DB_ID('" + ds.getDatabaseName() + "') IS NULL CREATE DATABASE " + ds.getDatabaseName();
+        	String sql = "IF DB_ID('SproutSpenderDB') IS NULL CREATE DATABASE SproutSpenderDB";
         	stmt.executeUpdate(sql);
         }
-        
-        if(ds.getDatabaseName() == "master") ds.setDatabaseName("SproutSpenderDB");
-        connection.close();
-        connection = ds.getConnection();
+        ds.setDatabaseName("SproutSpenderDB");
+    	connection = ds.getConnection();
         checkCreateTables();
     }
         

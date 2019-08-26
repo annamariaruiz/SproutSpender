@@ -90,7 +90,6 @@ public class Table {
 	private DatePicker goToDate;
 	
 	private boolean hasInitialized = false;
-	private boolean tableIsEditable = false;
 	private Date endDate = Date.valueOf(LocalDate.now());
 	
 	private Database db;
@@ -108,7 +107,7 @@ public class Table {
 	private void initialize() {
 		if(!hasInitialized) {
 			hasInitialized = true;
-			tableView.setEditable(tableIsEditable);
+			tableView.setEditable(true);
 			tableView.getSelectionModel().setCellSelectionEnabled(true);
 			
 			columns = (TableColumn<WeeklyPlanner, Budget>[]) new TableColumn[7];
@@ -153,8 +152,7 @@ public class Table {
 //						if(newVal != null && newVal.getCurrentAmount() < newVal.getLimit()) {
 //							cell.setTextFill(Color.FORESTGREEN);
 //						}
-//					});
-					
+						
 					return cell;
 				});
 				
@@ -221,9 +219,7 @@ public class Table {
 			if(selectedBudg != null && selectedBudg.getCategory() != CategoryType.GENERAL) {
 				selectedID = selectedBudg.getID();
 				openDetailedEditWindow(selectedBudg);
-			} else {
-				//TODO write alert
-			}			
+			}
 		}
 	}
 	
@@ -260,13 +256,7 @@ public class Table {
 	private void onMenuItemExit(ActionEvent ae) {
 		((Stage) tableView.getScene().getWindow()).close();
 	}
-	
-	@FXML
-	private void onMenuItemEditMode(ActionEvent ae) {
-		tableIsEditable = !tableIsEditable;
-		tableView.setEditable(tableIsEditable);
-	}
-	
+		
 	@FXML
 	private void onMenuItemRemove(ActionEvent ae) {
 		if(tableView.getSelectionModel().getSelectedItem() != null) {
