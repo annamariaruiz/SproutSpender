@@ -29,7 +29,6 @@
                   <items>
                      			<MenuItem onAction="#onMenuItemMakeNew" text="Make New Budget" />
                      			<MenuItem onAction="#onMenuItemEditDetails" text="Edit Selected Budget Details" />
-                     			<CheckMenuItem onAction="#onMenuItemEditMode" text="Edit Mode" />
                      			<MenuItem onAction="#onMenuItemRemove" text="Remove Selected Budget" />
                   </items>
                			</Menu>

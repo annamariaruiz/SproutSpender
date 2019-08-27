@@ -2,6 +2,11 @@ package pro100.group10.sproutspender.models;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Optional;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
 
 public class WeeklyPlanner {
 
@@ -19,24 +24,27 @@ public class WeeklyPlanner {
 		try {
 			method = getClass().getMethod("getDay" + day);
 		} catch (NoSuchMethodException nsme) {
-			// TODO write catch block
+			Alert alert = new Alert(AlertType.ERROR, "The specified day could not be found. This probably indicates an iterative error.\n" + nsme.getMessage(), ButtonType.CLOSE);
+			Optional<ButtonType> response = alert.showAndWait();
 			nsme.printStackTrace();
 		} catch (SecurityException se) {
-			// TODO write catch block
-			se.printStackTrace();
+			Alert alert = new Alert(AlertType.ERROR, "Something's very wrong. You somehow violated security policy..\n" + se.getMessage(), ButtonType.CLOSE);
+			Optional<ButtonType> response = alert.showAndWait();
 		}
 		
 		Budget budg = null;
 		try {
 			budg = (((Budget) method.invoke(this)));
 		} catch (IllegalAccessException iae1) {
-			// TODO write catch block
-			iae1.printStackTrace();
+			Alert alert = new Alert(AlertType.ERROR, "The budget could not access its own methods.\n" + iae1.getMessage(), ButtonType.CLOSE);
+			Optional<ButtonType> response = alert.showAndWait();
 		} catch (IllegalArgumentException iae2) {
-			// TODO write catch block
+			Alert alert = new Alert(AlertType.ERROR, "Budget's getDay method was called with the wrong arguments..\n" + iae2.getMessage(), ButtonType.CLOSE);
+			Optional<ButtonType> response = alert.showAndWait();
 			iae2.printStackTrace();
 		} catch (InvocationTargetException ite) {
-			// TODO write catch block
+			Alert alert = new Alert(AlertType.ERROR, "There was a problem calling getDay in budget.\n" + ite.getMessage(), ButtonType.CLOSE);
+			Optional<ButtonType> response = alert.showAndWait();
 			ite.printStackTrace();
 		}
 		
