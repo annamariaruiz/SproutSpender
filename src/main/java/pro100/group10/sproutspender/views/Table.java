@@ -28,12 +28,11 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import pro100.group10.sproutspender.controllers.HomeController;
-import pro100.group10.sproutspender.controllers.Manager;
 import pro100.group10.sproutspender.models.Budget;
 import pro100.group10.sproutspender.models.Budget.CategoryType;
 import pro100.group10.sproutspender.models.Database;
@@ -69,7 +68,7 @@ public class Table {
 	
 	private SimpleObjectProperty<Date>[] obsDates;
 	
-	private int selectedID;
+	private Budget selectedBudg = null;
 	private boolean createMode = true;
 	@FXML
 	private DatePicker makeNewDate;
@@ -193,7 +192,7 @@ public class Table {
 	private void onMenuItemMakeNew(ActionEvent ae) {
 		createMode = true;
 		if(tableView.getSelectionModel().getSelectedItem() != null) {
-			Budget selectedBudg = tableView.getSelectionModel().getSelectedItem().getDay(
+			selectedBudg = tableView.getSelectionModel().getSelectedItem().getDay(
 					tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1);
 			if(selectedBudg == null) {
 				TablePosition pos = tableView.getSelectionModel().getSelectedCells().get(0);
@@ -213,11 +212,10 @@ public class Table {
 	private void onMenuItemEditDetails(ActionEvent ae) {
 		createMode = false;
 		if(tableView.getSelectionModel().getSelectedItem() != null) {
-			Budget selectedBudg = tableView.getSelectionModel().getSelectedItem().getDay(
+			selectedBudg = tableView.getSelectionModel().getSelectedItem().getDay(
 					tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1);
 			
 			if(selectedBudg != null && selectedBudg.getCategory() != CategoryType.GENERAL) {
-				selectedID = selectedBudg.getID();
 				openDetailedEditWindow(selectedBudg);
 			}
 		}
@@ -232,19 +230,30 @@ public class Table {
 		
 		try {
 			budgetPopOutRoot = (GridPane) budgetPopOutLoader.load();
-			makeNewCat.getItems().removeAll(makeNewCat.getItems());
-			makeNewCat.getItems().addAll(enums);
-			if(budg.getDate() != null) makeNewDate.setValue(budg.getDate().toLocalDate());
-			if(budg.getCategory() != null) {
-				makeNewCat.getSelectionModel().select(budg.getCategory());
-			} else {
-				makeNewCat.getSelectionModel().select(enums.get(0));
-			}
-			if(budg.getCurrentAmount() > 0) makeNewCurrentAmount.setText(String.valueOf(budg.getCurrentAmount()));
-			
 		} catch(IOException ioe) {
 			//TODO write catch block
 		}
+		
+		makeNewCat.getItems().removeAll(makeNewCat.getItems());
+		makeNewCat.getItems().addAll(enums);
+		if(budg.getDate() != null) makeNewDate.setValue(budg.getDate().toLocalDate());
+		if(budg.getCategory() != null) {
+			makeNewCat.getSelectionModel().select(budg.getCategory());
+		} else {
+			makeNewCat.getSelectionModel().select(enums.get(0));
+		}
+		if(budg.getCurrentAmount() > 0) makeNewCurrentAmount.setText("$" + String.format("%.2f", budg.getCurrentAmount()));
+		
+		// Make fake button that simulated cancel button so that the onPopOutCancel() method doesn't have to change because of the user pressing enter.
+		Button fakeCancelButton = new Button();
+		fakeCancelButton.setVisible(false);
+		budgetPopOutRoot.getChildren().add(fakeCancelButton);
+		ActionEvent ae = new ActionEvent(fakeCancelButton, null);
+		makeNewCurrentAmount.setOnKeyPressed(key -> {
+			if(key.getCode() == KeyCode.ENTER) {
+				onPopOutSubmit(ae);
+			}
+		});
 		
 		Stage budgetPopOutStage = new Stage();
 		budgetPopOutStage.setTitle(MAKE_NEW_BUDGET_TITLE);
@@ -417,11 +426,12 @@ public class Table {
 					makeNewCat.getValue(),
 					Date.valueOf(makeNewDate.getValue())
 				);
+				budg.setID(selectedBudg.getID());
 				String newAmount = makeNewCurrentAmount.getText().trim();
 				newAmount = newAmount.replace("$", "");
 				newAmount = newAmount.replace(",", "");
 				budg.setCurrentAmount(Float.parseFloat(newAmount));
-				budg.setID(selectedID);
+				budg.setEndDate(selectedBudg.getEndDate());
 				budg.setManagerID(HomeController.manager.getID());
 				
 				if(createMode) {
