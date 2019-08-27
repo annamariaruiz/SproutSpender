@@ -1,0 +1,20 @@
+.button {
+    -fx-border-color: #158032;
+    -fx-border-radius: 5;
+}
+
+.button:selected {
+    -fx-border-color: yellow;
+}
+
+.table-row-cell {
+	-fx-border-color: white #C6D77C;
+	-fx-background-color: #C6D77C;
+	-fx-border-width: 1px 0px; 
+	-fx-min-height: 72px;
+}
+
+.table-cell:selected {
+	-fx-background-color: #9AD1B1;
+	-fx-text-fill: black;
+}

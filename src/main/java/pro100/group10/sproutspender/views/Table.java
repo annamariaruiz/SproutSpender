@@ -25,6 +25,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -130,6 +131,7 @@ public class Table {
 			Date dateToGrab = null;
 			
 			for(int i = 6; i >= 0; i--) {
+				final int colIndex = i;
 				dateToGrab = new Date(calendar.getTime().getTime());
 				columns[i].setText(new SimpleDateFormat("EEE, MMM d ").format(dateToGrab));
 				calendar.add(Calendar.DATE, -1);
@@ -218,7 +220,7 @@ public class Table {
 		}
 	}
 	
-	private void openDetailedEditWindow() {
+	private void openDetailedEditWindow(Budget budg) {
 		FXMLLoader budgetPopOutLoader = new FXMLLoader();
 		budgetPopOutLoader.setLocation(getClass().getResource(BUDGET_POP_OUT_FXML_LOC));
 		GridPane budgetPopOutRoot = null;

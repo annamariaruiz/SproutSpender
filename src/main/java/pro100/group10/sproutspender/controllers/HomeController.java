@@ -45,14 +45,12 @@ public class HomeController {
 				createNewUser.setTextFill(Color.web("#158032"));
 			}
 		});
-
 		createNewUser.setOnMouseExited(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
 				createNewUser.setTextFill(Color.web("#000"));
 			}
 		});
-		
 		password.setOnKeyPressed(key -> {
 			if(key.getCode().equals(KeyCode.ENTER)) {
 				init();
@@ -99,7 +97,6 @@ public class HomeController {
 					mana.setID(db.importManager(dbName.getText().trim(), u).getID());
 					manager = mana;
 				}
-				
 				// call to open table
 			} catch (RuntimeException | SQLException e) {
 				e.printStackTrace();
@@ -107,7 +104,6 @@ public class HomeController {
 				System.out.println(e.getMessage());
 				e.printStackTrace();
 			}
-
 		} else if (valid && empty) {
 			alert.setText("Database name must not be empty");
 		} else if (!valid) {
@@ -121,6 +117,7 @@ public class HomeController {
 			tableLoader.setController(table);
 			Parent root = tableLoader.load();
 			Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("../views/table.css").toString());
 			stage.setScene(scene);
 			stage.setOnHidden(eh -> table.cleanUp());
 			stage.show();
@@ -140,7 +137,6 @@ public class HomeController {
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
-		
 		Credentials c = new Credentials();
 		c.init(db);
 	}
