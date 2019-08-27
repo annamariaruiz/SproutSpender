@@ -182,6 +182,7 @@ public class Bills {
 		} else {
 			error.setText("Values must not be empty");
 		}
+		man.nextCycleBi();
 	}
 
 	private void deleteBill(){
