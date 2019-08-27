@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
@@ -14,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="450.0" maxWidth="840.0" minHeight="450.0" minWidth="830.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="450.0" maxWidth="845.0" minHeight="450.0" minWidth="830.0" prefHeight="450.0" prefWidth="845.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
 	<top>
 		<VBox>
    <children>
@@ -53,13 +52,13 @@
 	<center>
 		<TableView fx:id="tableView">
 			<columns>
-	            <TableColumn fx:id="day1Col" prefWidth="102.0" />
-	            <TableColumn fx:id="day2Col" prefWidth="102.0" />
-	            <TableColumn fx:id="day3Col" prefWidth="102.0" />
-	            <TableColumn fx:id="day4Col" prefWidth="102.0" />
-	            <TableColumn fx:id="day5Col" prefWidth="102.0" />
-	            <TableColumn fx:id="day6Col" prefWidth="102.0" />
-	            <TableColumn fx:id="day7Col" prefWidth="102.0" />
+	            <TableColumn fx:id="day1Col" prefWidth="102.0" styleClass="columns" />
+	            <TableColumn fx:id="day2Col" prefWidth="102.0" styleClass="columns" />
+	            <TableColumn fx:id="day3Col" prefWidth="102.0" styleClass="columns" />
+	            <TableColumn fx:id="day4Col" prefWidth="102.0" styleClass="columns" />
+	            <TableColumn fx:id="day5Col" prefWidth="102.0" styleClass="columns" />
+	            <TableColumn fx:id="day6Col" prefWidth="102.0" styleClass="columns" />
+	            <TableColumn fx:id="day7Col" prefWidth="102.0" styleClass="columns" />
 			</columns>
          </TableView>
 	</center>
