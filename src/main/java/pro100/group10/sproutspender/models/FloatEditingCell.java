@@ -77,7 +77,7 @@ public class FloatEditingCell extends TableCell<WeeklyPlanner, Budget> {
 	}
 	
 	private String getString() {
-		return getItem() == null ? "" : getItem().toString();
+		return getItem() == null ? "" : "$" + String.format("%.2f", getItem().getCurrentAmount());
 	}
 	
 	@Override
@@ -133,5 +133,23 @@ public class FloatEditingCell extends TableCell<WeeklyPlanner, Budget> {
 		
 		// Stops neighboring cell from being edited without a double-click
 		getTableView().getSelectionModel().clearSelection();
+	}
+
+	private void registerChange(boolean hasValue) {
+		if(getItem() != null) {
+//			if(getItem().getCurrentAmount() < getItem().getLimit()) {
+//				setTextFill(Color.FORESTGREEN);
+//			}
+			
+			if(!hasValue) {
+				String removedFormatting = textField.getText().trim().replaceAll("[$]*", "").replaceAll("[,]*", "");
+				getItem().setCurrentAmount(Float.parseFloat(removedFormatting));
+				commitEdit(getItem());
+			}
+		}
+	}
+	
+	private void registerChange() {
+		registerChange(false);
 	}
 }

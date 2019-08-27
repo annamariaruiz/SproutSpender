@@ -13,6 +13,7 @@ public class Bill implements Serializable {
 	}
 	
 	private int id;
+	private int ManagerID;
 	private float amount;
 	private Date date; //Date due
 	private String name;
@@ -76,5 +77,13 @@ public class Bill implements Serializable {
 
 	public void setPaid(boolean paid) {
 		this.paid = paid;
+	}
+
+	public int getManagerID() {
+		return ManagerID;
+	}
+
+	public void setManagerID(int managerID) {
+		ManagerID = managerID;
 	}
 }

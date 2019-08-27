@@ -1,19 +1,23 @@
 package pro100.group10.sproutspender.views;
 
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import pro100.group10.sproutspender.controllers.HomeController;
 import pro100.group10.sproutspender.controllers.Manager;
 import pro100.group10.sproutspender.models.Database;
+import pro100.group10.sproutspender.models.User;
 
 public class Credentials {
 	
@@ -21,30 +25,42 @@ public class Credentials {
 	private String username;
 	private String password;
 	private Manager mana;
+	private Database db;
 
-	public void init() {
+	public void init(Database db) {
+		this.db = db;
 		
 		credit.setTitle("Create a New User");
 		credit.setResizable(false);
 		
 		mana = HomeController.manager;
-		VBox box = new VBox();
+		GridPane grid = new GridPane();
+		VBox boxR = new VBox();
+		VBox boxL = new VBox();
 		
+		Label us = new Label("Username");
+		Label pw = new Label("Password");
 		TextField user = new TextField();
-		TextField pass = new TextField();
+		PasswordField pass = new PasswordField();
 		Button create = new Button("Create User");
 		
-		box.getChildren().addAll(user, pass, create);	
+		boxL.getChildren().addAll(us, pw);	
+		boxR.getChildren().addAll(user, pass);	
+		
+		grid.add(boxL, 0, 1);
+		grid.add(boxR, 1, 1);
+		grid.add(create, 0, 2);
 		
 		create.setOnAction(new EventHandler<ActionEvent>() { 
 			@Override
             public void handle(ActionEvent e) { 
-            	if(!createCredentials(user.getText(), pass.getText())) {
-            		
+            	boolean exit = createCredentials(user.getText(), pass.getText());
+            	if(exit) {
+            		credit.close();
             	}
-            } 
+            }
 		});
-		Scene scene = new Scene(box, 200, 200);
+		Scene scene = new Scene(grid, 400, 400);
 //		scene.getStylesheets().add(getClass().getResource("../views/application.css").toString());
 		credit.setResizable(false);
 		credit.setScene(scene);
@@ -52,18 +68,20 @@ public class Credentials {
 	}
 	
 	private boolean createCredentials(String user, String pass) {
-		boolean success = true;
-		Database db = mana.db;
-		db.setConnection(username, password, "master");
-		Connection con = db.getConnection();
-		String createLog = "CREATE LOGIN " + user + " WITH PASSWORD = '" + pass + "'";
-    	try(Statement stmt = con.createStatement()) {
-    		stmt.executeUpdate(createLog);
-    	} catch (SQLException e) {
+		Alert a = new Alert(AlertType.ERROR);
+		a.setContentText("Account already exists with that username");
+		
+		db.setConnection("admin", "admin", "SproutSpenderDB");
+		User u = new User(user, pass);
+		boolean validate = true;
+		try {
+			validate = db.createUser(u);
+		} catch (SQLException e) {
 			e.printStackTrace();
-			success = false;
 		}
-    	return success;
+		
+		if(!validate) a.show();
+		return validate;
 	}
 
 	public void setUsername(String username) {

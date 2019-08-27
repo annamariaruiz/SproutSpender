@@ -27,9 +27,11 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import pro100.group10.sproutspender.controllers.HomeController;
 import pro100.group10.sproutspender.models.Budget;
 import pro100.group10.sproutspender.models.Budget.CategoryType;
 import pro100.group10.sproutspender.models.Database;
@@ -63,7 +65,9 @@ public class Table {
 	private TableColumn<WeeklyPlanner, Budget> day7Col;
 	TableColumn<WeeklyPlanner, Budget>[] columns;
 	
-	private int selectedID;
+	private SimpleObjectProperty<Date>[] obsDates;
+	
+	private Budget selectedBudg = null;
 	private boolean createMode = true;
 	@FXML
 	private DatePicker makeNewDate;
@@ -84,7 +88,6 @@ public class Table {
 	private DatePicker goToDate;
 	
 	private boolean hasInitialized = false;
-	private boolean tableIsEditable = false;
 	private Date endDate = Date.valueOf(LocalDate.now());
 	
 	private Database db;
@@ -102,7 +105,8 @@ public class Table {
 	private void initialize() {
 		if(!hasInitialized) {
 			hasInitialized = true;
-			tableView.setEditable(tableIsEditable);
+			tableView.setEditable(true);
+			tableView.getSelectionModel().setCellSelectionEnabled(true);
 			
 			columns = (TableColumn<WeeklyPlanner, Budget>[]) new TableColumn[7];
 			columns[0] = day1Col;
@@ -136,9 +140,18 @@ public class Table {
 					return new SimpleObjectProperty<Budget>(budg);
 				});
 				
-				columns[i].setCellFactory(floatCellFactory);
+				columns[i].setCellFactory(tc -> {
+					TableCell<WeeklyPlanner, Budget> cell = floatCellFactory.call(columns[colIndex]);
+//					cell.itemProperty().addListener((obs, oldVal, newVal) -> {
+//						if(newVal != null && newVal.getCurrentAmount() < newVal.getLimit()) {
+//							cell.setTextFill(Color.FORESTGREEN);
+//						}
+						
+					return cell;
+				});
 				
 				columns[i].setOnEditCommit(new EventHandler<CellEditEvent<WeeklyPlanner, Budget>>() {
+					@SuppressWarnings("unused")
 					@Override
 					public void handle(CellEditEvent<WeeklyPlanner, Budget> t) {
 						WeeklyPlanner wp = (WeeklyPlanner) t.getTableView().getItems().get(
@@ -171,18 +184,38 @@ public class Table {
 		db.close();
 	}
 
+	@SuppressWarnings("rawtypes")
 	@FXML
 	private void onMenuItemMakeNew(ActionEvent ae) {
 		createMode = true;
-		openDetailedEditWindow();
+		if(tableView.getSelectionModel().getSelectedItem() != null) {
+			selectedBudg = tableView.getSelectionModel().getSelectedItem().getDay(
+					tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1);
+			if(selectedBudg == null) {
+				TablePosition pos = tableView.getSelectionModel().getSelectedCells().get(0);
+				selectedBudg = new Budget();
+				selectedBudg.setDate(obsDates[pos.getColumn()].get());
+				selectedBudg.setCategory(Budget.categoryRank[pos.getRow()]);
+				selectedBudg.setCurrentAmount(0);
+				selectedBudg.setLimit(0);
+				openDetailedEditWindow(selectedBudg);
+			} else {
+				//TODO write alert
+			}
+		}
 	}
 	
 	@FXML
 	private void onMenuItemEditDetails(ActionEvent ae) {
 		createMode = false;
-		selectedID = tableView.getSelectionModel().getSelectedItem().getDay(
-				tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1).getID();
-		openDetailedEditWindow();
+		if(tableView.getSelectionModel().getSelectedItem() != null) {
+			selectedBudg = tableView.getSelectionModel().getSelectedItem().getDay(
+					tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1);
+			
+			if(selectedBudg != null && selectedBudg.getCategory() != CategoryType.GENERAL) {
+				openDetailedEditWindow(selectedBudg);
+			}
+		}
 	}
 	
 	private void openDetailedEditWindow() {
@@ -196,12 +229,30 @@ public class Table {
 		
 		try {
 			budgetPopOutRoot = (GridPane) budgetPopOutLoader.load();
-			makeNewCat.getItems().removeAll(makeNewCat.getItems());
-			makeNewCat.getItems().addAll(enums);
-			makeNewCat.getSelectionModel().select(enums.get(0));
 		} catch(IOException ioe) {
 			//TODO write catch block
 		}
+		
+		makeNewCat.getItems().removeAll(makeNewCat.getItems());
+		makeNewCat.getItems().addAll(enums);
+		if(budg.getDate() != null) makeNewDate.setValue(budg.getDate().toLocalDate());
+		if(budg.getCategory() != null) {
+			makeNewCat.getSelectionModel().select(budg.getCategory());
+		} else {
+			makeNewCat.getSelectionModel().select(enums.get(0));
+		}
+		if(budg.getCurrentAmount() > 0) makeNewCurrentAmount.setText("$" + String.format("%.2f", budg.getCurrentAmount()));
+		
+		// Make fake button that simulated cancel button so that the onPopOutCancel() method doesn't have to change because of the user pressing enter.
+		Button fakeCancelButton = new Button();
+		fakeCancelButton.setVisible(false);
+		budgetPopOutRoot.getChildren().add(fakeCancelButton);
+		ActionEvent ae = new ActionEvent(fakeCancelButton, null);
+		makeNewCurrentAmount.setOnKeyPressed(key -> {
+			if(key.getCode() == KeyCode.ENTER) {
+				onPopOutSubmit(ae);
+			}
+		});
 		
 		Stage budgetPopOutStage = new Stage();
 		budgetPopOutStage.setTitle(MAKE_NEW_BUDGET_TITLE);
@@ -213,27 +264,23 @@ public class Table {
 	private void onMenuItemExit(ActionEvent ae) {
 		((Stage) tableView.getScene().getWindow()).close();
 	}
-	
-	@FXML
-	private void onMenuItemEditMode(ActionEvent ae) {
-		tableIsEditable = !tableIsEditable;
-		tableView.setEditable(tableIsEditable);
-	}
-	
+		
 	@FXML
 	private void onMenuItemRemove(ActionEvent ae) {
-		int day = tableView.getFocusModel().getFocusedCell().getColumn() + 1;
-		int row = tableView.getFocusModel().getFocusedCell().getRow();
-		int id = tableView.getFocusModel().getFocusedItem().getDay(day).getID();
-		WeeklyPlanner wp = tableView.getItems().get(row);
-		wp.setDay(day, null);
-		tableView.getItems().set(row, wp);
-		try {
-			db.remove(id);
-		} catch (SQLException sqle) {
-			// TODO write catch block
+		if(tableView.getSelectionModel().getSelectedItem() != null) {
+			int day = tableView.getFocusModel().getFocusedCell().getColumn() + 1;
+			int row = tableView.getFocusModel().getFocusedCell().getRow();
+			int id = tableView.getFocusModel().getFocusedItem().getDay(day).getID();
+			WeeklyPlanner wp = tableView.getItems().get(row);
+			wp.setDay(day, null);
+			tableView.getItems().set(row, wp);
+			try {
+				HomeController.manager.db.remove(id);
+			} catch (SQLException sqle) {
+				// TODO write catch block
+			}
+			calculateTotals();
 		}
-		calculateTotals();
 	}
 	
 	@FXML
@@ -256,6 +303,8 @@ public class Table {
 			wpList.add(parseThisWeek(cat));			
 		}
 		tableView.setItems(wpList);
+		HomeController.manager.update(HomeController.manager.db);
+		
 	}
 	
 	private void changeEndDate(int days) {
@@ -376,12 +425,16 @@ public class Table {
 					makeNewCat.getValue(),
 					Date.valueOf(makeNewDate.getValue())
 				);
-				
-				budg.setCurrentAmount(Float.parseFloat(makeNewCurrentAmount.getText().trim()));
-				budg.setID(selectedID);
+				budg.setID(selectedBudg.getID());
+				String newAmount = makeNewCurrentAmount.getText().trim();
+				newAmount = newAmount.replace("$", "");
+				newAmount = newAmount.replace(",", "");
+				budg.setCurrentAmount(Float.parseFloat(newAmount));
+				budg.setEndDate(selectedBudg.getEndDate());
+				budg.setManagerID(HomeController.manager.getID());
 				
 				if(createMode) {
-					db.store(budg, true);
+					db.store(budg);
 				} else {
 					db.update(budg);
 				}
