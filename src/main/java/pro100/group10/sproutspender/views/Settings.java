@@ -1,5 +1,6 @@
 package pro100.group10.sproutspender.views;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 import javafx.beans.value.ChangeListener;
@@ -50,14 +51,25 @@ public class Settings {
 	private Stage settings = new Stage();
 
 	@FXML
-	private void saveToFile(ActionEvent ae) {
+	private void saveToFile(ActionEvent ae) throws SQLException {
 		LocalDate startDate = timeStart.getValue();
 		if (weekTime.isSelected()) {
 			if (startDate != null) {
 				// newCycleW(startDate);
 				Stage stage = (Stage) saveButton.getScene().getWindow();
 				Manager m = new Manager();
-				m.changeSettings(timeStart, weekTime, foodSlider.getValue(), transSlider.getValue(), entertainmentSlider.getValue(), miscSlider.getValue());
+				String timeType = "weekly";
+				if(weekTime.isSelected()) {
+					timeType = "weekly";
+				} else if (monthTime.isSelected()) {
+					timeType = "monthly";
+				}
+				float food = (float) foodSlider.getValue();
+				float trans = (float) transSlider.getValue();
+				float entertainment = (float) entertainmentSlider.getValue();
+				float misc = (float) miscSlider.getValue();
+				
+				m.changeSettings(timeStart.getValue(), timeType, food, trans, entertainment, misc);
 				alert.setText("Saved");
 			} else {
 				alert.setText("Please pick a date");
