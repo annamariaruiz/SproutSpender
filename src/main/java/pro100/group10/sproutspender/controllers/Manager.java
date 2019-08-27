@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -113,8 +113,6 @@ public class Manager implements Serializable{
 	}
 	
 	public void changeSettings(LocalDate newS, String timeFram, float food, float transit, float entertain, float misc) throws SQLException { //Depending on the new start date, the end date  would change
-		Manager temp = new Manager();
-		
 		Timeframe timeFrame = null;
 		if(timeFram.equalsIgnoreCase(Timeframe.MONTHLY.toString())) {
 			timeFrame = Timeframe.MONTHLY;
@@ -122,14 +120,14 @@ public class Manager implements Serializable{
 			timeFrame = Timeframe.WEEKLY;
 		}	
 		this.timeFrame = timeFrame; //Update the time frame
-		temp.setTimeFrame(timeFrame);
+		HomeController.manager.setTimeFrame(timeFrame);
 		
 		budgetLimits.clear(); //Update the limits
 		budgetLimits.put("FOOD", food);
 		budgetLimits.put("TRANSPORTATION", transit);
 		budgetLimits.put("ENTERTAINMENT", entertain);
 		budgetLimits.put("MISCELLANEOUS", misc);
-		temp.setBudgetLimits(budgetLimits);
+		HomeController.manager.setBudgetLimits(budgetLimits);
 		
 		//Ensure the new start date is valid.
 		Date newStart = Date.valueOf(newS); //new Start Date
@@ -139,11 +137,7 @@ public class Manager implements Serializable{
 			newStart = newStartPast(newS, newStart);
 		}
 		startDate = newStart;
-		temp.setStartDate(newStart);
-		temp.setEndDate(endDate);
-		temp.setID(ID);
-		temp.setPrevEndDate(prevEndDate);
-		temp.setName(name);
+		HomeController.manager.setStartDate(newStart);
 	
 		for (Budget b : allBudgets) {//Fix the budgets to only be the ones located in the current window of time
 			if(b.getEndDate().after(startDate)) {
@@ -154,7 +148,7 @@ public class Manager implements Serializable{
 		newCycle(null, newStart, null); //New end date for the manager
 		
 		 for(Budget b : budgets) { //New end dates and limits for the specified categories
-			 b.setEndDate(endDate);
+			 b.setEndDate(HomeController.manager.endDate);
 			 if(b.getCategory() == Budget.CategoryType.FOOD) {
 				 b.setLimit(food);
 			 } else if(b.getCategory() == Budget.CategoryType.TRANSPORTATION) {
@@ -164,19 +158,19 @@ public class Manager implements Serializable{
 			 } else if(b.getCategory() == Budget.CategoryType.MISCELLANEOUS) {
 				 b.setLimit(misc);
 			 } 
-			 temp.setEndDate(endDate);
 			 db.update(b);
-			 db.updateManager(temp);
 		 }
+		 HomeController.manager.setEndDate(HomeController.manager.endDate);
+		 db.updateManager(HomeController.manager);
 	}
 
 	private Date newStartFuture(LocalDate newS, Date newStart) {
-		if(timeFrame.equals(Timeframe.WEEKLY)) {//If the timeFrame goes by weeks
-			Period period = Period.between(newS, LocalDate.now());
-		    int diff = period.getDays(); //Difference between the future start date and today
+		if(HomeController.manager.timeFrame.equals(Timeframe.WEEKLY)) {//If the timeFrame goes by weeks
+		    long diff1 = ChronoUnit.DAYS.between(newS, LocalDate.now());
+		    int diff = (int) -diff1; //Difference between the future start date and today
 		    if(diff % 7 == 0) { //If there is no remainder then set the new startdate to be today
 		    	Calendar official = Calendar.getInstance();
-		    	official.set(newS.getYear(), newS.getMonthValue(), newS.getDayOfMonth());
+		    	official.set(newS.getYear(), newS.getMonthValue() - 1, newS.getDayOfMonth());
 		    	official.add(Calendar.DATE, -diff);
 		    	java.util.Date temp = official.getTime();
 		    	newStart = new Date(temp.getTime());
@@ -184,12 +178,12 @@ public class Manager implements Serializable{
 		    	int base = diff / 7; //How many weeks you can go back without passing today
 		    	int newDiff = (base + 1) * 7;
 		    	Calendar official = Calendar.getInstance();
-		    	official.set(newS.getYear(), newS.getMonthValue(), newS.getDayOfMonth());
+		    	official.set(newS.getYear(), newS.getMonthValue() - 1, newS.getDayOfMonth());
 		    	official.add(Calendar.DATE, -newDiff);
 		    	java.util.Date temp = official.getTime();
 		    	newStart = new Date(temp.getTime());
 		    }
-		} else if(timeFrame.equals(Timeframe.MONTHLY)) {//If the timeFrame goes by months
+		} else if(HomeController.manager.timeFrame.equals(Timeframe.MONTHLY)) {//If the timeFrame goes by months
 			Calendar startCalendar = new GregorianCalendar();
 			startCalendar.setTime(Date.valueOf(LocalDate.now()));
 			Calendar endCalendar = new GregorianCalendar();
@@ -197,8 +191,8 @@ public class Manager implements Serializable{
 			int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
 			int diffMonth = diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
 	    	Calendar official = Calendar.getInstance();
-	    	official.set(newS.getYear(), newS.getMonthValue(), newS.getDayOfMonth());
-	    	official.add(Calendar.DATE, -diffMonth);
+	    	official.set(newS.getYear(), newS.getMonthValue() - 1, newS.getDayOfMonth());
+	    	official.add(Calendar.MONTH, -diffMonth);
 	    	java.util.Date temp = official.getTime();
 	    	newStart = new Date(temp.getTime());
 		} 
@@ -208,29 +202,29 @@ public class Manager implements Serializable{
 	private Date newStartPast(LocalDate newS, Date newStart) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(newStart);
-		if(timeFrame.equals(Timeframe.WEEKLY)) {
+		if(HomeController.manager.timeFrame.equals(Timeframe.WEEKLY)) {
 			calendar.add(Calendar.DATE, 7);
-		} else if(timeFrame.equals(Timeframe.MONTHLY)) {
+		} else if(HomeController.manager.timeFrame.equals(Timeframe.MONTHLY)) {
 			calendar.add(Calendar.MONTH, 1);
 		}
 		java.util.Date endD = calendar.getTime(); //Turn into a java.util.Date object
 		Date end = new Date(endD.getTime()); //Turn into a sql.date object
 		
 		if(end.before(Date.valueOf(LocalDate.now()))) {
-			if(timeFrame.equals(Timeframe.WEEKLY)) { //Week
-				Period period = Period.between(LocalDate.now(), newS);
-			    int diff = period.getDays(); //Difference between the future start date and today
+			if(HomeController.manager.timeFrame.equals(Timeframe.WEEKLY)) { //Week
+				long diff1 = ChronoUnit.DAYS.between(LocalDate.now(), newS);
+			    int diff = (int) -diff1; //Difference between the future start date and today
 			    if(diff % 7 == 0) { //If there is no remainder then set the new startdate to be today 
 			    	Calendar official = Calendar.getInstance();
-			    	official.set(newS.getYear(), newS.getMonthValue(), newS.getDayOfMonth());
-			    	official.add(Calendar.DATE, -diff);
+			    	official.set(newS.getYear(), newS.getMonthValue() - 1, newS.getDayOfMonth());
+			    	official.add(Calendar.DATE, diff);
 			    	java.util.Date temp = official.getTime();
 			    	newStart = new Date(temp.getTime());
 			    } else { //If there is a remainder
 			    	int base = diff / 7; //How many weeks you can go forward without passing today
 			    	int newDiff = base * 7;
 			    	Calendar official = Calendar.getInstance();
-			    	official.set(newS.getYear(), newS.getMonthValue(), newS.getDayOfMonth());
+			    	official.set(newS.getYear(), newS.getMonthValue() - 1, newS.getDayOfMonth());
 			    	official.add(Calendar.DATE, newDiff);
 			    	java.util.Date temp = official.getTime();
 			    	newStart = new Date(temp.getTime());
@@ -243,8 +237,8 @@ public class Manager implements Serializable{
 				int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
 				int diffMonth = diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
 		    	Calendar official = Calendar.getInstance();
-		    	official.set(newS.getYear(), newS.getMonthValue(), newS.getDayOfMonth());
-		    	official.add(Calendar.DATE, diffMonth);
+		    	official.set(newS.getYear(), newS.getMonthValue() - 1, newS.getDayOfMonth());
+		    	official.add(Calendar.MONTH, diffMonth);
 		    	java.util.Date temp = official.getTime();
 		    	newStart = new Date(temp.getTime());
 			}
@@ -255,9 +249,9 @@ public class Manager implements Serializable{
 	public Date newCycle(LocalDate ld, Date d, Budget b) {
 		Date startDay = null;
 		if(ld != null) {
-			startDate = Date.valueOf(ld);
+			startDay = Date.valueOf(ld);
 		} else {
-			startDate = d;
+			startDay = d;
 		}
 		HomeController.manager.startDate = startDay;
 		
