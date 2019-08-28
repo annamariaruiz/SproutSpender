@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="450.0" maxWidth="845.0" minHeight="450.0" minWidth="830.0" prefHeight="450.0" prefWidth="845.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxWidth="840.0" minHeight="500.0" minWidth="830.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 	<top>
 		<VBox>
    <children>
@@ -69,27 +69,35 @@
    <left>
     <VBox>
        <children>
-   	   	  <Label prefHeight="21.0" prefWidth="73.0" text="Food" translateY="38.0" BorderPane.alignment="CENTER">
+   	   	  <Label prefHeight="21.0" prefWidth="73.0" text="Food" translateY="55.0" BorderPane.alignment="CENTER">
                <font>
                   <Font size="18.0" />
                </font></Label>
-   	      <Label prefHeight="27.0" prefWidth="121.0" text="Transportation" translateY="38.0" BorderPane.alignment="CENTER">
+   	      <Label prefHeight="27.0" prefWidth="121.0" text="Transportation" translateY="100.0" BorderPane.alignment="CENTER">
                <font>
                   <Font size="18.0" />
                </font></Label>
-   	      <Label prefHeight="21.0" prefWidth="115.0" text="Entertainment" translateY="38.0" BorderPane.alignment="CENTER">
+   	      <Label prefHeight="21.0" prefWidth="115.0" text="Entertainment" translateY="145.0" BorderPane.alignment="CENTER">
                <font>
                   <Font size="18.0" />
                </font></Label>
-   	      <Label prefHeight="26.0" prefWidth="115.0" text="Miscellaneous" translateY="38.0" BorderPane.alignment="CENTER">
+   	      <Label prefHeight="26.0" prefWidth="115.0" text="Miscellaneous" translateY="190.0" BorderPane.alignment="CENTER">
                <font>
                   <Font size="18.0" />
                </font></Label>
-   	      <Label prefHeight="21.0" prefWidth="73.0" text="Total" translateY="38.0" BorderPane.alignment="CENTER">
+   	      <Label prefHeight="21.0" prefWidth="73.0" text="Total" translateY="235.0" BorderPane.alignment="CENTER">
                <font>
                   <Font size="18.0" />
                </font></Label>
        </children>
     </VBox>
    </left>
+   <bottom>
+      <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <items>
+            <Label text="Your nearest bill is due on" translateX="520.0" />
+            <Label text="" translateX="565.0" fx:id="nextBillDate" />
+         </items>
+      </ToolBar>
+   </bottom>
 </BorderPane>

@@ -3,6 +3,7 @@ package pro100.group10.sproutspender.views;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
@@ -22,6 +23,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
@@ -35,6 +37,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import pro100.group10.sproutspender.controllers.HomeController;
 import pro100.group10.sproutspender.controllers.Manager;
+import pro100.group10.sproutspender.models.Bill;
 import pro100.group10.sproutspender.models.Budget;
 import pro100.group10.sproutspender.models.Budget.CategoryType;
 import pro100.group10.sproutspender.models.Database;
@@ -69,6 +72,9 @@ public class Table {
 	TableColumn<WeeklyPlanner, Budget>[] columns;
 	
 	private SimpleObjectProperty<Date>[] obsDates;
+	
+	@FXML
+	private Label nextBillDate;
 	
 	private Budget selectedBudg = null;
 	private boolean createMode = true;
@@ -141,9 +147,8 @@ public class Table {
 				columns[i].setResizable(false);
 				columns[i].setSortable(false);
 				
-				final int index = i;
 				columns[i].setCellValueFactory(cellData -> {
-					Budget budg = cellData.getValue().getDay(index + 1);
+					Budget budg = cellData.getValue().getDay(colIndex + 1);
 					return new SimpleObjectProperty<Budget>(budg);
 				});
 				
@@ -166,7 +171,7 @@ public class Table {
 								t.getTablePosition().getRow());
 						
 						try {	
-							Budget budg = wp.getDay(index + 1);
+							Budget budg = wp.getDay(colIndex + 1);
 							if(budg != null) {
 								budg.setCurrentAmount(t.getNewValue().getCurrentAmount());
 								db.update(budg);
@@ -206,7 +211,8 @@ public class Table {
 				selectedBudg.setLimit(0);
 				openDetailedEditWindow(selectedBudg);
 			} else {
-				//TODO write alert
+				Alert alert = new Alert(AlertType.INFORMATION, "A budget already exists there.\n", ButtonType.CLOSE);
+				Optional<ButtonType> response = alert.showAndWait();
 			}
 		}
 	}
@@ -234,7 +240,8 @@ public class Table {
 		try {
 			budgetPopOutRoot = (GridPane) budgetPopOutLoader.load();
 		} catch(IOException ioe) {
-			//TODO write catch block
+			Alert alert = new Alert(AlertType.ERROR, "The budget details window could not be loaded.\n" + ioe.getMessage(), ButtonType.CLOSE);
+			Optional<ButtonType> response = alert.showAndWait();
 		}
 		
 		makeNewCat.getItems().removeAll(makeNewCat.getItems());
@@ -281,7 +288,8 @@ public class Table {
 			try {
 				HomeController.manager.db.remove(id);
 			} catch (SQLException sqle) {
-				// TODO write catch block
+				Alert alert = new Alert(AlertType.ERROR, "The budget manager I.D. could not be removed.\n" + sqle.getMessage(), ButtonType.CLOSE);
+				Optional<ButtonType> response = alert.showAndWait();
 			}
 			calculateTotals();
 		}
@@ -309,7 +317,8 @@ public class Table {
 		
 		tableView.setItems(wpList);
 		HomeController.manager.update(HomeController.manager.db);
-		
+		Bill nextBill = HomeController.manager.nextBill();
+		if(nextBill != null) nextBillDate.setText(new SimpleDateFormat("EEE, MMM d ").format(nextBill.getDate()));
 	}
 	
 	private void changeEndDate(int days) {
@@ -355,7 +364,8 @@ public class Table {
 			try {
 				budg = db.lookUpByDayAndCat(dateToGrab, category);
 			} catch(SQLException sqle) {
-				//TODO write catch block
+				Alert alert = new Alert(AlertType.ERROR, "An error was encountered while loading the week from the database.\n" + sqle.getMessage(), ButtonType.CLOSE);
+				Optional<ButtonType> response = alert.showAndWait();
 			}
 			
 			if(budg != null) thisWeek.setDay(i + 1, budg);
@@ -416,25 +426,40 @@ public class Table {
 	@FXML
 	private void onPopOutSubmit(ActionEvent ae) {
 		boolean missingReqField = false;
+		boolean hasFormatError = false;
 		
 		if(makeNewDate.getValue() == null) missingReqField = true;
-		if(makeNewCat.getSelectionModel().isEmpty()) missingReqField = true;
 		if(makeNewCurrentAmount.getText().trim().isEmpty()) makeNewCurrentAmount.setText("0.0");
 		
-		if(missingReqField) {
-			//TODO write missing required fields alert
+		String newAmount = makeNewCurrentAmount.getText().trim();
+		newAmount = newAmount.replace("$", "");
+		newAmount = newAmount.replace(",", "");
+		float newFloatAmount = -1f;
+		try {
+			newFloatAmount = Float.parseFloat(newAmount);
+		} catch(NumberFormatException nfe) {
+			hasFormatError = true;
+		}
+		
+		Date newDate = null;
+		try {
+			newDate = Date.valueOf(makeNewDate.getValue());
+		} catch(NullPointerException npe) {
+			hasFormatError = true;
+		}
+		
+		if(missingReqField || hasFormatError) {
+			Alert alert = new Alert(AlertType.INFORMATION, "You must fill in all required fields with the appropriate data type.\n", ButtonType.CLOSE);
+			Optional<ButtonType> response = alert.showAndWait();
 		} else {
 			try {
 				Budget budg = new Budget(
 					0,
 					makeNewCat.getValue(),
-					Date.valueOf(makeNewDate.getValue())
+					newDate
 				);
 				budg.setID(selectedBudg.getID());
-				String newAmount = makeNewCurrentAmount.getText().trim();
-				newAmount = newAmount.replace("$", "");
-				newAmount = newAmount.replace(",", "");
-				budg.setCurrentAmount(Float.parseFloat(newAmount));
+				budg.setCurrentAmount(newFloatAmount);
 				budg.setEndDate(selectedBudg.getEndDate());
 				budg.setManagerID(HomeController.manager.getID());
 				
@@ -443,15 +468,13 @@ public class Table {
 				} else {
 					db.update(budg);
 				}
-			} catch(NumberFormatException nfe) {
-				//TODO write catch block
 			} catch(SQLException sqle) {
-				//TODO write catch block
+				Alert alert = new Alert(AlertType.ERROR, "The database could not be written to.\n" + sqle.getMessage(), ButtonType.CLOSE);
+				Optional<ButtonType> response = alert.showAndWait();
 			}
-		}
-		
-		refreshTableView();
-		calculateTotals();
-		onPopOutCancel(ae);
+			refreshTableView();
+			calculateTotals();
+			onPopOutCancel(ae);
+		}		
  	}
 }

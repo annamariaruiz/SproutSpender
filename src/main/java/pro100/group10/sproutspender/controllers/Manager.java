@@ -332,7 +332,7 @@ public class Manager implements Serializable{
 		Bill next = null;
 
 		update(HomeController.manager.db);
-		
+
 		for(String name : HomeController.manager.bills.keySet()) {
 			if(d == null) {
 				d = HomeController.manager.bills.get(name).getDate();

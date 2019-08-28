@@ -3,6 +3,7 @@ package pro100.group10.sproutspender.views;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Optional;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,7 +11,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -18,6 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -159,18 +163,29 @@ public class Bills {
 	
 	@FXML
 	private void saveEditBill() throws SQLException {
-		if (!nameOfBill.getText().isEmpty() && !amount.getText().isEmpty() && nextDate.getValue() != null && timetype.getValue() != null) {
-			
+		boolean hasFormatError = false;
+		String newAmount = amount.getText().trim();
+		newAmount = newAmount.replace("$", "");
+		newAmount = newAmount.replace(",", "");
+		float floatAmount = -1f;
+		try {
+			floatAmount = Float.parseFloat(newAmount);
+		} catch(NumberFormatException nfe) {
+			hasFormatError = true;
+		}
+		
+		java.sql.Date date = null;
+		try {
+			date = java.sql.Date.valueOf(nextDate.getValue());
+		} catch(NullPointerException npe) {
+			hasFormatError = true;
+		}
+		
+		if (!nameOfBill.getText().isEmpty() && !amount.getText().isEmpty() && nextDate.getValue() != null && timetype.getValue() != null && !hasFormatError) {
 	    	for(Bill bill : currentSelected) {
-				String newAmount = amount.getText();
-				newAmount = newAmount.replace("$", "");
-				newAmount = newAmount.replace(",", "");
-				float floatAmount = Float.valueOf(newAmount.trim()).floatValue();
-				Date date = java.sql.Date.valueOf(nextDate.getValue());
-				
 				bill.setName(nameOfBill.getText());
 				bill.setAmount(floatAmount);
-				bill.setDate((java.sql.Date) date);
+				bill.setDate(date);
 				bill.setTimeFrame(timetype.getValue());
 				bill.setPaid(paid.isSelected());
 				db.updateBill(bill);
@@ -180,7 +195,9 @@ public class Bills {
 			window.setScene(primScene);
 			window.show();
 		} else {
-			error.setText("Values must not be empty");
+//			error.setText("Values must not be empty and must be of the proper format.");
+			Alert alert = new Alert(AlertType.INFORMATION, "You must fill in all required fields with the appropriate data type.\n", ButtonType.CLOSE);
+			Optional<ButtonType> response = alert.showAndWait();
 		}
 		man.nextCycleBi();
 	}
@@ -220,18 +237,31 @@ public class Bills {
 	
 	@FXML
 	private void saveNewBill() throws SQLException {
+		boolean hasFormatError = false;
+		String newAmount = amount.getText().trim();
+		newAmount = newAmount.replace("$", "");
+		newAmount = newAmount.replace(",", "");
+		float floatAmount = -1f;
+		try {
+			floatAmount = Float.parseFloat(newAmount);
+		} catch(NumberFormatException nfe) {
+			hasFormatError = true;
+		}
+		
+		java.sql.Date date = null;
+		try {
+			date = java.sql.Date.valueOf(nextDate.getValue());
+		} catch(NullPointerException npe) {
+			hasFormatError = true;
+		}
+		
 		//check if fields are empty
-		if (!nameOfBill.getText().isEmpty() && !amount.getText().isEmpty() && nextDate.getValue() != null && timetype.getValue() != null) {			
+		if (!nameOfBill.getText().isEmpty() && !amount.getText().isEmpty() && nextDate.getValue() != null && timetype.getValue() != null && !hasFormatError) {			
 			//store values
 			String newName = nameOfBill.getText().trim();
-			String newAmount = amount.getText();
-			newAmount = newAmount.replace("$", "");
-			newAmount = newAmount.replace(",", "");
-			float floatAmount = Float.valueOf(newAmount.trim()).floatValue();
-			Date date = java.sql.Date.valueOf(nextDate.getValue());
 			Bill.TimeFrame type = timetype.getValue();
 			
-			Bill nb = new Bill(floatAmount, (java.sql.Date) date, newName, type, false);
+			Bill nb = new Bill(floatAmount, date, newName, type, false);
 			
 			//save to database
 			db.createBi(nb);
@@ -240,9 +270,10 @@ public class Bills {
 			window.setScene(primScene);
 			window.show();
 		} else {
-			error.setText("Values must not be empty");
+//			error.setText("Values must not be empty");
+			Alert alert = new Alert(AlertType.INFORMATION, "You must fill in all required fields with the appropriate data type.\n", ButtonType.CLOSE);
+			Optional<ButtonType> response = alert.showAndWait();
 		}
-		
 	}
 
 	private ObservableList<Bill> getBills() {

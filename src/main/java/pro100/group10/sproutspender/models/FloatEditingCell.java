@@ -23,7 +23,7 @@ public class FloatEditingCell extends TableCell<WeeklyPlanner, Budget> {
 	@Override
 	public void startEdit() {
 		if(getItem() != null && getItem().getCategory() == CategoryType.GENERAL) {
-			editableProperty().setValue((Boolean) false);
+			editableProperty().setValue(Boolean.valueOf(false));
 		} else {
 			if(!isEmpty() && getItem() != null) {
 				super.startEdit();
