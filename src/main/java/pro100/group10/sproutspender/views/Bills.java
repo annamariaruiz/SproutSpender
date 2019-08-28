@@ -273,7 +273,6 @@ public class Bills {
 			Alert alert = new Alert(AlertType.INFORMATION, "You must fill in all required fields with the appropriate data type.\n", ButtonType.CLOSE);
 			Optional<ButtonType> response = alert.showAndWait();
 		}
-		
 	}
 
 	private ObservableList<Bill> getBills() {
