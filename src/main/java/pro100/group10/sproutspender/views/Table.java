@@ -30,9 +30,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import pro100.group10.sproutspender.controllers.HomeController;
+import pro100.group10.sproutspender.controllers.Manager;
 import pro100.group10.sproutspender.models.Budget;
 import pro100.group10.sproutspender.models.Budget.CategoryType;
 import pro100.group10.sproutspender.models.Database;
@@ -118,13 +120,10 @@ public class Table {
 			columns[5] = day6Col;
 			columns[6] = day7Col;
 			
+			obsDates = new SimpleObjectProperty[7];
+			
 			Callback<TableColumn<WeeklyPlanner, Budget>, TableCell<WeeklyPlanner, Budget>> floatCellFactory =
 					cb -> new FloatEditingCell();
-			
-			for(TableColumn tc : columns) {
-				tc.setResizable(false);
-				tc.setSortable(false);
-			}
 			
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(endDate);
@@ -133,12 +132,18 @@ public class Table {
 			for(int i = 6; i >= 0; i--) {
 				final int colIndex = i;
 				dateToGrab = new Date(calendar.getTime().getTime());
-				columns[i].setText(new SimpleDateFormat("EEE, MMM d ").format(dateToGrab));
+				obsDates[i] = new SimpleObjectProperty<Date>();
+				obsDates[i].addListener((observable, oldValue, newValue) -> {
+					columns[colIndex].setText(new SimpleDateFormat("EEE, MMM d ").format(newValue));
+				});
+				obsDates[i].setValue(dateToGrab);
 				calendar.add(Calendar.DATE, -1);
+				columns[i].setResizable(false);
+				columns[i].setSortable(false);
 				
 				final int index = i;
 				columns[i].setCellValueFactory(cellData -> {
-					Budget budg = cellData.getValue().getDay(index + 1);						
+					Budget budg = cellData.getValue().getDay(index + 1);
 					return new SimpleObjectProperty<Budget>(budg);
 				});
 				
@@ -148,7 +153,8 @@ public class Table {
 //						if(newVal != null && newVal.getCurrentAmount() < newVal.getLimit()) {
 //							cell.setTextFill(Color.FORESTGREEN);
 //						}
-						
+//					});
+					
 					return cell;
 				});
 				
@@ -173,8 +179,6 @@ public class Table {
 					}
 				});
 			}
-			
-			tableView.getSelectionModel().setCellSelectionEnabled(true);
 			
 			refreshTableView();
 			calculateTotals();
@@ -226,8 +230,6 @@ public class Table {
 		GridPane budgetPopOutRoot = null;
 		final String MAKE_NEW_BUDGET_TITLE = "Create/Edit Budget";
 		budgetPopOutLoader.setController(this);
-		
-
 		
 		try {
 			budgetPopOutRoot = (GridPane) budgetPopOutLoader.load();
@@ -304,6 +306,7 @@ public class Table {
 		for(CategoryType cat : Budget.categoryRank) {
 			wpList.add(parseThisWeek(cat));			
 		}
+		
 		tableView.setItems(wpList);
 		HomeController.manager.update(HomeController.manager.db);
 		
@@ -318,7 +321,7 @@ public class Table {
 		
 		for(int i = 6; i >= 0; i--) {
 			dateToGrab = new Date(calendar.getTime().getTime());
-			columns[i].setText(new SimpleDateFormat("EEE, MMM d ").format(dateToGrab));
+			obsDates[i].setValue(dateToGrab);
 			calendar.add(Calendar.DATE, -1);
 		}
 	}
@@ -333,7 +336,7 @@ public class Table {
 		
 		for(int i = 6; i >= 0; i--) {
 			dateToGrab = new Date(calendar.getTime().getTime());
-			columns[i].setText(new SimpleDateFormat("EEE, MMM d ").format(dateToGrab));
+			obsDates[i].setValue(dateToGrab);
 			calendar.add(Calendar.DATE, -1);
 		}
 		refreshTableView();

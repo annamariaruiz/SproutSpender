@@ -255,9 +255,9 @@ public class Manager implements Serializable{
 	public Date newCycle(LocalDate ld, Date d, Budget b) {
 		Date startDay = null;
 		if(ld != null) {
-			startDate = Date.valueOf(ld);
+			startDay = Date.valueOf(ld);
 		} else {
-			startDate = d;
+			startDay = d;
 		}
 		HomeController.manager.startDate = startDay;
 		
@@ -275,6 +275,9 @@ public class Manager implements Serializable{
 		
 		if(b != null ) {
 			b.setEndDate(end);
+			System.out.println(b.getID());
+			System.out.println("Start Date: " + b.getDate());
+			System.out.println("End Date: " + b.getEndDate());
 			try {
 				HomeController.manager.db.update(b);
 			} catch (SQLException e) {
@@ -348,6 +351,15 @@ public class Manager implements Serializable{
 	public void update(Database db) {
 		bills = db.selectAllBills();
 		allBudgets = db.selectAllBudg();
+		
+		budgets.clear();
+		for (Budget b : allBudgets) {
+			java.util.Date temp = Date.valueOf(LocalDate.now());
+	    	Date temp2 = new Date(temp.getTime());
+			if(b.getEndDate().after(temp2)) {//TODO Check and see if the end date is before or after the start date
+				budgets.add(b);
+			}
+		}
 	}
 	
 	public boolean isValid(String str) {
