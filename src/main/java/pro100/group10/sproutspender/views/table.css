@@ -7,6 +7,10 @@
     -fx-border-color: yellow;
 }
 
+.button:hover {
+    -fx-background-color: #EFF7F5;
+}
+
 .table-row-cell {
 	-fx-border-color: white #C6D77C;
 	-fx-background-color: #C6D77C;
@@ -17,4 +21,10 @@
 .table-cell:selected {
 	-fx-background-color: #9AD1B1;
 	-fx-text-fill: black;
+}
+
+.table-view .column-header-background .label{
+    -fx-background-color: transparent;
+    -fx-text-fill: #158032;
+    -fx-font-size: 13;
 }
