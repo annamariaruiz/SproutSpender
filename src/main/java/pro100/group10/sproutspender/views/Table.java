@@ -140,9 +140,8 @@ public class Table {
 				columns[i].setResizable(false);
 				columns[i].setSortable(false);
 				
-				final int index = i;
 				columns[i].setCellValueFactory(cellData -> {
-					Budget budg = cellData.getValue().getDay(index + 1);
+					Budget budg = cellData.getValue().getDay(colIndex + 1);
 					return new SimpleObjectProperty<Budget>(budg);
 				});
 				
@@ -164,7 +163,7 @@ public class Table {
 								t.getTablePosition().getRow());
 						
 						try {	
-							Budget budg = wp.getDay(index + 1);
+							Budget budg = wp.getDay(colIndex + 1);
 							if(budg != null) {
 								budg.setCurrentAmount(t.getNewValue().getCurrentAmount());
 								db.update(budg);
