@@ -138,6 +138,8 @@ public class Bills {
 		vertical.getChildren().addAll(tableView, buttons);
 		
 		primScene = new Scene(vertical, 650, 400);
+
+		primScene.getStylesheets().add(getClass().getResource("../views/bills.css").toString());
 		window.setScene(primScene);
 		window.show();
 	}
@@ -150,6 +152,7 @@ public class Bills {
 		try {
 			GridPane root = (GridPane)FXMLLoader.load(getClass().getResource("../views/EditBill.fxml"));
 			Scene scene = new Scene(root,500,375);
+			scene.getStylesheets().add(getClass().getResource("../views/settings.css").toString());
 			window.setScene(scene);
 			window.show();
 		} catch(Exception e) {
@@ -211,6 +214,7 @@ public class Bills {
 		try {
 			GridPane root = (GridPane)FXMLLoader.load(getClass().getResource("../views/AddBill.fxml"));
 			Scene scene = new Scene(root,500,375);
+			scene.getStylesheets().add(getClass().getResource("../views/settings.css").toString());
 			window.setScene(scene);
 			window.show();
 		} catch(Exception e) {

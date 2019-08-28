@@ -1,0 +1,27 @@
+.button {
+    -fx-border-color: #158032;
+    -fx-border-radius: 5;
+}
+
+.button:selected {
+    -fx-border-color: yellow;
+}
+
+.button:hover {
+    -fx-background-color: #EFF7F5;
+}
+
+.radio-button .radio {
+	-fx-border-color: black;
+	-fx-background-color: white;
+	-fx-border-radius: 15.0px;
+}
+ 
+.radio-button .radio:selected {
+	-fx-background-color: white;
+}
+
+.label {
+	-fx-text-fill: #158032;
+	
+}

@@ -15,7 +15,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
 import javafx.stage.Stage;
 import pro100.group10.sproutspender.controllers.HomeController;
-import pro100.group10.sproutspender.controllers.Manager;
 
 public class Settings {
 
@@ -62,7 +61,7 @@ public class Settings {
 				}
 				LocalDate start = null;
 				if(timeStart.getValue() == null) {
-					HomeController.manager.getStartDate();
+//					start = HomeController.manager.getStartDate();
 				} else {
 					start = timeStart.getValue();
 				}
@@ -104,7 +103,8 @@ public class Settings {
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("../views/Settings.fxml"));
 
-			Scene scene = new Scene(root, 600, 400);
+			Scene scene = new Scene(root, 600, 410);
+			scene.getStylesheets().add(getClass().getResource("../views/settings.css").toString());
 			settings.setResizable(false);
 			settings.setScene(scene);
 			settings.show();
