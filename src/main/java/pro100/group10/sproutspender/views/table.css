@@ -16,6 +16,11 @@
 	-fx-background-color: #C6D77C;
 	-fx-border-width: 1px 0px; 
 	-fx-min-height: 72px;
+	-fx-font-size: 18px;
+}
+
+.table-column {
+	-fx-alignment: center-left;
 }
 
 .table-cell:selected {

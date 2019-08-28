@@ -77,6 +77,7 @@ public class Table {
 	private Label nextBillDate;
 	
 	private Budget selectedBudg = null;
+	private int selectedPos;
 	private boolean createMode = true;
 	@FXML
 	private DatePicker makeNewDate;
@@ -200,6 +201,7 @@ public class Table {
 	private void onMenuItemMakeNew(ActionEvent ae) {
 		createMode = true;
 		if(tableView.getSelectionModel().getSelectedItem() != null) {
+			selectedPos = tableView.getFocusModel().getFocusedIndex();
 			selectedBudg = tableView.getSelectionModel().getSelectedItem().getDay(
 					tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1);
 			if(selectedBudg == null) {
@@ -221,8 +223,10 @@ public class Table {
 	private void onMenuItemEditDetails(ActionEvent ae) {
 		createMode = false;
 		if(tableView.getSelectionModel().getSelectedItem() != null) {
+			selectedPos = tableView.getFocusModel().getFocusedIndex();
 			selectedBudg = tableView.getSelectionModel().getSelectedItem().getDay(
 					tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1);
+			
 			
 			if(selectedBudg != null && selectedBudg.getCategory() != CategoryType.GENERAL) {
 				openDetailedEditWindow(selectedBudg);
@@ -281,6 +285,7 @@ public class Table {
 	@FXML
 	private void onMenuItemRemove(ActionEvent ae) {
 		if(tableView.getSelectionModel().getSelectedItem() != null) {
+			selectedPos = tableView.getFocusModel().getFocusedIndex();
 			int day = tableView.getFocusModel().getFocusedCell().getColumn() + 1;
 			int row = tableView.getFocusModel().getFocusedCell().getRow();
 			int id = tableView.getFocusModel().getFocusedItem().getDay(day).getID();
@@ -294,6 +299,7 @@ public class Table {
 				Optional<ButtonType> response = alert.showAndWait();
 			}
 			calculateTotals();
+			tableView.getFocusModel().focus(selectedPos);
 		}
 	}
 	
@@ -477,6 +483,7 @@ public class Table {
 			refreshTableView();
 			calculateTotals();
 			onPopOutCancel(ae);
+			tableView.getFocusModel().focus(selectedPos);
 		}		
  	}
 }

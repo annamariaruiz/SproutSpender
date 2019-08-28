@@ -30,9 +30,9 @@
                		</Menu>
                			<Menu text="Edit">
                   <items>
-                     			<MenuItem onAction="#onMenuItemMakeNew" text="Make New Budget" />
-                     			<MenuItem onAction="#onMenuItemEditDetails" text="Edit Selected Budget Details" />
-                     			<MenuItem onAction="#onMenuItemRemove" text="Remove Selected Budget" />
+                     			<MenuItem onAction="#onMenuItemMakeNew" text="Add Amount Spent" />
+                     			<MenuItem onAction="#onMenuItemEditDetails" text="Move/Edit Amount Spent" />
+                     			<MenuItem onAction="#onMenuItemRemove" text="Remove Amount Spent" />
                   </items>
                			</Menu>
                		<Menu text="Help">
