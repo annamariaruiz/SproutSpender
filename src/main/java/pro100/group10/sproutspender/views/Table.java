@@ -52,6 +52,7 @@ public class Table {
 			Budget.CategoryType.ENTERTAINMENT, 
 			Budget.CategoryType.MISCELLANEOUS, 
 			Budget.CategoryType.TRANSPORTATION);
+	private boolean wantsToLogOut = false;
 	
 	@FXML
 	private TableView<WeeklyPlanner> tableView;
@@ -192,8 +193,9 @@ public class Table {
 	}
 	
 	@FXML
-	public void cleanUp() {
+	public boolean cleanUp() {
 		db.close();
+		return wantsToLogOut;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -275,6 +277,12 @@ public class Table {
 		scene.getStylesheets().add(getClass().getResource("../views/settings.css").toString());
 		if(budgetPopOutRoot != null) budgetPopOutStage.setScene(scene);
 		budgetPopOutStage.show();
+	}
+	
+	@FXML
+	private void onMenuItemLogOut(ActionEvent ae) {
+		wantsToLogOut = true;
+		onMenuItemExit(ae);
 	}
 	
 	@FXML

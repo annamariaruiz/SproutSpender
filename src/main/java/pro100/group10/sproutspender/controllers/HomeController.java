@@ -10,8 +10,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import pro100.group10.sproutspender.app.Main;
@@ -119,7 +121,23 @@ public class HomeController {
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("../views/table.css").toString());
 			stage.setScene(scene);
-			stage.setOnHidden(eh -> table.cleanUp());
+			stage.setOnHidden(eh -> {
+				if(table.cleanUp()) {
+					Stage reopenedPrmStage = new Stage();
+					stage.setTitle("Sprout Spender");
+					stage.setResizable(false);
+					stage.getIcons().add(new Image("sprout.png"));
+					try {
+						GridPane reopenedRoot = (GridPane)FXMLLoader.load(getClass().getResource("../views/Home.fxml"));
+						Scene reopenedScene = new Scene(reopenedRoot,600,400);
+						reopenedScene.getStylesheets().add(getClass().getResource("../views/application.css").toString());
+						reopenedPrmStage.setScene(reopenedScene);
+						reopenedPrmStage.show();
+					} catch(Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
 			stage.show();
 		} catch (Exception e) {
 			e.printStackTrace();
