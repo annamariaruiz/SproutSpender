@@ -35,21 +35,20 @@ public class Credentials {
 		
 		mana = HomeController.manager;
 		GridPane grid = new GridPane();
-		VBox boxR = new VBox();
-		VBox boxL = new VBox();
 		
+		Label intro = new Label("Create Your User!");
 		Label us = new Label("Username");
 		Label pw = new Label("Password");
 		TextField user = new TextField();
 		PasswordField pass = new PasswordField();
 		Button create = new Button("Create User");
 		
-		boxL.getChildren().addAll(us, pw);	
-		boxR.getChildren().addAll(user, pass);	
-		
-		grid.add(boxL, 0, 1);
-		grid.add(boxR, 1, 1);
-		grid.add(create, 0, 2);
+		grid.add(intro, 1, 0);
+		grid.add(us , 0, 1);
+		grid.add(pw, 0, 2);
+		grid.add(user , 1, 1);
+		grid.add(pass, 1, 2);
+		grid.add(create, 1, 3);
 		
 		create.setOnAction(new EventHandler<ActionEvent>() { 
 			@Override

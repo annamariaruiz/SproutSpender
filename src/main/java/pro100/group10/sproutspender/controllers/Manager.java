@@ -331,27 +331,29 @@ public class Manager implements Serializable{
 		Date d = null;
 		Bill next = null;
 
-		for(String name : bills.keySet()) {
+		update(HomeController.manager.db);
+		
+		for(String name : HomeController.manager.bills.keySet()) {
 			if(d == null) {
-				d = bills.get(name).getDate();
-			} else if(bills.get(name).getDate().before(d) && d != null) {
-				d = bills.get(name).getDate();
-				next = bills.get(name);
+				d = HomeController.manager.bills.get(name).getDate();
+			} else if(HomeController.manager.bills.get(name).getDate().before(d) && d != null) {
+				d = HomeController.manager.bills.get(name).getDate();
+				next = HomeController.manager.bills.get(name);
 			}
 		}
 		return next;
 	}
 	
 	public void update(Database db) {
-		bills = db.selectAllBills();
-		allBudgets = db.selectAllBudg();
+		HomeController.manager.bills = db.selectAllBills();
+		HomeController.manager.allBudgets = db.selectAllBudg();
 		
-		budgets.clear();
-		for (Budget b : allBudgets) {
+		HomeController.manager.budgets.clear();
+		for (Budget b : HomeController.manager.allBudgets) {
 			java.util.Date temp = Date.valueOf(LocalDate.now());
 	    	Date temp2 = new Date(temp.getTime());
 			if(b.getEndDate().after(temp2)) {//TODO Check and see if the end date is before or after the start date
-				budgets.add(b);
+				HomeController.manager.budgets.add(b);
 			}
 		}
 	}
