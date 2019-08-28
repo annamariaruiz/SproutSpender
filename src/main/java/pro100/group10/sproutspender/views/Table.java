@@ -31,9 +31,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import pro100.group10.sproutspender.controllers.HomeController;
+import pro100.group10.sproutspender.controllers.Manager;
 import pro100.group10.sproutspender.models.Budget;
 import pro100.group10.sproutspender.models.Budget.CategoryType;
 import pro100.group10.sproutspender.models.Database;
@@ -151,7 +153,8 @@ public class Table {
 //						if(newVal != null && newVal.getCurrentAmount() < newVal.getLimit()) {
 //							cell.setTextFill(Color.FORESTGREEN);
 //						}
-						
+//					});
+					
 					return cell;
 				});
 				
@@ -309,6 +312,7 @@ public class Table {
 		
 		tableView.setItems(wpList);
 		HomeController.manager.update(HomeController.manager.db);
+		
 	}
 	
 	private void changeEndDate(int days) {

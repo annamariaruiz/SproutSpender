@@ -1,5 +1,6 @@
 package pro100.group10.sproutspender.views;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 import javafx.event.ActionEvent;
@@ -11,7 +12,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Slider;
 import javafx.stage.Stage;
+import pro100.group10.sproutspender.controllers.HomeController;
+import pro100.group10.sproutspender.controllers.Manager;
 
 public class Settings {
 
@@ -25,25 +29,65 @@ public class Settings {
 	private Button saveButton;
 	@FXML
 	private Label alert;
+	@FXML
+	private Label foodBudgetLimit;
+	@FXML
+	private Label transBudgetLimit;
+	@FXML
+	private Label entertainmentBudgetLimit;
+	@FXML
+	private Label miscBudgetLimit;
+	@FXML
+	private Slider foodSlider;
+	@FXML
+	private Slider transSlider;
+	@FXML
+	private Slider entertainmentSlider;
+	@FXML
+	private Slider miscSlider;
 	
 	private Stage settings = new Stage();
 
 	@FXML
-	private void saveToFile(ActionEvent ae) {
+	private void saveToFile(ActionEvent ae) throws SQLException {
 		LocalDate startDate = timeStart.getValue();
 		if (weekTime.isSelected()) {
 			if (startDate != null) {
-				// newCycleW(startDate);
 				Stage stage = (Stage) saveButton.getScene().getWindow();
+				String timeType = "weekly";
+				if(weekTime.isSelected()) {
+					timeType = "weekly";
+				} else if (monthTime.isSelected()) {
+					timeType = "monthly";
+				}
+				float food = (float) foodSlider.getValue();
+				float trans = (float) transSlider.getValue();
+				float entertainment = (float) entertainmentSlider.getValue();
+				float misc = (float) miscSlider.getValue();
+				
+				HomeController.manager.changeSettings(timeStart.getValue(), timeType, food, trans, entertainment, misc);
 				alert.setText("Saved");
 			} else {
-				alert.setText("pick a date ma dude");
+				alert.setText("Please pick a date");
 			}
 		} else if (monthTime.isSelected()) {
 			if (startDate != null) {
-				// newCycleM(startDate);
-				Stage stage = (Stage) saveButton.getScene().getWindow();
-				stage.close();
+				if (startDate != null) {
+					Stage stage = (Stage) saveButton.getScene().getWindow();
+					String timeType = "weekly";
+					if(weekTime.isSelected()) {
+						timeType = "weekly";
+					} else if (monthTime.isSelected()) {
+						timeType = "monthly";
+					}
+					float food = (float) foodSlider.getValue();
+					float trans = (float) transSlider.getValue();
+					float entertainment = (float) entertainmentSlider.getValue();
+					float misc = (float) miscSlider.getValue();
+					
+					HomeController.manager.changeSettings(timeStart.getValue(), timeType, food, trans, entertainment, misc);
+					alert.setText("Saved");
+				}
 			} else {
 				alert.setText("Please pick a date");
 			}
@@ -64,5 +108,10 @@ public class Settings {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@FXML
+	private void change() {
+		foodBudgetLimit.setText("");
 	}
 }
