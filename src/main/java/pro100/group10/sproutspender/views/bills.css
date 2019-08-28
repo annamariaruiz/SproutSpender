@@ -12,10 +12,21 @@
 }
 
 .table-row-cell {
-	-fx-border-color: white #C6D77C;
+	-fx-border-color: white #C6D77C #C6D77C #C6D77C; 
+	-fx-text-fill: black;
 	-fx-background-color: #C6D77C;
-	-fx-border-width: 1px 0px; 
-	-fx-min-height: 72px;
+	-fx-border-width: 1px 0px;
+    -fx-table-cell-border-color: transparent;
+}
+
+.table-row-cell:selected {
+	-fx-text-fill: black;
+	-fx-background-color: #9AD1B1;
+	-fx-border-width: 1px 0px;
+}
+
+.table-row-cell:selected .text {
+       -fx-fill: black;
 }
 
 .table-cell:selected {

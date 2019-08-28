@@ -15,7 +15,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
 import javafx.stage.Stage;
 import pro100.group10.sproutspender.controllers.HomeController;
-import pro100.group10.sproutspender.controllers.Manager;
 
 public class Settings {
 
@@ -52,24 +51,27 @@ public class Settings {
 	private void saveToFile(ActionEvent ae) throws SQLException {
 		LocalDate startDate = timeStart.getValue();
 		if (weekTime.isSelected()) {
-			if (startDate != null) {
 				Stage stage = (Stage) saveButton.getScene().getWindow();
+//				Manager m = new Manager();
 				String timeType = "weekly";
 				if(weekTime.isSelected()) {
 					timeType = "weekly";
 				} else if (monthTime.isSelected()) {
 					timeType = "monthly";
 				}
+				LocalDate start = null;
+				if(timeStart.getValue() == null) {
+//					start = HomeController.manager.getStartDate();
+				} else {
+					start = timeStart.getValue();
+				}
 				float food = (float) foodSlider.getValue();
 				float trans = (float) transSlider.getValue();
 				float entertainment = (float) entertainmentSlider.getValue();
 				float misc = (float) miscSlider.getValue();
 				
-				HomeController.manager.changeSettings(timeStart.getValue(), timeType, food, trans, entertainment, misc);
+				HomeController.manager.changeSettings(start, timeType, food, trans, entertainment, misc);
 				alert.setText("Saved");
-			} else {
-				alert.setText("Please pick a date");
-			}
 		} else if (monthTime.isSelected()) {
 			if (startDate != null) {
 				if (startDate != null) {
@@ -101,7 +103,8 @@ public class Settings {
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("../views/Settings.fxml"));
 
-			Scene scene = new Scene(root, 600, 400);
+			Scene scene = new Scene(root, 600, 410);
+			scene.getStylesheets().add(getClass().getResource("../views/settings.css").toString());
 			settings.setResizable(false);
 			settings.setScene(scene);
 			settings.show();

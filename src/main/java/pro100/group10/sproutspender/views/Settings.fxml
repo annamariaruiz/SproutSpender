@@ -13,8 +13,8 @@
 
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="524.0" prefWidth="499.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pro100.group10.sproutspender.views.Settings">
   <columnConstraints>
-    <ColumnConstraints hgrow="SOMETIMES" maxWidth="333.0" minWidth="10.0" prefWidth="230.0" />
-    <ColumnConstraints hgrow="SOMETIMES" maxWidth="155.0" minWidth="10.0" prefWidth="148.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="333.0" minWidth="10.0" prefWidth="221.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="157.0" minWidth="10.0" prefWidth="156.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="142.0" minWidth="10.0" prefWidth="122.0" />
   </columnConstraints>
   <rowConstraints>
@@ -38,44 +38,56 @@
             <Font size="14.0" />
          </font>
       </Button>
-      <Label contentDisplay="CENTER" prefHeight="27.0" prefWidth="101.0" text="Time Setting" textAlignment="CENTER">
+      <Label contentDisplay="CENTER" prefHeight="27.0" prefWidth="101.0" text="Time Setting" textAlignment="CENTER" GridPane.halignment="CENTER">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label contentDisplay="CENTER" prefHeight="27.0" prefWidth="83.0" text="Start Date" textAlignment="CENTER" GridPane.rowIndex="1">
+      <Label contentDisplay="CENTER" prefHeight="27.0" prefWidth="83.0" text="Start Date" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="1">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
       <Label fx:id="alert" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
-      <Label text="Food Budget Limit" GridPane.rowIndex="2">
+      <Label text="Food Budget Limit" GridPane.halignment="CENTER" GridPane.rowIndex="2">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label text="Transportation Budget Limit" GridPane.rowIndex="3">
+      <Label text="Transportation Budget Limit" GridPane.halignment="CENTER" GridPane.rowIndex="3">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label text="Entertainment Budget Limit" GridPane.rowIndex="4">
+      <Label text="Entertainment Budget Limit" GridPane.halignment="CENTER" GridPane.rowIndex="4">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label text="Miscellaneous Budget Limit" GridPane.rowIndex="5">
+      <Label text="Miscellaneous Budget Limit" GridPane.halignment="CENTER" GridPane.rowIndex="5">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Slider fx:id="foodSlider" blockIncrement="50.0" majorTickUnit="50.0" max="800.0" min="50.0" minorTickCount="0" prefHeight="14.0" showTickMarks="true" snapToTicks="true" translateY="10.0" value="400.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2" />
-      <Slider fx:id="transSlider" blockIncrement="50.0" majorTickUnit="50.0" max="800.0" min="50.0" minorTickCount="0" showTickMarks="true" snapToTicks="true" translateY="10.0" value="400.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="3" />
-      <Slider fx:id="miscSlider" blockIncrement="50.0" majorTickUnit="50.0" max="800.0" min="50.0" minorTickCount="0" showTickMarks="true" snapToTicks="true" translateY="10.0" value="400.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="5" />
-      <Slider fx:id="entertainmentSlider" blockIncrement="50.0" majorTickUnit="50.0" max="800.0" min="50.0" minorTickCount="0" showTickMarks="true" snapToTicks="true" translateY="10.0" value="400.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="4" />
-      <Label fx:id="foodBudgetLimit" text="${foodSlider.value}" translateY="-15.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-      <Label fx:id="transBudgetLimit" text="${transSlider.value}" translateY="-15.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
-      <Label fx:id="entertainmentBudgetLimit" text="${entertainmentSlider.value}" translateY="-15.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
-      <Label fx:id="miscBudgetLimit" text="${miscSlider.value}" translateY="-15.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
+      <Slider fx:id="foodSlider" blockIncrement="50.0" majorTickUnit="50.0" max="800.0" maxWidth="280.0" min="50.0" minWidth="250.0" minorTickCount="0" showTickMarks="true" snapToTicks="true" translateY="10.0" value="400.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+      <Slider fx:id="transSlider" blockIncrement="50.0" majorTickUnit="50.0" max="800.0" maxWidth="280.0" min="50.0" minWidth="250.0" minorTickCount="0" showTickMarks="true" snapToTicks="true" translateY="10.0" value="400.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+      <Slider fx:id="miscSlider" blockIncrement="50.0" majorTickUnit="50.0" max="800.0" maxWidth="280.0" min="50.0" minWidth="250.0" minorTickCount="0" showTickMarks="true" snapToTicks="true" translateY="10.0" value="400.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
+      <Slider fx:id="entertainmentSlider" blockIncrement="50.0" majorTickUnit="50.0" max="800.0" maxWidth="280.0" min="50.0" minWidth="250.0" minorTickCount="0" showTickMarks="true" snapToTicks="true" translateY="10.0" value="400.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+      <Label fx:id="foodBudgetLimit" text="${foodSlider.value}" translateX="-10.0" translateY="-15.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+      <Label fx:id="transBudgetLimit" text="${transSlider.value}" translateX="-10.0" translateY="-15.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+      <Label fx:id="entertainmentBudgetLimit" text="${entertainmentSlider.value}" translateX="-10.0" translateY="-15.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="4">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+      <Label fx:id="miscBudgetLimit" text="${miscSlider.value}" translateX="-10.0" translateY="-15.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="5">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
    </children>
 </GridPane>

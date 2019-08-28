@@ -267,7 +267,9 @@ public class Table {
 		
 		Stage budgetPopOutStage = new Stage();
 		budgetPopOutStage.setTitle(MAKE_NEW_BUDGET_TITLE);
-		if(budgetPopOutRoot != null) budgetPopOutStage.setScene(new Scene(budgetPopOutRoot));
+		Scene scene = new Scene(budgetPopOutRoot);
+		scene.getStylesheets().add(getClass().getResource("../views/settings.css").toString());
+		if(budgetPopOutRoot != null) budgetPopOutStage.setScene(scene);
 		budgetPopOutStage.show();
 	}
 	
