@@ -331,7 +331,7 @@ public class Manager implements Serializable{
 		Date d = null;
 		Bill next = null;
 
-		for(String name : bills.keySet()) {
+		for(String name : HomeController.manager.bills.keySet()) {
 			if(d == null) {
 				d = bills.get(name).getDate();
 			} else if(bills.get(name).getDate().before(d) && d != null) {

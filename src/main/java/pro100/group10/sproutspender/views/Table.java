@@ -23,6 +23,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
@@ -36,6 +37,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import pro100.group10.sproutspender.controllers.HomeController;
 import pro100.group10.sproutspender.controllers.Manager;
+import pro100.group10.sproutspender.models.Bill;
 import pro100.group10.sproutspender.models.Budget;
 import pro100.group10.sproutspender.models.Budget.CategoryType;
 import pro100.group10.sproutspender.models.Database;
@@ -70,6 +72,9 @@ public class Table {
 	TableColumn<WeeklyPlanner, Budget>[] columns;
 	
 	private SimpleObjectProperty<Date>[] obsDates;
+	
+	@FXML
+	private Label nextBillDate;
 	
 	private Budget selectedBudg = null;
 	private boolean createMode = true;
@@ -312,7 +317,8 @@ public class Table {
 		
 		tableView.setItems(wpList);
 		HomeController.manager.update(HomeController.manager.db);
-		
+		Bill nextBill = HomeController.manager.nextBill();
+		if(nextBill != null) nextBillDate.setText(new SimpleDateFormat("EEE, MMM d ").format(nextBill.getDate()));
 	}
 	
 	private void changeEndDate(int days) {
