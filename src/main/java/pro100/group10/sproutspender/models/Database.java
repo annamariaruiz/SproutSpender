@@ -256,7 +256,6 @@ public class Database {
     	try(Statement stmt = connection.createStatement()) {
     		stmt.executeUpdate(updateSQL);
     	}
-    	HomeController.manager = m;
     	
     }
     

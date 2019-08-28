@@ -75,9 +75,22 @@ public class Settings {
 				alert.setText("Saved");
 		} else if (monthTime.isSelected()) {
 			if (startDate != null) {
-				// newCycleM(startDate);
-				Stage stage = (Stage) saveButton.getScene().getWindow();
-				stage.close();
+				if (startDate != null) {
+					Stage stage = (Stage) saveButton.getScene().getWindow();
+					String timeType = "weekly";
+					if(weekTime.isSelected()) {
+						timeType = "weekly";
+					} else if (monthTime.isSelected()) {
+						timeType = "monthly";
+					}
+					float food = (float) foodSlider.getValue();
+					float trans = (float) transSlider.getValue();
+					float entertainment = (float) entertainmentSlider.getValue();
+					float misc = (float) miscSlider.getValue();
+					
+					HomeController.manager.changeSettings(timeStart.getValue(), timeType, food, trans, entertainment, misc);
+					alert.setText("Saved");
+				}
 			} else {
 				alert.setText("Please pick a date");
 			}
