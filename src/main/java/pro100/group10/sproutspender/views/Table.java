@@ -52,7 +52,7 @@ public class Table {
 			Budget.CategoryType.ENTERTAINMENT, 
 			Budget.CategoryType.MISCELLANEOUS, 
 			Budget.CategoryType.TRANSPORTATION);
-	private boolean wantsToLogOut = false;
+	private Scene home;
 	
 	@FXML
 	private TableView<WeeklyPlanner> tableView;
@@ -109,6 +109,15 @@ public class Table {
 
 	public void setDB(Database db) {
 		this.db = db;
+	}
+
+	public Scene getHome() {
+		return home;
+	}
+	
+
+	public void setHome(Scene home) {
+		this.home = home;
 	}
 
 	@SuppressWarnings({ "unchecked"})
@@ -193,9 +202,8 @@ public class Table {
 	}
 	
 	@FXML
-	public boolean cleanUp() {
+	public void cleanUp() {
 		db.close();
-		return wantsToLogOut;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -281,8 +289,11 @@ public class Table {
 	
 	@FXML
 	private void onMenuItemLogOut(ActionEvent ae) {
-		wantsToLogOut = true;
-		onMenuItemExit(ae);
+		cleanUp();
+		Stage stage = ((Stage) tableView.getScene().getWindow());
+		stage.setScene(getHome());
+		stage.show();
+//		onMenuItemExit(ae);
 	}
 	
 	@FXML
