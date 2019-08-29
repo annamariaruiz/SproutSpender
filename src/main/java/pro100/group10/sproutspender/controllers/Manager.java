@@ -328,7 +328,7 @@ public class Manager implements Serializable{
 	}
 	
 	public Bill nextBill() {
-		Date d = null;
+ 		Date d = null;
 		Bill next = null;
 
 		update(HomeController.manager.db);
@@ -390,32 +390,26 @@ public class Manager implements Serializable{
 	public Date getPrevEndDate() {
 		return prevEndDate;
 	}
-
 	
 	public User getUser() {
 		return user;
 	}
-
 	
 	public void setUser(User user) {
 		this.user = user;
 	}
-
 	
 	public String getName() {
 		return name;
 	}
-
 	
 	public void setName(String name) {
 		this.name = name;
 	}
-
 	
 	public int getID() {
 		return ID;
 	}
-
 	
 	public void setID(int iD) {
 		ID = iD;

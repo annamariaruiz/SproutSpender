@@ -135,8 +135,6 @@ public class Database {
     }
     
     public void createBi(Bill b) throws SQLException {
-		 LocalDate now = LocalDate.now();
-		 Date date = Date.valueOf(now);
 		 int paid = 0;
 		 
 		 if(b.isPaid()) {
@@ -148,7 +146,7 @@ public class Database {
 		 try(Statement stmt = connection.createStatement()) {
 		     String sql = String.format(
 		             "INSERT INTO Bills (name, amount, duedate, timeFrame, paid, ManagerID) VALUES ('%s', %.2f, '%s', '%s', %d, %d)",
-		             b.getName(), b.getAmount(), date.toString(), b.getTimeFrame().toString(), paid, HomeController.manager.getID());
+		             b.getName(), b.getAmount(), b.getDate(), b.getTimeFrame().toString(), paid, HomeController.manager.getID());
 		     stmt.executeUpdate(sql);
 		 }
     }
