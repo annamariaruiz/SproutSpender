@@ -342,6 +342,9 @@ public class Help {
 			}
 		});	
 		
+		grid.getChildren().clear();
+		grid.getChildren().add(ribbon);
+		grid.getChildren().add(intro);
 		grid.setId("pane");
         
 		Scene scene = new Scene(grid);

@@ -54,11 +54,11 @@ public class Settings {
 	
 	public void initialize() {
 		if(HomeController.manager.getTimeFrame() == Timeframe.WEEKLY) {
-			weekTime.isSelected();
+			weekTime.setSelected(true);
 		} else if (HomeController.manager.getTimeFrame() == Timeframe.MONTHLY) {
-			monthTime.isSelected();
+			monthTime.setSelected(true);
 		} else {
-			monthTime.isSelected();
+			monthTime.setSelected(true);
 		}
 		
 		timeStart.setValue(HomeController.manager.getStartDate().toLocalDate());
