@@ -35,7 +35,10 @@
                      			<MenuItem onAction="#onMenuItemRemove" text="Remove Selected Budget" />
                   </items>
                			</Menu>
-               		<Menu text="Help">
+               	<Menu text="Help">
+					<items>
+								<MenuItem onAction="#onMenuItemHelp" text="Help" />
+					</items>
    				</Menu>
          </menus>
          		</MenuBar>

@@ -277,6 +277,12 @@ public class Table {
 	private void onMenuItemExit(ActionEvent ae) {
 		((Stage) tableView.getScene().getWindow()).close();
 	}
+	
+	@FXML
+	private void onMenuItemHelp(ActionEvent ae) {
+		Help h = new Help();
+		h.init();
+	}
 		
 	@FXML
 	private void onMenuItemRemove(ActionEvent ae) {
@@ -407,7 +413,6 @@ public class Table {
 	
 	@FXML
 	private void onGraphButtonClick(ActionEvent ae) {
-		//open graphs window
 		Graphs g = new Graphs();
 		g.init();
 	}
