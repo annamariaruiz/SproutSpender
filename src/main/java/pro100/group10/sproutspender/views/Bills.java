@@ -192,6 +192,7 @@ public class Bills {
 				bill.setTimeFrame(timetype.getValue());
 				bill.setPaid(paid.isSelected());
 				if(bill.isPaid()) {
+					db.updateBill(bill);
 					HomeController.manager.update(HomeController.manager.db);
 					HomeController.manager.nextCycleBi();
 				} else {
