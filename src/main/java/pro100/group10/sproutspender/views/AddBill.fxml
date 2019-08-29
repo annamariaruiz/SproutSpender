@@ -41,7 +41,7 @@
          <font>
             <Font size="18.0" />
          </font></Label>
-      <Button fx:id="saveNewBill" mnemonicParsing="false" onAction="#saveNewBill" text="Save New bill" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+      <Button fx:id="saveNewBill" mnemonicParsing="false" onAction="#saveNewBill" text="Save New Bill" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
       <TextField fx:id="nameOfBill" maxWidth="325.0" minWidth="300.0" prefHeight="25.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
       <TextField fx:id="amount" maxWidth="325.0" minWidth="300.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
       <DatePicker fx:id="nextDate" maxWidth="320.0" minWidth="300.0" prefHeight="25.0" prefWidth="30.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
