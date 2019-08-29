@@ -1,7 +1,9 @@
 package pro100.group10.sproutspender.views;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Calendar;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -61,6 +63,11 @@ public class Settings {
 				}
 				LocalDate start = null;
 				if(timeStart.getValue() == null) {
+					java.util.Date input = HomeController.manager.getStartDate();
+					Date date = new Date(input.getTime());
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(date);
+					start = LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
 //					start = HomeController.manager.getStartDate();
 				} else {
 					start = timeStart.getValue();
@@ -73,26 +80,32 @@ public class Settings {
 				HomeController.manager.changeSettings(start, timeType, food, trans, entertainment, misc);
 				alert.setText("Saved");
 		} else if (monthTime.isSelected()) {
-			if (startDate != null) {
-				if (startDate != null) {
-					Stage stage = (Stage) saveButton.getScene().getWindow();
-					String timeType = "weekly";
-					if(weekTime.isSelected()) {
-						timeType = "weekly";
-					} else if (monthTime.isSelected()) {
-						timeType = "monthly";
-					}
-					float food = (float) foodSlider.getValue();
-					float trans = (float) transSlider.getValue();
-					float entertainment = (float) entertainmentSlider.getValue();
-					float misc = (float) miscSlider.getValue();
-					
-					HomeController.manager.changeSettings(timeStart.getValue(), timeType, food, trans, entertainment, misc);
-					alert.setText("Saved");
+				Stage stage = (Stage) saveButton.getScene().getWindow();
+				String timeType = "weekly";
+				if(weekTime.isSelected()) {
+					timeType = "weekly";
+				} else if (monthTime.isSelected()) {
+					timeType = "monthly";
 				}
-			} else {
-				alert.setText("Please pick a date");
-			}
+				LocalDate start = null;
+				if(timeStart.getValue() == null) {
+					java.util.Date input = HomeController.manager.getStartDate();
+					Date date = new Date(input.getTime());
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(date);
+					start = LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
+//						start = HomeController.manager.getStartDate();
+				} else {
+					start = timeStart.getValue();
+				}
+				float food = (float) foodSlider.getValue();
+				float trans = (float) transSlider.getValue();
+				float entertainment = (float) entertainmentSlider.getValue();
+				float misc = (float) miscSlider.getValue();
+				
+				HomeController.manager.changeSettings(start, timeType, food, trans, entertainment, misc);
+				alert.setText("Saved");
+			
 		}
 	}
 	
