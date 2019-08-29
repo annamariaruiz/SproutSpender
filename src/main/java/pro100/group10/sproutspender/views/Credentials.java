@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.KeyCode;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -59,6 +60,15 @@ public class Credentials {
             	}
             }
 		});
+		
+		pass.setOnKeyPressed(key -> {
+			if(key.getCode().equals(KeyCode.ENTER)) {
+				if(createCredentials(user.getText(), pass.getText())) {
+					credit.close();
+				}
+			}
+		});
+		
 		Scene scene = new Scene(grid, 400, 400);
 //		scene.getStylesheets().add(getClass().getResource("../views/application.css").toString());
 		credit.setResizable(false);

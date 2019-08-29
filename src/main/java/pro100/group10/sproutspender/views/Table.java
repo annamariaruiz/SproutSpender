@@ -115,7 +115,6 @@ public class Table {
 		return home;
 	}
 	
-
 	public void setHome(Scene home) {
 		this.home = home;
 	}
@@ -345,7 +344,14 @@ public class Table {
 		tableView.setItems(wpList);
 		HomeController.manager.update(HomeController.manager.db);
 		Bill nextBill = HomeController.manager.nextBill();
-		if(nextBill != null) nextBillDate.setText(new SimpleDateFormat("EEE, MMM d ").format(nextBill.getDate()));
+		if(nextBill != null) {
+			nextBillDate.setText(new SimpleDateFormat("EEE, MMM d ").format(nextBill.getDate()));
+			if(nextBill.getDate().equals(Date.valueOf(LocalDate.now())) && !nextBill.isPaid()) {
+				nextBillDate.setStyle("-fx-highlight-fill: firebrick; -fx-highlight-text-fill: firebrick");
+			} else {
+				nextBillDate.setStyle("");
+			}
+		}
 	}
 	
 	private void changeEndDate(int days) {
