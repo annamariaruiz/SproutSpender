@@ -39,6 +39,9 @@ public class HomeController {
 
 	public void initialize() {
 		
+		username.setPromptText("username");
+		password.setPromptText("password");
+		
 		createNewUser.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {

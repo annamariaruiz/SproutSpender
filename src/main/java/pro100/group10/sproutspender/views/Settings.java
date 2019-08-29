@@ -15,6 +15,9 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
 import javafx.stage.Stage;
 import pro100.group10.sproutspender.controllers.HomeController;
+import pro100.group10.sproutspender.controllers.Manager.Timeframe;
+import pro100.group10.sproutspender.models.Bill;
+import pro100.group10.sproutspender.models.Budget;
 
 public class Settings {
 
@@ -46,6 +49,22 @@ public class Settings {
 	private Slider miscSlider;
 	
 	private Stage settings = new Stage();
+	
+	public void initialize() {
+		if(HomeController.manager.getTimeFrame() == Timeframe.WEEKLY) {
+			weekTime.isSelected();
+		} else if (HomeController.manager.getTimeFrame() == Timeframe.MONTHLY) {
+			monthTime.isSelected();
+		} else {
+			monthTime.isSelected();
+		}
+		
+		timeStart.setValue(HomeController.manager.getStartDate().toLocalDate());
+		foodSlider.setValue(HomeController.manager.getBudgetLimits().get("FOOD"));
+		transSlider.setValue(HomeController.manager.getBudgetLimits().get("TRANSPORTATION"));
+		entertainmentSlider.setValue(HomeController.manager.getBudgetLimits().get("ENTERTAINMENT"));
+		miscSlider.setValue(HomeController.manager.getBudgetLimits().get("MISCELLANEOUS"));
+	}
 
 	@FXML
 	private void saveToFile(ActionEvent ae) throws SQLException {
@@ -61,7 +80,7 @@ public class Settings {
 				}
 				LocalDate start = null;
 				if(timeStart.getValue() == null) {
-//					start = HomeController.manager.getStartDate();
+					start = HomeController.manager.getStartDate().toLocalDate();
 				} else {
 					start = timeStart.getValue();
 				}
