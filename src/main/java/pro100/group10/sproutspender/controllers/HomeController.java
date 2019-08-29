@@ -2,6 +2,7 @@ package pro100.group10.sproutspender.controllers;
 
 import java.sql.SQLException;
 
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,8 +11,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import pro100.group10.sproutspender.app.Main;
@@ -102,10 +105,8 @@ public class HomeController {
 				}
 				// call to open table
 			} catch (RuntimeException | SQLException e) {
-				e.printStackTrace();
 				alert.setText("Login failed");
 				System.out.println(e.getMessage());
-				e.printStackTrace();
 			}
 		} else if (valid && empty) {
 			alert.setText("Database name must not be empty");
@@ -117,12 +118,17 @@ public class HomeController {
 			tableLoader.setLocation(getClass().getResource("../views/TableStage.fxml"));
 			Table table = new Table();
 			table.setDB(db);
+			table.setHome(stage.getScene());
 			tableLoader.setController(table);
 			Parent root = tableLoader.load();
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("../views/table.css").toString());
 			stage.setScene(scene);
-			stage.setOnHidden(eh -> table.cleanUp());
+			
+			stage.setOnCloseRequest(we -> {
+				table.cleanUp();
+			});
+			
 			stage.show();
 		} catch (Exception e) {
 			e.printStackTrace();

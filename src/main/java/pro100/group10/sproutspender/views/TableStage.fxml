@@ -25,17 +25,21 @@
          <menus>
             			<Menu text="File">
                <items>
+               						<MenuItem onAction="#onMenuItemLogOut" text="Log Out" />
                     			<MenuItem onAction="#onMenuItemExit" text="Exit" />
                </items>
                		</Menu>
                			<Menu text="Edit">
                   <items>
-                     			<MenuItem onAction="#onMenuItemMakeNew" text="Make New Budget" />
-                     			<MenuItem onAction="#onMenuItemEditDetails" text="Edit Selected Budget Details" />
-                     			<MenuItem onAction="#onMenuItemRemove" text="Remove Selected Budget" />
+                     			<MenuItem onAction="#onMenuItemMakeNew" text="Add Amount Spent" />
+                     			<MenuItem onAction="#onMenuItemEditDetails" text="Move/Edit Amount Spent" />
+                     			<MenuItem onAction="#onMenuItemRemove" text="Remove Amount Spent" />
                   </items>
                			</Menu>
-               		<Menu text="Help">
+               	<Menu text="Help">
+					<items>
+								<MenuItem onAction="#onMenuItemHelp" text="Help" />
+					</items>
    				</Menu>
          </menus>
          		</MenuBar>

@@ -52,6 +52,7 @@ public class Table {
 			Budget.CategoryType.ENTERTAINMENT, 
 			Budget.CategoryType.MISCELLANEOUS, 
 			Budget.CategoryType.TRANSPORTATION);
+	private Scene home;
 	
 	@FXML
 	private TableView<WeeklyPlanner> tableView;
@@ -77,6 +78,7 @@ public class Table {
 	private Label nextBillDate;
 	
 	private Budget selectedBudg = null;
+	private int selectedPos;
 	private boolean createMode = true;
 	@FXML
 	private DatePicker makeNewDate;
@@ -107,6 +109,14 @@ public class Table {
 
 	public void setDB(Database db) {
 		this.db = db;
+	}
+
+	public Scene getHome() {
+		return home;
+	}
+	
+	public void setHome(Scene home) {
+		this.home = home;
 	}
 
 	@SuppressWarnings({ "unchecked"})
@@ -200,6 +210,7 @@ public class Table {
 	private void onMenuItemMakeNew(ActionEvent ae) {
 		createMode = true;
 		if(tableView.getSelectionModel().getSelectedItem() != null) {
+			selectedPos = tableView.getFocusModel().getFocusedIndex();
 			selectedBudg = tableView.getSelectionModel().getSelectedItem().getDay(
 					tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1);
 			if(selectedBudg == null) {
@@ -221,8 +232,10 @@ public class Table {
 	private void onMenuItemEditDetails(ActionEvent ae) {
 		createMode = false;
 		if(tableView.getSelectionModel().getSelectedItem() != null) {
+			selectedPos = tableView.getFocusModel().getFocusedIndex();
 			selectedBudg = tableView.getSelectionModel().getSelectedItem().getDay(
 					tableView.getSelectionModel().getSelectedCells().get(0).getColumn() + 1);
+			
 			
 			if(selectedBudg != null && selectedBudg.getCategory() != CategoryType.GENERAL) {
 				openDetailedEditWindow(selectedBudg);
@@ -274,13 +287,29 @@ public class Table {
 	}
 	
 	@FXML
+	private void onMenuItemLogOut(ActionEvent ae) {
+		cleanUp();
+		Stage stage = ((Stage) tableView.getScene().getWindow());
+		stage.setScene(getHome());
+		stage.show();
+//		onMenuItemExit(ae);
+	}
+	
+	@FXML
 	private void onMenuItemExit(ActionEvent ae) {
 		((Stage) tableView.getScene().getWindow()).close();
+	}
+	
+	@FXML
+	private void onMenuItemHelp(ActionEvent ae) {
+		Help h = new Help();
+		h.init();
 	}
 		
 	@FXML
 	private void onMenuItemRemove(ActionEvent ae) {
 		if(tableView.getSelectionModel().getSelectedItem() != null) {
+			selectedPos = tableView.getFocusModel().getFocusedIndex();
 			int day = tableView.getFocusModel().getFocusedCell().getColumn() + 1;
 			int row = tableView.getFocusModel().getFocusedCell().getRow();
 			int id = tableView.getFocusModel().getFocusedItem().getDay(day).getID();
@@ -294,6 +323,7 @@ public class Table {
 				Optional<ButtonType> response = alert.showAndWait();
 			}
 			calculateTotals();
+			tableView.getFocusModel().focus(selectedPos);
 		}
 	}
 	
@@ -320,7 +350,14 @@ public class Table {
 		tableView.setItems(wpList);
 		HomeController.manager.update(HomeController.manager.db);
 		Bill nextBill = HomeController.manager.nextBill();
-		if(nextBill != null) nextBillDate.setText(new SimpleDateFormat("EEE, MMM d ").format(nextBill.getDate()));
+		if(nextBill != null) {
+			nextBillDate.setText(new SimpleDateFormat("EEE, MMM d ").format(nextBill.getDate()));
+			if(nextBill.getDate().equals(Date.valueOf(LocalDate.now())) && !nextBill.isPaid()) {
+				nextBillDate.setStyle("-fx-highlight-fill: firebrick; -fx-highlight-text-fill: firebrick");
+			} else {
+				nextBillDate.setStyle("");
+			}
+		}
 	}
 	
 	private void changeEndDate(int days) {
@@ -407,7 +444,6 @@ public class Table {
 	
 	@FXML
 	private void onGraphButtonClick(ActionEvent ae) {
-		//open graphs window
 		Graphs g = new Graphs();
 		g.init();
 	}
@@ -477,6 +513,7 @@ public class Table {
 			refreshTableView();
 			calculateTotals();
 			onPopOutCancel(ae);
+			tableView.getFocusModel().focus(selectedPos);
 		}		
  	}
 }

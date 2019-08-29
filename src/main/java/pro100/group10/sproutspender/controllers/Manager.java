@@ -105,7 +105,7 @@ public class Manager implements Serializable{
 			}
 			allBudgets.clear();
 			for (Budget b : allBudgets) {
-				if(b.getEndDate().after(HomeController.manager.startDate)) {//TODO Check and see if the end date is before or after the start date
+				if(b.getEndDate().after(HomeController.manager.startDate)) {
 					budgets.add(b);
 				}
 			}
@@ -328,7 +328,7 @@ public class Manager implements Serializable{
 	}
 	
 	public Bill nextBill() {
-		Date d = null;
+ 		Date d = null;
 		Bill next = null;
 
 		update(HomeController.manager.db);
@@ -336,6 +336,7 @@ public class Manager implements Serializable{
 		for(String name : HomeController.manager.bills.keySet()) {
 			if(d == null) {
 				d = HomeController.manager.bills.get(name).getDate();
+				next = HomeController.manager.bills.get(name);
 			} else if(HomeController.manager.bills.get(name).getDate().before(d) && d != null) {
 				d = HomeController.manager.bills.get(name).getDate();
 				next = HomeController.manager.bills.get(name);
@@ -389,32 +390,26 @@ public class Manager implements Serializable{
 	public Date getPrevEndDate() {
 		return prevEndDate;
 	}
-
 	
 	public User getUser() {
 		return user;
 	}
-
 	
 	public void setUser(User user) {
 		this.user = user;
 	}
-
 	
 	public String getName() {
 		return name;
 	}
-
 	
 	public void setName(String name) {
 		this.name = name;
 	}
-
 	
 	public int getID() {
 		return ID;
 	}
-
 	
 	public void setID(int iD) {
 		ID = iD;
